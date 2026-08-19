@@ -35,13 +35,8 @@ jobs:
 
       - name: Copy Environment Configuration
         env:
-          AUTHORITIES: ${{ secrets.AUTHORITIES }}
-          GOOGLE_API_CREDENTIALS: ${{ secrets.GOOGLE_API_CREDENTIALS }}
           FE_ENV_DEV: ${{ secrets.FE_ENV_DEV }}
         run: |
-          mkdir -p app/order-api/public/json
-          echo "$GOOGLE_API_CREDENTIALS" > app/order-api/public/json/credentials.json
-          echo "$AUTHORITIES" > app/order-api/public/json/authorities.json
           echo "$FE_ENV_DEV" > app/order-ui/.env
 
       # Step 3: Log in to GitHub Container Registry
@@ -52,22 +47,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push order-api image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./app/order-api
-          file: ./.build/order-api/Dockerfile
-          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY_OWNER }}/order-api:dev
-          labels: ${{ env.REGISTRY }}/${{ env.REPOSITORY_OWNER }}/order-api
-          push: true
-
-      - name: Build and push order-ui image
+      - name: Build and push trend-ui image
         uses: docker/build-push-action@v4
         with:
           context: ./app/order-ui
           file: ./.build/order-ui/Dockerfile
-          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY_OWNER }}/order-ui:dev
-          labels: ${{ env.REGISTRY }}/${{ env.REPOSITORY_OWNER }}/order-ui
+          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY_OWNER }}/trend-ui:dev
+          labels: ${{ env.REGISTRY }}/${{ env.REPOSITORY_OWNER }}/trend-ui
           push: true
 
       - name: Pull latest images on remote server

@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev          # Vite dev server on port 5173
+npm run dev          # Vite dev server on port 5177
 npm run build        # lint + tsc -b + vite build
 npm run lint         # ESLint check only
 npm run lint-fix     # ESLint with auto-fix

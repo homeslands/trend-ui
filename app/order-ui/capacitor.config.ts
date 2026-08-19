@@ -13,7 +13,7 @@ const config: CapacitorConfig = {
      * ⚠️ Thay IP bằng IP LAN thật của máy (vd: 192.168.1.34)
      */
     
-    // url: 'http://192.168.1.34:5173',
+    // url: 'http://192.168.1.34:5177',
     // cleartext: true,
     androidScheme: 'https',
     iosScheme: 'https',
