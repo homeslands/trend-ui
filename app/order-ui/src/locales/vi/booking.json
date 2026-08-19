@@ -1,0 +1,19 @@
+{
+    "booking": {
+      "title": "Thông tin dịch vụ",
+      "noContent": "Không có nội dung",
+      "partyPersonal": "Tiệc cá nhân",
+      "partyPersonalDescription": "Dành cho những buổi hẹn hò, kỷ niệm, sinh nhật nhỏ hoặc buổi gặp gỡ thân mật, Trend Coffee cung cấp menu theo set được thiết kế trọn gói, bao gồm đồ uống, món ăn và bánh ngọt, phù hợp cho 2 người.",
+      "partyPersonalThemeDescription": "Khách hàng có thể lựa chọn giữa các chủ đề như Romantic Date, Sweet Moment, hoặc Simple & Cozy, kèm trang trí nhẹ nhàng theo tông màu yêu thích (hoa tươi, nến, thiệp chúc, ảnh decor bàn).",
+      "partyPersonalDecorationDescription": "Tất cả được chuẩn bị tỉ mỉ để mỗi buổi hẹn tại Trend Coffee trở thành một kỷ niệm đáng nhớ.",
+      "partyGroup": "Tiệc nhóm",
+      "partyGroupDescription": "Trend Coffee là lựa chọn hoàn hảo cho họp nhóm, team building mini, tiệc công ty, họp lớp hoặc workshop nhỏ.",
+      "partyGroupDescription2": "Chúng tôi cung cấp dịch vụ thiết kế menu theo yêu cầu, bao gồm các combo nước uống, món ăn nhẹ, bánh ngọt hoặc thực đơn riêng cho từng sự kiện. Không gian có thể được set-up linh hoạt.",
+      "partyGroupDescription3": "Trend Coffee đồng hành cùng doanh nghiệp và nhóm khách hàng để tạo nên buổi tiệc vừa ấm cúng, vừa chuyên nghiệp, đúng tinh thần “tận tình trong từng sản phẩm”",
+      "bookingContact": "Liên hệ đặt tiệc",
+      "bookingContactDescription": "Vui lòng liên hệ qua hotline",
+      "bookingContactDescription2": "hoặc để lại thông tin qua Fanpage Trend Coffee and Foods để được tư vấn chi tiết.",
+      "clickHere": "Nhấn vào đây!"
+    }
+  }
+  

@@ -1,0 +1,69 @@
+{
+  "notification": {
+    "createdAt": "Created at",
+    "loadMore": "Load more",
+    "loadingMore": "Loading more...",
+    "message": "Message",
+    "new": "New",
+    "noNotification": "No new notifications",
+    "notificationList": "Notification",
+    "order": "New order",
+    "order-needs-delivered": "Order needs delivered, please deliver it quickly",
+    "order-needs-processed": "Order needs processed, please process it quickly",
+    "order-needs-ready-to-get": "Order is ready to get, please come to get it",
+    "order-bill-failed-printing": "Invoice printing failed, please check the printer!",
+    "order-chef-order-failed-printing": "Chef order printing failed, please check the printer!",
+    "order-label-ticket-failed-printing": "Label printing failed, please check the printer!",
+    "order-paid": "Your order has been paid successfully!",
+    "voucher": "New voucher",
+    "voucher-birthday-received": "Happy birthday! You've just received a birthday voucher, use it now!",
+    "voucher-new-user-received": "Welcome! You've just received a voucher for new customers.",
+    "gift": "New gift",
+    "gift-birthday-received": "A birthday gift just for you is ready!",
+    "printerFailDialog": {
+      "title": "Printing error",
+      "titleMultiple": "Printing errors ({{count}} orders)",
+      "description": "A printing job failed. Please review the order and printer in the chef area.",
+      "descriptionMultiple": "{{count}} printing jobs failed. Please review the orders and printer in the chef area.",
+      "order": "Order",
+      "table": "Table",
+      "orderTime": "Order time",
+      "action": "Go to chef order",
+      "viewDetail": "View detail",
+      "viewAll": "View all orders",
+      "close": "Close"
+    },
+    "defaultTitle": "New notification",
+    "notificationTitle": {
+      "order-needs-processed": "Order needs processing",
+      "order-needs-delivered": "Order needs delivery",
+      "order-needs-cancelled": "Order cancelled",
+      "order-needs-ready-to-get": "Order ready for pickup",
+      "order-bill-failed-printing": "Invoice printing failed",
+      "order-chef-order-failed-printing": "Chef order printing failed",
+      "order-label-ticket-failed-printing": "Label printing failed",
+      "order-paid": "Order paid",
+      "voucher-birthday-received": "Birthday voucher",
+      "voucher-new-user-received": "New customer voucher",
+      "gift-birthday-received": "Birthday gift"
+    },
+    "read": "Read",
+    "tabs": {
+      "all": "Notifications",
+      "errors": "Errors"
+    },
+    "time": {
+      "daysAgo": "{{days}} days ago",
+      "hoursAgo": "{{hours}} hours ago",
+      "justNow": "Just now",
+      "minutesAgo": "{{minutes}} minutes ago",
+      "monthsAgo": "{{months}} months ago",
+      "weeksAgo": "{{weeks}} weeks ago",
+      "yearsAgo": "{{years}} years ago"
+    },
+    "timeAgo": "{{time}}",
+    "title": "Notification management",
+    "type": "Notification type",
+    "unread": "Unread"
+  }
+}

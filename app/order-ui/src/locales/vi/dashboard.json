@@ -1,0 +1,42 @@
+{
+  "dashboard": {
+    "chooseTool": "Chọn công cụ",
+    "daily": "Theo ngày",
+    "exportExcel": "Xuất doanh thu Excel",
+    "exportPDF": "Xuất doanh thu PDF",
+    "exportProductRevenue": "Xuất doanh số sản phẩm",
+    "filter": "Đang lọc theo",
+    "hourly": "Theo giờ",
+    "referenceNumberOrder": "Số thứ tự hóa đơn",
+    "title": "Tổng quan",
+    "titleDetail": "Tổng quan các chi nhánh",
+    "tool": "Công cụ",
+    "topProducts": "Sản phẩm bán chạy",
+    "order": {
+      "title": "Tổng quan đơn hàng"
+    },
+    "cardOrder": {
+      "label": "đơn hàng",
+      "date": "Ngày",
+      "title": "Tổng quan đơn thẻ quà tặng",
+      "totalRevenue": "Tổng tiền",
+      "bankRevenue": "Tiền TT ngân hàng",
+      "cashRevenue": "Tiền TT tiền mặt",
+      "cardCount": "Thẻ đã bán",
+      "totalCardOrders": "Tổng đơn",
+      "selfTopupOrderCount": "Đơn nạp cho bản thân",
+      "giftTopupOrderCount": "Đơn nạp cho người khác",
+      "cardPurchaseOrderCount": "Đơn mua thẻ quà tặng",
+      "giftCard": "Thẻ đã bán",
+      "totalCardOrdersByBank": "Đơn TT ngân hàng",
+      "totalCardOrdersByCash": "Đơn TT tiền mặt",
+      "orderSequence": "Thứ tự hóa đơn",
+      "revenueChart": "Biều đồ doanh thu",
+      "estimatedRevenue": "Tổng doanh thu",
+      "estimatedBankRevenue": "Doanh thu TT ngân hàng",
+      "estimatedCashRevenue": "Doanh thu TT tiền mặt",
+      "revenueOverview": "Tổng quan doanh thu",
+      "coinOverview": "Tổng quan xu"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+    "campaign": {
+        "title": "Marketing campaigns",
+        "createCampaign": "Create campaign",
+        "editCampaign": "Edit campaign",
+        "deleteCampaign": "Delete campaign",
+        "confirmDelete": "Are you sure you want to delete this campaign?",
+        "save": "Save",
+        "cancel": "Cancel",
+        "name": "Campaign name",
+        "type": "Campaign type",
+        "status": "Status",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "recipientLimit": "Recipient limit",
+        "voucherGroups": "Voucher groups",
+        "recipientLimitUnlimited": "Unlimited",
+        "recipientLimitHintOff": "Every eligible customer receives it.",
+        "recipientLimitHintOn": "The total across the campaign's entire lifetime, not per year. A birthday campaign that hits the cap stops granting rewards in later years.",
+        "recipientLimitPlaceholder": "e.g. 1000",
+        "startDateMustStayPastWhileOpening": "This campaign is open, so its start date must stay in the past. Moving it to the future silently stops the campaign from granting rewards.",
+        "types": {
+            "new-user": "New user",
+            "user-birthday": "Birthday"
+        },
+        "statuses": {
+            "opening": "Opening",
+            "scheduled": "Scheduled",
+            "closed": "Closed"
+        },
+        "template": {
+            "title": "Voucher",
+            "addTemplate": "Add template",
+            "editTemplate": "Edit template",
+            "deleteTemplate": "Delete template",
+            "templateTitle": "Voucher title",
+            "description": "Description",
+            "type": "Voucher type",
+            "value": "Value",
+            "maxUsage": "Max usage",
+            "minOrderValue": "Min order value",
+            "maxItems": "Max items",
+            "duration": "Duration (days)",
+            "durationHintBirthday": "How many days the voucher stays valid after a customer receives it. The campaign repeats every year; each customer receives it at most once a year.",
+            "durationHintNewUser": "How many days the voucher stays valid after the customer registers.",
+            "durationHintWithEndDate": "The voucher stays valid until the campaign ends.",
+            "usageFrequencyUnit": "Frequency unit",
+            "usageFrequencyValue": "Frequency value",
+            "applicabilityRule": "Applicability rule",
+            "paymentMethods": "Payment method",
+            "products": "Applicable products",
+            "typeKey": "Campaign type key",
+            "voucherTypes": {
+                "fixed_value": "Fixed discount",
+                "percent_order": "Percent discount",
+                "same_price_product": "Same price product"
+            },
+            "frequencyUnits": {
+                "hour": "Hour",
+                "day": "Day",
+                "week": "Week",
+                "month": "Month",
+                "year": "Year",
+                "unlimited": "Unlimited"
+            },
+            "applicabilityRules": {
+                "all_required": "All required",
+                "at_least_one_required": "At least one required"
+            },
+            "paymentMethodOptions": {
+                "cash": "Cash",
+                "bank-transfer": "Bank transfer",
+                "credit-card": "Credit card",
+                "point": "Points"
+            }
+        },
+        "confirmCreate": "Confirm campaign creation",
+        "confirmCreateDescription": "Are you sure you want to create this campaign?",
+        "confirmUpdate": "Confirm campaign update",
+        "confirmUpdateDescription": "Are you sure you want to update this campaign?",
+        "empty": "No campaigns yet",
+        "createSuccess": "Campaign created successfully",
+        "updateSuccess": "Campaign updated successfully",
+        "deleteSuccess": "Campaign deleted successfully",
+        "closeCampaign": "Close campaign",
+        "confirmClose": "Close this campaign?",
+        "confirmCloseDescription": "The campaign moves to Closed and stops granting rewards immediately.",
+        "closeNote1": "Rewards already granted stay with customers.",
+        "closeNote2": "You cannot reopen it from this screen.",
+        "closeSuccess": "Campaign closed",
+        "rewardType": "Reward type",
+        "rewardTypes": {
+            "voucher": "Voucher",
+            "gift": "Gift"
+        },
+        "rewardTypeHintVoucher": "The customer receives a generated voucher code to use when ordering.",
+        "rewardTypeHintGift": "The customer receives a gift. The reward type cannot be changed after the campaign is created.",
+        "giftTemplate": {
+            "sectionTitle": "Gift",
+            "title": "Gift name",
+            "titlePlaceholder": "e.g. Free drink voucher",
+            "description": "Description",
+            "readOnlyNote": "Gift details cannot be edited after creation — the backend does not support updating this yet.",
+            "durationHintBirthday": "How many days the gift stays valid after a customer receives it. The campaign repeats every year; each customer receives it at most once a year.",
+            "durationHintNewUser": "How many days the gift stays valid after the customer registers."
+        }
+    }
+}

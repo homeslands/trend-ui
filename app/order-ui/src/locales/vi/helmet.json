@@ -1,0 +1,196 @@
+{
+  "helmet": {
+    "bankConfig": {
+      "description": "Quản lý ngân hàng của bạn tại đây",
+      "keywords": "quản lý ngân hàng, ngân hàng, quản lý ngân hàng",
+      "manageBankConfig": "Quản lý ngân hàng",
+      "title": "Quản lý ngân hàng"
+    },
+    "banner": {
+      "description": "Quản lý banner của bạn tại đây",
+      "keywords": "banner, quản lý banner, banner quảng cáo",
+      "manageBanner": "Quản lý banner",
+      "title": "Quản lý banner"
+    },
+    "branch": {
+      "description": "Quản lý chi nhánh của bạn tại đây",
+      "keywords": "chi nhánh, quản lý chi nhánh, chi nhánh quán ăn",
+      "manageBranch": "Quản lý cửa hàng",
+      "title": "Quản lý cửa hàng"
+    },
+    "cart": {
+      "description": "Quản lý giỏ hàng của bạn tại đây",
+      "keywords": "giỏ hàng, quản lý giỏ hàng, giỏ hàng mua sắm",
+      "manageCart": "Quản lý giỏ hàng",
+      "title": "Giỏ hàng"
+    },
+    "chefArea": {
+      "description": "Quản lý khu vực của đầu bếp tại đây",
+      "keywords": "khu vực, quản lý khu vực, khu vực đầu bếp",
+      "manageChefArea": "Khu vực của đầu bếp",
+      "title": "Khu vực bếp"
+    },
+    "config": {
+      "description": "Quản lý cài đặt của bạn tại đây",
+      "keywords": "cài đặt, quản lý cài đặt, cài đặt hệ thống",
+      "manageConfig": "Cấu hình hệ thống",
+      "title": "Cấu hình hệ thống"
+    },
+    "customer": {
+      "description": "Quản lý người dùng của bạn tại đây",
+      "keywords": "quản lý người dùng, người dùng, khách hàng",
+      "manageCustomer": "Quản lý người dùng",
+      "title": "Quản lý người dùng"
+    },
+    "deliveryManagement": {
+      "description": "Quản lý đơn hàng của bạn tại đây",
+      "keywords": "đơn hàng, quản lý đơn hàng, đơn hàng quán ăn",
+      "manageDeliveryManagement": "Quản lý đơn hàng",
+      "title": "Quản lý giao hàng"
+    },
+    "employee": {
+      "description": "Quản lý nhân viên của bạn tại đây",
+      "keywords": "quản lý nhân viên, nhân viên, quản lý nhân sự",
+      "manageEmployee": "Quản lý nhân viên",
+      "title": "Quản lý nhân viên"
+    },
+    "giftCard": {
+      "description": "Quản lý thẻ quà tặng của bạn tại đây",
+      "keywords": "thẻ quà tặng, phiếu quà tặng, thẻ quà tặng quán ăn",
+      "manageGiftCard": "Quản lý thẻ quà tặng",
+      "title": "Quản lý thẻ quà tặng"
+    },
+    "giftCardMenu": {
+      "description": "Mua thẻ quà tặng của bạn tại đây",
+      "keywords": "menu thẻ quà tặng, danh mục thẻ quà tặng, menu thẻ quà tặng quán ăn",
+      "manageGiftCardMenu": "Mua thẻ quà tặng",
+      "title": "Mua thẻ quà tặng"
+    },
+    "giftCardFeatureFlag": {
+      "description": "Quản lý khóa chức năng của bạn tại đây",
+      "keywords": "khóa thẻ quà tặng, Quản lý khóa chức năng, khóa thẻ quà tặng quán ăn",
+      "manageGiftCardFeatureFlag": "Quản lý khóa chức năng",
+      "title": "Quản lý khóa chức năng"
+    },
+    "home": {
+      "description": "Trang chủ của bạn tại đây",
+      "keywords": "trang chủ, trang chủ quán ăn",
+      "title": "Trang chủ"
+    },
+    "log": {
+      "description": "Quản lý lịch sử của bạn tại đây",
+      "keywords": "lịch sử, quản lý lịch sử, lịch sử giao dịch",
+      "manageLog": "Quản lý lịch sử",
+      "title": "Quản lý log"
+    },
+    "menu": {
+      "description": "Quản lý thực đơn của bạn tại đây",
+      "keywords": "thực đơn, quản lý thực đơn, thực đơn quán ăn",
+      "manageMenu": "Quản lý thực đơn",
+      "title": "Thực đơn"
+    },
+    "menuManagement": {
+      "description": "Quản lý thực đơn của bạn tại đây",
+      "keywords": "thực đơn, quản lý thực đơn, thực đơn quán ăn",
+      "manageMenuManagement": "Quản lý thực đơn",
+      "title": "Quản lý thực đơn"
+    },
+    "notification": {
+      "description": "Quản lý thông báo của bạn tại đây",
+      "keywords": "thông báo, quản lý thông báo, thông báo quán ăn",
+      "manageNotification": "Quản lý thông báo",
+      "title": "Quản lý thông báo"
+    },
+    "orderDetail": {
+      "description": "Chi tiết đơn hàng của bạn tại đây",
+      "keywords": "chi tiết đơn hàng, đơn hàng, chi tiết đơn hàng",
+      "manageOrderDetail": "Chi tiết đơn hàng",
+      "title": "Chi tiết đơn hàng"
+    },
+    "orderManagement": {
+      "description": "Quản lý lịch sử đơn hàng của bạn tại đây",
+      "keywords": "lịch sử đơn hàng, đơn hàng, quản lý đơn hàng",
+      "manageOrderManagement": "Quản lý đơn hàng",
+      "title": "Quản lý đơn hàng"
+    },
+    "cardOrder": {
+      "title": "Quản lý đơn hàng quà tặng"
+    },
+    "payment": {
+      "description": "Quản lý thanh toán của bạn tại đây",
+      "managePayment": "Trang thanh toán",
+      "title": "Thanh toán"
+    },
+    "product": {
+      "description": "Quản lý sản phẩm của bạn tại đây",
+      "keywords": "sản phẩm, quản lý sản phẩm, sản phẩm bánh",
+      "manageProduct": "Quản lý sản phẩm",
+      "title": "Quản lý món"
+    },
+    "productDetail": {
+      "description": "Chi tiết món của bạn tại đây",
+      "keywords": "chi tiết món, món ăn, chi tiết sản phẩm",
+      "manageProductDetail": "Chi tiết món",
+      "title": "Chi tiết món"
+    },
+    "profile": {
+      "description": "Quản lý hồ sơ của bạn tại đây",
+      "manageProfile": "Quản lý hồ sơ",
+      "title": "Hồ sơ"
+    },
+    "promotion": {
+      "description": "Quản lý khuyến mãi của bạn tại đây",
+      "keywords": "khuyến mãi, quản lý khuyến mãi, khuyến mãi giảm giá",
+      "managePromotion": "Quản lý khuyến mãi",
+      "title": "Quản lý khuyến mãi"
+    },
+    "role": {
+      "description": "Quản lý hệ thống của bạn tại đây",
+      "keywords": "vai trò, quản lý vai trò, vai trò người dùng",
+      "manageRole": "Hệ thống",
+      "title": "Hệ thống"
+    },
+    "staticPage": {
+      "description": "Quản lý trang tĩnh của bạn tại đây",
+      "keywords": "trang tĩnh, quản lý trang tĩnh, trang tĩnh quán ăn",
+      "manageStaticPage": "Quản lý trang tĩnh",
+      "title": "Quản lý trang tĩnh"
+    },
+    "table": {
+      "description": "Quản lý bàn của bạn tại đây",
+      "keywords": "bàn, quản lý bàn, bàn ăn",
+      "manageTable": "Quản lý bàn",
+      "title": "Quản lý bàn"
+    },
+    "updateOrder": {
+      "description": "Cập nhật đơn hàng của bạn tại đây",
+      "keywords": "cập nhật đơn hàng, đơn hàng, quản lý đơn hàng",
+      "manageUpdateOrder": "Cập nhật đơn hàng",
+      "title": "Cập nhật đơn hàng"
+    },
+    "voucher": {
+      "description": "Quản lý voucher của bạn tại đây",
+      "keywords": "voucher, quản lý voucher, voucher giảm giá",
+      "manageVoucher": "Quản lý voucher",
+      "title": "Quản lý voucher"
+    },
+    "system": {
+      "description": "Quản lý hệ thống của bạn tại đây",
+      "keywords": "hệ thống, quản lý hệ thống, hệ thống quán ăn",
+      "manageSystem": "Quản lý hệ thống",
+      "title": "Quản lý hệ thống"
+    },
+    "userGroup": {
+      "description": "Quản lý nhóm khách hàng của bạn tại đây",
+      "keywords": "nhóm khách hàng, quản lý nhóm khách hàng, nhóm khách hàng quán ăn",
+      "manageUserGroup": "Quản lý nhóm khách hàng",
+      "title": "Quản lý nhóm khách hàng"
+    },
+    "coinPolicy": {
+      "title": "Quản lý cấu hình thẻ quà tặng"
+    },
+    "invoiceArea": {
+      "title": "Khu vực in hóa đơn | Order"
+    }
+  }
+}

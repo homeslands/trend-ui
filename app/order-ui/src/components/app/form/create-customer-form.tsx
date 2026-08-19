@@ -1,0 +1,253 @@
+import React, { useEffect, useMemo } from 'react'
+import { useForm } from 'react-hook-form'
+import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Form,
+  Input,
+  PasswordInput,
+  ScrollArea,
+  Switch,
+} from '@/components/ui'
+import { useCreateUser, useRoles } from '@/hooks'
+import { TCreateUserSchema, useCreateUserSchema } from '@/schemas'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ICreateUserRequest } from '@/types'
+import { showToast } from '@/utils'
+import { PasswordWithRulesInput } from '../input'
+import { useOrderFlowStore, useUserStore } from '@/stores'
+import { Role } from '@/constants'
+import { DatePicker } from '../picker'
+
+interface IFormCreateCustomerProps {
+  onSubmit: (isOpen: boolean) => void
+}
+
+export const CreateCustomerForm: React.FC<IFormCreateCustomerProps> = ({
+  onSubmit,
+}) => {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation(['customer'])
+  const { mutate: createUser } = useCreateUser()
+  const {userInfo} = useUserStore()
+
+  const { data } = useRoles()
+  const { addCustomerInfo } = useOrderFlowStore()
+  
+  const isAdminOrSuperAdmin = useMemo(() => userInfo?.role.name === Role.ADMIN || userInfo?.role.name === Role.SUPER_ADMIN, [userInfo?.role.name])
+
+  // get slug of role customer
+  const customerRole = data?.result.find((role) => role.name === Role.CUSTOMER)
+
+  const form = useForm<TCreateUserSchema>({
+    resolver: zodResolver(useCreateUserSchema()),
+    defaultValues: {
+      phonenumber: '',
+      password: '',
+      confirmPassword: '',
+      firstName: '',
+      lastName: '',
+      dob: '',
+      role: '',
+    },
+  })
+
+
+  useEffect(() => {
+    if (customerRole) {
+      form.setValue('role', customerRole.slug)
+    }
+  }, [customerRole, form])
+
+  const handleSubmit = (data: ICreateUserRequest) => {
+    createUser(data, {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries({
+          queryKey: ['users'],
+          exact: false,
+          refetchType: 'all'
+        })
+        if (response?.result) {
+          addCustomerInfo(response.result)
+        }
+        onSubmit(false)
+        form.reset()
+        showToast(t('toast.createUserSuccess'))
+      },
+    })
+  }
+
+  const formFields = {
+    phonenumber: (
+      <FormField
+        control={form.control}
+        name="phonenumber"
+        render={({ field }) => (
+          <FormItem>
+            <span className="pr-1 text-destructive">*</span>
+            <FormLabel>{t('customer.phoneNumber')}</FormLabel>
+            <FormControl>
+              <Input
+                placeholder={t('customer.enterPhoneNumber')}
+                {...field}
+                onChange={(e) => {
+                  // Chỉ giữ lại các ký tự là số
+                  const onlyNumbers = e.target.value.replace(/\D/g, '')
+                  field.onChange(onlyNumbers) // Gán lại cho field dạng string
+                }}
+                inputMode="numeric" // Gợi ý bàn phím số trên mobile
+                pattern="[0-9]*"     // Gợi ý trình duyệt chỉ cho nhập số
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ),
+
+    password: (
+      <FormField
+        control={form.control}
+        name="password"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              <span className="pr-1 text-destructive">*</span>
+              {t('customer.password')}
+            </FormLabel>
+            <FormControl>
+              <PasswordWithRulesInput
+                value={field.value}
+                onChange={field.onChange}
+                placeholder={t('customer.enterPassword')}
+                disabled={field.disabled}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ),
+    confirmPassword: (
+      <FormField
+        control={form.control}
+        name="confirmPassword"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              <span className="pr-1 text-destructive">*</span>
+              {t('customer.confirmPassword')}
+            </FormLabel>
+            <FormControl>
+              <PasswordInput
+                placeholder={t('customer.enterPassword')}
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ),
+    firstName: (
+      <FormField
+        control={form.control}
+        name="firstName"
+        render={({ field }) => (
+          <FormItem>
+            <span className="pr-1 text-destructive">*</span>
+            <FormLabel>{t('customer.firstName')}</FormLabel>
+            <FormControl>
+              <Input placeholder={t('customer.enterFirstName')} {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ),
+    lastName: (
+      <FormField
+        control={form.control}
+        name="lastName"
+        render={({ field }) => (
+          <FormItem>
+            <span className="pr-1 text-destructive">*</span>
+            <FormLabel>{t('customer.lastName')}</FormLabel>
+            <FormControl>
+              <Input placeholder={t('customer.enterLastName')} {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ),
+    dob: (
+      <FormField
+        control={form.control}
+        name="dob"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t('customer.dob')}</FormLabel>
+            <FormControl>
+              <DatePicker
+                backgroundColor="bg-transparent"
+                date={field.value}
+                onSelect={(selectedDate) => field.onChange(selectedDate)}
+                validateDate={(date) => date <= new Date()}
+                disableFutureDate
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ),
+    isVerifiedPhonenumber: (
+      isAdminOrSuperAdmin && (
+      <FormField
+        control={form.control}
+        name="isVerifiedPhonenumber"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className='flex gap-1 items-center'>
+              {t('customer.isVerifiedPhonenumber')}
+            </FormLabel>
+            <FormControl>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+          )}
+        />
+      )
+    ),
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      <Form {...form}>
+        <form id='create-customer-form' onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <ScrollArea className="h-[400px] px-2">
+            <div className="grid grid-cols-1 gap-4 p-2">
+              {Object.keys(formFields).map((key) => (
+                <React.Fragment key={key}>
+                  {formFields[key as keyof typeof formFields]}
+                </React.Fragment>
+              ))}
+            </div>
+          </ScrollArea>
+        </form>
+      </Form>
+    </div>
+  )
+}

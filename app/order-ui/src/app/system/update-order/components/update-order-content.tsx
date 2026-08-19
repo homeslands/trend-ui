@@ -1,0 +1,407 @@
+import _ from 'lodash'
+import { ShoppingCart, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+
+import { Badge, Button, Input, ScrollArea } from '@/components/ui'
+import { OrderTypeInUpdateOrderSelect, PickupTimeSelectInUpdateOrder } from '@/components/app/select'
+import { calculateOrderItemDisplay, calculatePlacedOrderTotals, capitalizeFirstLetter, formatCurrency, showErrorToastMessage, showToast, transformOrderItemToOrderDetail } from '@/utils'
+import { IOrderItem, IVoucherProduct, OrderStatus, OrderTypeEnum } from '@/types'
+import { StaffVoucherListSheetInUpdateOrderWithLocalStorage } from '@/components/app/sheet'
+import { APPLICABILITY_RULE, VOUCHER_TYPE } from '@/constants'
+import UpdateOrderQuantity from './update-quantity'
+import { useOrderFlowStore } from '@/stores'
+import { OrderItemNoteInUpdateOrderInput, OrderNoteInUpdateOrderInput } from '@/components/app/input'
+import { StaffConfirmUpdateOrderDialog, DeleteLastOrderItemDialog } from '@/components/app/dialog'
+import { useIsMobile } from '@/hooks'
+
+function CustomPriceDraftInput({ customPrice, onPriceChange }: { customPrice?: number; onPriceChange: (v: number) => void }) {
+    const { t } = useTranslation(['menu'])
+    const [raw, setRaw] = useState((customPrice ?? 0) > 0 ? String(customPrice) : '')
+
+    return (
+        <Input
+            type="number"
+            min={0}
+            placeholder={t('menu.enterCustomPrice')}
+            className="h-7 text-xs flex-1 border-orange-300 focus-visible:ring-orange-400"
+            value={raw}
+            onChange={(e) => {
+                setRaw(e.target.value)
+                const parsed = parseFloat(e.target.value)
+                if (!isNaN(parsed) && parsed >= 0) onPriceChange(parsed)
+                else if (e.target.value === '') onPriceChange(0)
+            }}
+        />
+    )
+}
+
+interface UpdateOrderContentProps {
+    orderType: OrderTypeEnum
+    table: string
+}
+
+export default function UpdateOrderContent({
+    orderType,
+    table,
+}: UpdateOrderContentProps) {
+    const { t } = useTranslation(['menu'])
+    const { t: tCommon } = useTranslation(['common'])
+    const { t: tVoucher } = useTranslation(['voucher'])
+    const { t: tToast } = useTranslation(['toast'])
+    const { updatingData, removeDraftItem, removeDraftVoucher, updateDraftItem } = useOrderFlowStore()
+    const isMobile = useIsMobile()
+
+    // console.log('updatingData', updatingData?.updateDraft?.orderItems)
+
+    const voucher = updatingData?.updateDraft?.voucher || null
+    const voucherSlug = voucher?.slug
+    const voucherMaxItems = voucher?.maxItems || 0
+    const deliveryFee = updatingData?.updateDraft?.deliveryFee || 0
+    const accumulatedPointsToUse = updatingData?.originalOrder?.accumulatedPointsToUse || 0
+
+    // Memoize orderItems để tránh dependency thay đổi
+    const orderItems = useMemo(() =>
+        updatingData?.updateDraft?.orderItems || [],
+        [updatingData?.updateDraft?.orderItems]
+    )
+
+    const isGiftItem = useCallback((item: IOrderItem) => {
+        const itemWithGift = item as { isGift?: boolean; product?: { isGift?: boolean }; variant?: { product?: { isGift?: boolean } } }
+        return (
+            itemWithGift.isGift === true ||
+            itemWithGift.product?.isGift === true ||
+            itemWithGift.variant?.product?.isGift === true
+        )
+    }, [])
+
+    // console.log('orderItems isGift', orderItems.map(item => isGiftItem(item)))
+
+    const nonGiftOrderItems = useMemo(() =>
+        orderItems.filter(item => !isGiftItem(item)),
+        [orderItems, isGiftItem]
+    )
+
+    // console.log('nonGiftOrderItems', nonGiftOrderItems)
+    // Memoize cartItemQuantity để tránh trigger useEffect không cần thiết khi chỉ thêm gift items
+    const cartItemQuantity = useMemo(() =>
+        nonGiftOrderItems.reduce((total, item) => total + (item.quantity || 0), 0),
+        [nonGiftOrderItems]
+    )
+    // console.log('cartItemQuantity', cartItemQuantity)
+
+    // Memoize calculations để tránh re-render không cần thiết
+    const { displayItems, cartTotals } = useMemo(() => {
+        const transformed = transformOrderItemToOrderDetail(orderItems)
+        const display = calculateOrderItemDisplay(transformed, voucher)
+        const totals = calculatePlacedOrderTotals(display, voucher, deliveryFee, accumulatedPointsToUse)
+        return {
+            displayItems: display,
+            cartTotals: totals
+        }
+    }, [orderItems, voucher, deliveryFee, accumulatedPointsToUse])
+    // const deliveryFee = useCalculateDeliveryFee(parseKm(updatingData?.updateDraft?.deliveryDistance) || 0, branch?.slug || '')
+
+    const hasCustomPriceItems = useMemo(
+        () => orderItems.some((i) => i.isCustomPrice) ?? false,
+        [orderItems]
+    )
+
+    const hasUnpricedCustomItems = useMemo(
+        () => orderItems.some((i) => i.isCustomPrice === true && !(i.customPrice != null && i.customPrice > 0)),
+        [orderItems]
+    )
+
+    const handleRemoveOrderItem = (item: IOrderItem) => {
+        // 💡 Xóa khỏi store (local) - không gọi API
+        removeDraftItem(item.id)
+        showToast(tToast('toast.deleteOrderItemSuccess'))
+    }
+
+    // Check if the total quantity of products in the cart exceeds the voucher's maxItems
+    useEffect(() => {
+        if (!voucherSlug || !voucherMaxItems) return
+        if (cartItemQuantity > voucherMaxItems) {
+            removeDraftVoucher()
+            showErrorToastMessage('toast.voucherMaxItemsExceeded')
+        }
+    }, [
+        voucherSlug,
+        voucherMaxItems,
+        cartItemQuantity,
+        removeDraftVoucher,
+        nonGiftOrderItems.length,
+    ])
+
+    return (
+        <div
+            className={`flex flex-col ${isMobile
+                ? 'w-screen max-w-none -mx-2 sm:-mx-6 sm:px-6 min-h-[50vh] border-t border-b bg-background'
+                : 'z-30 fixed right-0 top-14 h-[calc(100vh-3.5rem)] w-full md:w-[26%] xl:w-[25%] shadow-lg overflow-hidden bg-background transition-all duration-300'
+                }`}
+        >
+            {/* Header */}
+            <div className={`flex flex-col gap-2 p-2 ${isMobile ? 'border-b bg-background' : 'backdrop-blur-sm shrink-0 bg-background/95'}`}>
+                <div className='flex flex-col gap-2 items-center'>
+                    <div className="w-full">
+                        <OrderTypeInUpdateOrderSelect typeOrder={orderType} />
+                    </div>
+                    {orderType === OrderTypeEnum.TAKE_OUT && (
+                        <div className='w-full'>
+                            <PickupTimeSelectInUpdateOrder orderType={orderType} pickupTime={updatingData?.originalOrder?.timeLeftTakeOut} />
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Order Items */}
+            <ScrollArea className={`${isMobile ? 'overflow-y-auto p-0 max-h-[35vh] min-h-[200px]' : 'flex-1 p-0 scrollbar-hidden'}`}>
+                <div className={`flex flex-col gap-2 p-2 ${isMobile ? 'pb-4' : ''}`}>
+                    <AnimatePresence>
+                        {orderItems && orderItems.length > 0 ? (
+                            orderItems.map((item: IOrderItem, index: number) => {
+                                // Tạo key thống nhất - dựa trên ID để đảm bảo mỗi item có key duy nhất
+                                // Điều này quan trọng khi có nhiều items giống nhau (cùng product, variant)
+                                const stableKey = item.id || `${item.productSlug}-${item.variant?.slug || 'default'}-${index}`
+
+                                const displayItem = displayItems.find(di => di.productSlug === item.productSlug)
+
+                                const original = item.variant?.price || 0
+                                const priceAfterPromotion = displayItem?.priceAfterPromotion || original
+                                const finalPrice = displayItem?.finalPrice || priceAfterPromotion
+
+                                const isSamePriceVoucher =
+                                    voucher?.type === VOUCHER_TYPE.SAME_PRICE_PRODUCT &&
+                                    voucher?.voucherProducts?.some((vp: IVoucherProduct) => vp.product?.slug === item.productSlug)
+
+                                const isAtLeastOneVoucher =
+                                    voucher?.applicabilityRule === APPLICABILITY_RULE.AT_LEAST_ONE_REQUIRED &&
+                                    voucher?.voucherProducts?.some(vp => vp.product?.slug === item.productSlug)
+
+                                const hasPromotionDiscount = (displayItem?.promotionDiscount || 0) > 0
+                                const hasVoucherDiscount = (displayItem?.voucherDiscount || 0) > 0
+
+                                // Use finalPrice for display when there's voucher discount, otherwise use priceAfterPromotion
+                                const displayPrice = isSamePriceVoucher
+                                    ? finalPrice // đồng giá
+                                    : isAtLeastOneVoucher && hasVoucherDiscount
+                                        ? original - (displayItem?.voucherDiscount || 0)
+                                        : hasPromotionDiscount
+                                            ? priceAfterPromotion
+                                            : original
+
+                                const shouldShowLineThrough =
+                                    (isSamePriceVoucher || hasPromotionDiscount || hasVoucherDiscount) &&
+                                    (original > displayPrice)
+
+                                return (
+                                    <motion.div
+                                        key={stableKey}
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                                        className={`flex flex-col gap-1 p-2 rounded-lg border transition-colors ${item.isCustomPrice ? 'border-orange-400/70 bg-orange-500/10' : 'border-primary/80 bg-primary/10'} group`}
+                                    >
+                                        {item.isCustomPrice ? (
+                                            <div className="flex flex-col gap-1.5">
+                                                <div className="flex justify-between items-start gap-1">
+                                                    <div className="flex items-center gap-1 min-w-0">
+                                                        <span className="text-[13px] xl:text-sm font-semibold truncate max-w-[9rem] xl:max-w-[12rem]">
+                                                            {item.name}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-[14px] font-semibold text-orange-600 shrink-0">
+                                                        {(item.customPrice ?? 0) > 0 ? formatCurrency(item.customPrice ?? 0) : '—'}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <CustomPriceDraftInput
+                                                        customPrice={item.customPrice}
+                                                        onPriceChange={(v) => updateDraftItem(item.id, { customPrice: v, originalPrice: v })}
+                                                    />
+                                                    {orderItems.length === 1 ? (
+                                                        <DeleteLastOrderItemDialog orderItem={item} onSuccess={() => removeDraftItem(item.id)} />
+                                                    ) : (
+                                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveOrderItem(item)} className="shrink-0 hover:bg-destructive/10 hover:text-destructive">
+                                                            <Trash2 size={16} className="text-destructive" />
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                                <OrderItemNoteInUpdateOrderInput orderItem={item} />
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col flex-1 min-w-0">
+                                                <div className='flex justify-between items-center'>
+                                                    <div className='flex gap-1 items-end'>
+                                                        <span className="text-[13px] xl:text-sm font-semibold truncate max-w-[9rem] xl:max-w-[15rem]">
+                                                            {item.name}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className='flex justify-between items-center'>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] text-muted-foreground">
+                                                            ({capitalizeFirstLetter(item.variant?.size?.name || '')})
+                                                        </span>
+                                                        <div className="flex flex-col gap-1 items-start mt-1">
+                                                            {shouldShowLineThrough && original !== finalPrice && (
+                                                                <span className="text-[10px] line-through text-muted-foreground">
+                                                                    {formatCurrency(original)}
+                                                                </span>
+                                                            )}
+                                                            <span className="text-[10px] font-bold text-primary">
+                                                                {formatCurrency(displayPrice)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2 items-center">
+                                                        <UpdateOrderQuantity orderItem={item} />
+                                                        {orderItems.length === 1 ? (
+                                                            <DeleteLastOrderItemDialog orderItem={item} onSuccess={() => removeDraftItem(item.id)} />
+                                                        ) : (
+                                                            <Button title={t('common.remove')} variant="ghost" size="icon" onClick={() => handleRemoveOrderItem(item)} className="hover:bg-destructive/10 hover:text-destructive">
+                                                                <Trash2 size={18} className='icon text-destructive' />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <OrderItemNoteInUpdateOrderInput orderItem={item} />
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )
+                            })
+                        ) : (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="flex flex-col items-center justify-center min-h-[12rem] gap-2 text-muted-foreground"
+                            >
+                                <div className="p-2 rounded-full bg-muted/30">
+                                    <ShoppingCart className="w-10 h-10" />
+                                </div>
+                                <div className="space-y-1 text-center">
+                                    <p className="font-medium">{tCommon('common.noData')}</p>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </ScrollArea>
+
+            {/* Footer - Payment */}
+            {orderItems && orderItems.length > 0 && (
+                <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    className={`p-2 border-t ${isMobile ? 'bg-background' : 'z-10 backdrop-blur-sm shrink-0 bg-background/95'}`}
+                >
+                    <div className='space-y-1'>
+                        <div className="flex flex-col">
+                            <OrderNoteInUpdateOrderInput order={updatingData?.updateDraft} />
+                            {!hasCustomPriceItems && <StaffVoucherListSheetInUpdateOrderWithLocalStorage />}
+                        </div>
+
+                        <div>
+                            {voucher && (
+                                <div className="flex justify-start w-full">
+                                    <div className="flex flex-col items-start">
+                                        <div className="flex gap-2 items-center mt-2">
+                                            <Badge variant='outline' className="text-[10px] px-1 border-primary text-primary">
+                                                {(() => {
+                                                    if (!voucher) return null
+
+                                                    switch (voucher.type) {
+                                                        case VOUCHER_TYPE.PERCENT_ORDER:
+                                                            return `${tVoucher('voucher.discountValue')}${voucher.value}% ${tVoucher('voucher.orderValue')}`
+
+                                                        case VOUCHER_TYPE.FIXED_VALUE:
+                                                            return `${tVoucher('voucher.discountValue')}${formatCurrency(voucher.value)} ${tVoucher('voucher.orderValue')}`
+
+                                                        case VOUCHER_TYPE.SAME_PRICE_PRODUCT:
+                                                            return `${tVoucher('voucher.samePrice')} ${formatCurrency(voucher.value)} ${tVoucher('voucher.forSelectedProducts')}`
+
+                                                        default:
+                                                            return ''
+                                                    }
+                                                })()}
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="space-y-1 text-sm">
+                            <div className="flex flex-col w-full text-sm text-muted-foreground">
+                                {hasCustomPriceItems ? (
+                                    <div className="flex justify-between items-center pt-2 mt-2 font-semibold border-t text-md">
+                                        <span>{t('order.totalPayment')}</span>
+                                        <span className="text-2xl font-bold text-primary">
+                                            {formatCurrency(orderItems.reduce((sum, i) => sum + (i.customPrice ?? 0) * i.quantity, 0))}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="flex justify-between text-xs">
+                                            <span>{t('order.subtotalBeforeDiscount')}</span>
+                                            <span>{formatCurrency(cartTotals?.subTotalBeforeDiscount || 0)}</span>
+                                        </div>
+
+                                        {(cartTotals?.promotionDiscount || 0) > 0 && (
+                                            <div className="flex justify-between text-[10px] italic text-yellow-600">
+                                                <span>{t('order.promotionDiscount')}</span>
+                                                <span>-{formatCurrency(cartTotals?.promotionDiscount || 0)}</span>
+                                            </div>
+                                        )}
+
+                                        {(cartTotals?.voucherDiscount || 0) > 0 && (
+                                            <div className="flex justify-between text-[10px] italic text-green-600">
+                                                <span>{t('order.voucherDiscount')}</span>
+                                                <span>-{formatCurrency(cartTotals?.voucherDiscount || 0)}</span>
+                                            </div>
+                                        )}
+
+                                        {(accumulatedPointsToUse || 0) > 0 && (
+                                            <div className="flex justify-between text-[10px] italic text-primary">
+                                                <span>{t('order.accumulatedPointsToUse')}</span>
+                                                <span>-{formatCurrency(accumulatedPointsToUse || 0)}</span>
+                                            </div>
+                                        )}
+
+                                        {orderType === OrderTypeEnum.DELIVERY && (
+                                            <div className="flex justify-between text-xs italic text-muted-foreground/60">
+                                                <span>{t('order.deliveryFee')}</span>
+                                                <span>{formatCurrency(deliveryFee)}</span>
+                                            </div>
+                                        )}
+
+                                        <div className="flex justify-between items-center pt-2 mt-2 font-semibold border-t text-md">
+                                            <span>{t('order.totalPayment')}</span>
+                                            <span className="text-2xl font-bold text-primary">{formatCurrency(cartTotals?.finalTotal || 0)}</span>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            {updatingData?.originalOrder?.status === OrderStatus.PENDING && (
+                                <div className='flex justify-end items-center'>
+                                    <StaffConfirmUpdateOrderDialog
+                                        disabled={
+                                            hasUnpricedCustomItems ||
+                                            (orderType === OrderTypeEnum.AT_TABLE && !table) ||
+                                            (orderType === OrderTypeEnum.DELIVERY && !updatingData?.updateDraft?.deliveryAddress)
+                                        }
+                                        disabledText={hasUnpricedCustomItems ? t('menu.enterCustomPriceFirst') : undefined}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+        </div>
+    )
+} 

@@ -1,0 +1,108 @@
+{
+	"campaign": {
+		"title": "Chiến dịch marketing",
+		"createCampaign": "Tạo chiến dịch",
+		"editCampaign": "Chỉnh sửa chiến dịch",
+		"deleteCampaign": "Xóa chiến dịch",
+		"confirmDelete": "Bạn có chắc chắn muốn xóa chiến dịch này không?",
+		"save": "Lưu",
+		"cancel": "Hủy",
+		"name": "Tên chiến dịch",
+		"type": "Loại chiến dịch",
+		"status": "Trạng thái",
+		"startDate": "Ngày bắt đầu",
+		"endDate": "Ngày kết thúc",
+		"recipientLimit": "Giới hạn người nhận",
+		"voucherGroups": "Nhóm voucher",
+		"recipientLimitUnlimited": "Không giới hạn",
+		"recipientLimitHintOff": "Mọi khách đủ điều kiện đều nhận được.",
+		"recipientLimitHintOn": "Tổng số người nhận trong suốt vòng đời chiến dịch, không phải mỗi năm. Chiến dịch sinh nhật chạm trần sẽ ngừng phát ở những năm sau.",
+		"recipientLimitPlaceholder": "Ví dụ: 1000",
+		"startDateMustStayPastWhileOpening": "Chiến dịch đang mở nên ngày bắt đầu phải ở quá khứ. Đặt sang tương lai sẽ khiến chiến dịch ngừng phát thưởng mà không báo gì.",
+		"types": {
+			"new-user": "Người dùng mới",
+			"user-birthday": "Sinh nhật"
+		},
+		"statuses": {
+			"opening": "Đang mở",
+			"scheduled": "Đã lên lịch",
+			"closed": "Đã đóng"
+		},
+		"template": {
+			"title": "Voucher",
+			"addTemplate": "Thêm template",
+			"editTemplate": "Chỉnh sửa template",
+			"deleteTemplate": "Xóa template",
+			"templateTitle": "Tên voucher",
+			"description": "Mô tả",
+			"type": "Loại voucher",
+			"value": "Giá trị",
+			"maxUsage": "Số lần sử dụng tối đa",
+			"minOrderValue": "Giá trị đơn tối thiểu",
+			"maxItems": "Số items tối đa",
+			"duration": "Thời hạn (ngày)",
+			"durationHintBirthday": "Số ngày voucher có hiệu lực kể từ khi khách nhận. Chiến dịch lặp lại hằng năm, mỗi khách nhận tối đa 1 lần/năm.",
+			"durationHintNewUser": "Số ngày voucher có hiệu lực kể từ khi khách đăng ký.",
+			"durationHintWithEndDate": "Voucher hiệu lực đến khi chiến dịch kết thúc.",
+			"usageFrequencyUnit": "Đơn vị tần suất",
+			"usageFrequencyValue": "Tần suất sử dụng",
+			"applicabilityRule": "Quy tắc áp dụng",
+			"paymentMethods": "Phương thức thanh toán",
+			"products": "Sản phẩm áp dụng",
+			"typeKey": "Loại chiến dịch áp dụng",
+			"voucherTypes": {
+				"fixed_value": "Giảm tiền cố định",
+				"percent_order": "Giảm phần trăm",
+				"same_price_product": "Đồng giá sản phẩm"
+			},
+			"frequencyUnits": {
+				"hour": "Giờ",
+				"day": "Ngày",
+				"week": "Tuần",
+				"month": "Tháng",
+				"year": "Năm",
+				"unlimited": "Không giới hạn"
+			},
+			"applicabilityRules": {
+				"all_required": "Tất cả bắt buộc",
+				"at_least_one_required": "Ít nhất một"
+			},
+			"paymentMethodOptions": {
+				"cash": "Tiền mặt",
+				"bank-transfer": "Chuyển khoản",
+				"credit-card": "Thẻ tín dụng",
+				"point": "Điểm"
+			}
+		},
+		"confirmCreate": "Xác nhận tạo chiến dịch",
+		"confirmCreateDescription": "Bạn có chắc chắn muốn tạo chiến dịch này không?",
+		"confirmUpdate": "Xác nhận cập nhật chiến dịch",
+		"confirmUpdateDescription": "Bạn có chắc chắn muốn cập nhật chiến dịch này không?",
+		"empty": "Chưa có chiến dịch nào",
+		"createSuccess": "Tạo chiến dịch thành công",
+		"updateSuccess": "Cập nhật chiến dịch thành công",
+		"deleteSuccess": "Xóa chiến dịch thành công",
+		"closeCampaign": "Đóng chiến dịch",
+		"confirmClose": "Đóng chiến dịch?",
+		"confirmCloseDescription": "Chiến dịch sẽ chuyển sang trạng thái Đã đóng và ngừng phát thưởng ngay.",
+		"closeNote1": "Phần thưởng đã phát cho khách vẫn giữ nguyên.",
+		"closeNote2": "Không mở lại được từ giao diện này.",
+		"closeSuccess": "Đã đóng chiến dịch",
+		"rewardType": "Loại phần thưởng",
+		"rewardTypes": {
+			"voucher": "Voucher",
+			"gift": "Quà tặng"
+		},
+		"rewardTypeHintVoucher": "Khách nhận một mã voucher tự sinh, dùng khi đặt hàng.",
+		"rewardTypeHintGift": "Khách nhận một phần quà. Loại phần thưởng không đổi được sau khi tạo chiến dịch.",
+		"giftTemplate": {
+			"sectionTitle": "Quà tặng",
+			"title": "Tên quà tặng",
+			"titlePlaceholder": "Ví dụ: Voucher đồ uống miễn phí",
+			"description": "Mô tả",
+			"readOnlyNote": "Nội dung quà tặng không sửa được sau khi tạo — backend chưa hỗ trợ cập nhật phần này.",
+			"durationHintBirthday": "Số ngày quà có hiệu lực kể từ khi khách nhận. Chiến dịch lặp lại hằng năm, mỗi khách nhận tối đa 1 lần/năm.",
+			"durationHintNewUser": "Số ngày quà có hiệu lực kể từ khi khách đăng ký."
+		}
+	}
+}

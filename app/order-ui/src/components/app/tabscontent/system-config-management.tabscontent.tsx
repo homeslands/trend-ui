@@ -1,0 +1,17 @@
+import { ScrollArea } from '@/components/ui'
+import { SystemConfigForm } from '@/components/app/form'
+
+export function SystemConfigManagementTabsContent() {
+  return (
+    <div className="flex flex-row h-full gap-2">
+      <ScrollArea className="flex-1">
+        <div className={`transition-all duration-300 ease-in-out`}>
+          <div className="sticky top-0 z-10 flex flex-col items-center gap-2 pb-4">
+            <SystemConfigForm />
+          </div>
+        </div>
+      </ScrollArea>
+    </div>
+  )
+}
+

@@ -1,0 +1,25 @@
+{
+  "config": {
+    "addNewConfig": "Thêm cấu hình mới",
+    "addRow": "Thêm dòng",
+    "delete": "Xóa",
+    "deleteContent": "Bạn có chắc muốn xóa cấu hình với key ",
+    "deleteContent2": " và giá trị ",
+    "deleteContent3": " không?",
+    "deleteSystemConfig": "Xóa cấu hình hệ thống",
+    "deleteBranchConfig": "Xóa cấu hình chi nhánh",
+    "description": "Mô tả",
+    "enterDescription": "Nhập mô tả",
+    "enterKey": "Nhập từ khóa",
+    "enterValue": "Nhập giá trị",
+    "key": "Từ khóa",
+    "noSavedConfig": "Không có cấu hình nào được lưu",
+    "save": "Lưu",
+    "savedConfigs": "Cấu hình đã lưu",
+    "title": "Cấu hình hệ thống",
+    "update": "Cập nhật",
+    "updateSystemConfigDescription": "Cập nhật cấu hình hệ thống",
+    "updateBranchConfigDescription": "Cập nhật cấu hình chi nhánh",
+    "value": "Giá trị"
+  }
+}

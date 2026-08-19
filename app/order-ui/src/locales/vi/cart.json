@@ -1,0 +1,10 @@
+{
+  "cart": {
+    "description": "Quản lý giỏ hàng của bạn tại đây",
+    "emptyCart": "Giỏ hàng của bạn đang trống",
+    "goBackToMenu": "Quay lại thực đơn",
+    "keywords": "giỏ hàng, quản lý giỏ hàng, giỏ hàng mua sắm",
+    "manageCart": "Quản lý giỏ hàng",
+    "title": "Giỏ hàng"
+  }
+}

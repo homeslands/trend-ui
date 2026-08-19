@@ -1,0 +1,31 @@
+{
+  "branch": {
+    "branchAddress": "Branch Address",
+    "branchDescription": "Description",
+    "branchEmail": "Email",
+    "branchName": "Branch Name",
+    "branchPhone": "Phone Number",
+    "chooseBranch": "Choose Branch",
+    "chooseBranchDescription": "Select a branch to view items",
+    "create": "Create Branch",
+    "createBranchDescription": "Fill in all the details to create a new branch",
+    "delete": "Delete Branch",
+    "deleteBranchConfirmation": "Are you sure you want to delete this branch?",
+    "deleteBranchWarning1": "You are about to delete the branch ",
+    "enterBranchAddress": "Enter branch address",
+    "enterBranchName": "Enter branch name",
+    "manageBranch": "Manage Branch",
+    "manageBranchAndSystem": "Manage Store",
+    "slug": "Branch Code",
+    "title": "Branch",
+    "update": "Update Branch",
+    "updateBranchDescription": "Modify the information to update the branch",
+    "branchInfo": "Branch Information",
+    "configKeys": {
+      "MAX_DISTANCE_DELIVERY": "Maximum Delivery Distance (km)",
+      "DELIVERY_FEE_PER_KM": "Delivery Fee Per Kilometer",
+      "WIFI_NAME": "WiFi Name",
+      "WIFI_PASSWORD": "WiFi Password"
+    }
+  }
+}

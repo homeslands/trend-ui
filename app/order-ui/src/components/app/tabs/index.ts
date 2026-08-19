@@ -1,0 +1,11 @@
+export * from './customer-profile.tabs'
+export * from './customer-order.tabs'
+export * from './system-menu.tabs'
+export * from './client-menu.tabs '
+// export * from './system-menu-management.tabs' // Deprecated - use system-menu-and-product-management.tabs instead
+export * from './system-menu-in-update-order.tabs'
+export * from './system-customer-info.tabs'
+export * from './system-menu-and-product-management.tabs'
+export * from './system-customer-and-marketing-management.tabs'
+export * from './system-branch-and-system-management.tabs'
+export * from './system-system-management.tabs'

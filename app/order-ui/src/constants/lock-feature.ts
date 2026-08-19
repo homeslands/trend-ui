@@ -1,0 +1,23 @@
+export enum SystemLockFeatureGroup {
+  GROUP_EXAMPLE = 'GROUP_EXAMPLE',
+  ORDER = 'ORDER',
+  PRINTER = 'PRINTER',
+}
+
+export enum SystemLockFeatureType {
+  CREATE_PRIVATE = 'CREATE_PRIVATE',
+  CREATE_PUBLIC = 'CREATE_PUBLIC',
+}
+
+export enum SystemLockFeatureChild {
+  AT_TABLE = 'AT_TABLE',
+  TAKE_OUT = 'TAKE_OUT',
+  DELIVERY = 'DELIVERY',
+}
+
+export enum SystemLockFeaturePrinter {
+  EVENT_FAILED_PRINTING = 'EVENT_FAILED_PRINTING',
+  PRINT_CHEF_ORDER = 'PRINT_CHEF_ORDER',
+  PRINT_INVOICE = 'PRINT_INVOICE',
+  PRINT_LABEL_TICKET = 'PRINT_LABEL_TICKET',
+}

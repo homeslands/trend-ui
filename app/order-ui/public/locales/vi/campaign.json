@@ -1,0 +1,51 @@
+{
+  "campaign": {
+    "title": "Chiến dịch marketing",
+    "createCampaign": "Tạo chiến dịch",
+    "editCampaign": "Chỉnh sửa chiến dịch",
+    "deleteCampaign": "Xóa chiến dịch",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa chiến dịch này không?",
+    "name": "Tên chiến dịch",
+    "type": "Loại chiến dịch",
+    "status": "Trạng thái",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "recipientLimit": "Giới hạn người nhận",
+    "voucherGroups": "Nhóm voucher",
+    "types": {
+      "new-user": "Người dùng mới",
+      "user-birthday": "Sinh nhật"
+    },
+    "statuses": {
+      "opening": "Đang mở",
+      "scheduled": "Đã lên lịch",
+      "closed": "Đã đóng"
+    },
+    "template": {
+      "title": "Voucher",
+      "addTemplate": "Thêm template",
+      "editTemplate": "Chỉnh sửa template",
+      "deleteTemplate": "Xóa template",
+      "templateTitle": "Tên voucher",
+      "description": "Mô tả",
+      "type": "Loại voucher",
+      "value": "Giá trị",
+      "maxUsage": "Số lần sử dụng tối đa",
+      "minOrderValue": "Giá trị đơn tối thiểu",
+      "maxItems": "Số items tối đa",
+      "duration": "Thời hạn (ngày)",
+      "usageFrequencyUnit": "Đơn vị tần suất",
+      "usageFrequencyValue": "Tần suất sử dụng",
+      "applicabilityRule": "Quy tắc áp dụng",
+      "paymentMethods": "Phương thức thanh toán",
+      "products": "Sản phẩm áp dụng",
+      "typeKey": "Loại chiến dịch áp dụng",
+      "templateStartDate": "Ngày bắt đầu template",
+      "templateEndDate": "Ngày kết thúc template"
+    },
+    "empty": "Chưa có chiến dịch nào",
+    "createSuccess": "Tạo chiến dịch thành công",
+    "updateSuccess": "Cập nhật chiến dịch thành công",
+    "deleteSuccess": "Xóa chiến dịch thành công"
+  }
+}

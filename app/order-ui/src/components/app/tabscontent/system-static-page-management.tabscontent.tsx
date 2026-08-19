@@ -1,0 +1,24 @@
+import { DataTable } from '@/components/ui'
+import { useGetAllStaticPages } from '@/hooks'
+import { useStaticPageColumns } from '@/app/system/static-page/DataTable/columns'
+import { StaticPageActionOptions } from '@/app/system/static-page/DataTable/actions'
+
+export function SystemStaticPageManagementTabsContent() {
+  const { data: staticPages, isLoading } = useGetAllStaticPages()
+
+  return (
+    <div className="grid h-full grid-cols-1 gap-2">
+      <DataTable
+        columns={useStaticPageColumns()}
+        data={staticPages?.result || []}
+        isLoading={isLoading}
+        pages={1}
+        onInputChange={() => { }}
+        actionOptions={StaticPageActionOptions}
+        onPageChange={() => { }}
+        onPageSizeChange={() => { }}
+      />
+    </div>
+  )
+}
+

@@ -1,0 +1,711 @@
+import { useTranslation } from 'react-i18next'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  VisibilityState,
+  useReactTable,
+  Column,
+  Table as ReactTable,
+} from '@tanstack/react-table'
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Loader2Icon,
+  MoveRight,
+  RefreshCcw,
+  SearchIcon,
+} from 'lucide-react'
+import {
+  DoubleArrowLeftIcon,
+  DoubleArrowRightIcon,
+  MixerHorizontalIcon,
+} from '@radix-ui/react-icons'
+import moment from 'moment'
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  Input,
+  DropdownMenuLabel,
+  DropdownMenuCheckboxItem,
+} from '@/components/ui'
+import { cn } from '@/lib/utils'
+import { useDebouncedInput } from '@/hooks'
+import { SimpleDatePicker } from '../app/picker'
+import { PeriodOfTimeSelect } from '../app/select'
+import { timeChange } from './utils/data-table.utils'
+import { useSearchParams } from 'react-router-dom'
+interface DataTablePaginationProps<TData> {
+  table: ReactTable<TData>
+  onPageChange: (page: number) => void
+  onPageSizeChange: (size: number) => void
+  controlled?: boolean
+}
+
+export interface DataTableFilterOptionsProps<TData> {
+  setFilterOption: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
+  data: TData[]
+  filterConfig?: {
+    id: string
+    label: string
+    options: {
+      label: string
+      value: string | number | boolean
+    }[]
+  }[]
+  onFilterChange?: (filterId: string, value: string) => void
+}
+
+// DataTableColumnHeader Component
+interface DataTableColumnHeaderProps<TData, TValue>
+  extends React.HTMLAttributes<HTMLDivElement> {
+  column: Column<TData, TValue>
+  title: string
+}
+
+export interface DataTableActionOptionsProps<TData> {
+  table: ReactTable<TData>
+}
+
+interface DataTableViewOptionsProps<TData> {
+  table: ReactTable<TData>
+}
+
+// DataTable Component
+interface DataTableProps<TData, TValue> {
+  isLoading: boolean
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+  pages: number
+  hiddenInput?: boolean
+  searchPlaceholder?: string
+  hiddenDatePicker?: boolean
+  onRefresh?: () => void
+  onPageChange: (pageIndex: number) => void
+  onPageSizeChange: (pageSize: number) => void
+  onRowClick?: (row: TData) => void
+  onInputChange?: (value: string) => void
+  periodOfTime?: string
+  onDateChange?: (startDate: string, endDate: string) => void
+  filterOptions?: React.FC<DataTableFilterOptionsProps<TData>>
+  actionOptions?: React.FC<DataTableActionOptionsProps<TData>>
+  rowClassName?: (row: TData) => string
+  filterConfig?: {
+    id: string
+    label: string
+    options: {
+      label: string
+      value: string | number | boolean
+    }[]
+  }[]
+  onFilterChange?: (filterId: string, value: string) => void
+  pageIndex?: number
+  pageSize?: number
+  onPaginationChange?: (pageIndex0: number, pageSize: number) => void
+  searchValue?: string
+}
+
+export function DataTable<TData, TValue>({
+  isLoading,
+  columns,
+  data,
+  pages,
+  hiddenInput = true,
+  searchPlaceholder,
+  hiddenDatePicker = true,
+  onRefresh,
+  onPageChange,
+  onPageSizeChange,
+  onRowClick,
+  onInputChange,
+  periodOfTime,
+  onDateChange,
+  filterOptions: DataTableFilterOptions,
+  actionOptions: DataTableActionOptions,
+  rowClassName,
+  filterConfig,
+  onFilterChange,
+  pageIndex,
+  pageSize,
+  onPaginationChange,
+  searchValue,
+}: DataTableProps<TData, TValue>) {
+  const { t } = useTranslation('common')
+  const { inputValue, setInputValue, debouncedInputValue } = useDebouncedInput({
+    defaultValue: searchValue ?? '',
+  })
+  const isControlledPagination = pageIndex !== undefined
+  const today = useMemo(() => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }, []);
+  today.setHours(0, 0, 0, 0)
+  const [startDate, setStartDate] = useState<string>(moment().format('YYYY-MM-DD'))
+  const [endDate, setEndDate] = useState<string>(moment().format('YYYY-MM-DD'))
+
+  // Add effect to call onInputChange when debounced value changes
+  useEffect(() => {
+    if (onInputChange) {
+      onInputChange(debouncedInputValue)
+    }
+  }, [debouncedInputValue, onInputChange])
+
+  // Add effect to call onDateChange when dates change
+  useEffect(() => {
+    if (onDateChange) {
+      onDateChange(startDate, endDate)
+    }
+  }, [startDate, endDate, onDateChange])
+
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
+
+  const table = useReactTable({
+    data,
+    columns,
+    pageCount: pages,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+      ...(isControlledPagination
+        ? { pagination: { pageIndex: pageIndex as number, pageSize: pageSize ?? 10 } }
+        : {}),
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    ...(isControlledPagination
+      ? {
+          onPaginationChange: (updater) => {
+            const current = { pageIndex: pageIndex as number, pageSize: pageSize ?? 10 }
+            const next = typeof updater === 'function' ? updater(current) : updater
+            onPaginationChange?.(next.pageIndex, next.pageSize)
+          },
+        }
+      : {}),
+    manualPagination: true,
+    debugTable: true,
+  })
+
+  const handlePeriodOfTimeChange = useCallback((periodOfTime: string) => {
+    const result = timeChange(periodOfTime, today);
+    setStartDate(result.startDate);
+    setEndDate(result.endDate);
+  }, [today])
+
+  const handleRefresh = () => {
+    onRefresh?.()
+  }
+
+  return (
+    <div className="w-full">
+      <div className="flex overflow-x-auto gap-2 justify-between items-center py-2 pt-2 whitespace-nowrap sm:max-w-full scrollbar-hide">
+        <div className="flex flex-shrink-0 gap-2 items-center min-w-max">
+          {/* Input search */}
+          {!hiddenInput && (
+            <div className="relative w-48 min-w-[192px]">
+              <SearchIcon className="absolute left-2 top-1/2 w-4 h-4 text-gray-400 transform -translate-y-1/2" />
+              <Input
+                placeholder={searchPlaceholder || t('dataTable.search')}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                className="pl-8 text-xs border placeholder:hidden sm:w-full sm:pr-2 placeholder:sm:inline md:w-full"
+              />
+            </div>
+          )}
+          {!hiddenDatePicker && (
+            <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center">
+                <div className="">
+                  <SimpleDatePicker
+                    value={startDate}
+                    onChange={setStartDate}
+                    disabledDates={endDate ? (date: Date) => {
+                      const endDateObj = moment(endDate.split('/').reverse().join('-'), 'YYYY-MM-DD').startOf('day').toDate();
+                      return date > endDateObj
+                    } : undefined}
+                    disableFutureDates={true}
+                  />
+                </div>
+                <MoveRight className="icon" />
+                <div className="">
+                  <SimpleDatePicker
+                    value={endDate}
+                    onChange={setEndDate}
+                    disabledDates={startDate ? (date: Date) => {
+                      const startDateObj = moment(startDate.split('/').reverse().join('-'), 'YYYY-MM-DD').startOf('day').toDate();
+                      return date < startDateObj
+                    } : undefined}
+                    disableFutureDates={true}
+                  />
+                </div>
+              </div>
+              <PeriodOfTimeSelect periodOfTime={periodOfTime} onChange={handlePeriodOfTimeChange} />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-shrink-0 gap-2 justify-end items-center min-w-max">
+
+          {/* Actions */}
+          {DataTableActionOptions && <div className="min-w-max"><DataTableActionOptions table={table} /></div>}
+          {/* Filter */}
+          {DataTableFilterOptions && (
+            <div className="min-w-max">
+              <DataTableFilterOptions
+                setFilterOption={setColumnFilters}
+                data={data}
+                filterConfig={filterConfig}
+                onFilterChange={onFilterChange}
+              />
+            </div>
+          )}
+          {onRefresh && (
+            <Button type="button" variant="outline" onClick={handleRefresh}>
+              <RefreshCcw className="w-4 h-4" />
+              <span className=''>
+                {t('common.refresh')}
+              </span>
+            </Button>
+          )}
+          {/* View options */}
+          {/* <DataTableViewOptions table={table} /> */}
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="mt-3">
+        <Table className='border border-collapse'>
+          <TableHeader className="bg-muted-foreground/5">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className='border dark:border-gray-500'>
+                    {header.isPlaceholder ? null : (
+                      <div>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                      </div>
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="mx-auto w-full h-full text-center border"
+                >
+                  <Loader2Icon className="mx-auto w-6 h-6 animate-spin text-primary" />
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={
+                    row.getIsSelected() ? t('tablePaging.selected') : undefined
+                  }
+                  className={cn(
+                    'relative cursor-pointer hover:bg-primary/20',
+                    // index % 2 === 0 ? 'bg-white dark:bg-transparent' : 'bg-muted-foreground/15',
+                    rowClassName ? rowClassName(row.original) : ''
+                  )}
+
+                  onClick={() => onRowClick && onRowClick(row.original)}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className='border dark:border-gray-500'>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-full text-center border dark:border-gray-500"
+                >
+                  {t('common.noData')}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-end items-center py-4 space-x-2">
+        <DataTablePagination
+          table={table}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          controlled={isControlledPagination}
+        />
+      </div>
+    </div>
+  )
+}
+
+export function DataTableColumnHeader<TData, TValue>({
+  column,
+  title,
+  className,
+}: DataTableColumnHeaderProps<TData, TValue>) {
+  const { t } = useTranslation(['common'])
+
+  if (!column.getCanSort()) {
+    return <div className="text-[0.7rem]">{title}</div>
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex min-w-[3rem] items-center space-x-2 text-[0.7rem]',
+        className,
+      )}
+    >
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-3 h-8 data-[state=open]:bg-accent"
+          >
+            <span className="text-[0.8rem]">{t(title)}</span>
+            {column.getIsSorted() === 'desc' ? (
+              <ArrowDownIcon className="ml-2 w-3 h-3" />
+            ) : column.getIsSorted() === 'asc' ? (
+              <ArrowUpIcon className="ml-2 w-3 h-3" />
+            ) : null}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
+            <ArrowUpIcon className="mr-2 w-3 h-3 text-muted-foreground/70" />
+            {t('dataTable.asc')}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
+            <ArrowDownIcon className="mr-2 w-3 h-3 text-muted-foreground/70" />
+            {t('dataTable.desc')}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
+            <ArrowUpIcon className="mr-2 w-3 h-3 text-muted-foreground/70" />
+            {t('dataTable.hide')}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
+}
+
+export function DataTableColumnAddressHeader<TData, TValue>({
+  column,
+  title,
+  className,
+}: DataTableColumnHeaderProps<TData, TValue>) {
+  const { t } = useTranslation(['common'])
+  if (!column.getCanSort()) {
+    return <div className="text-[0.8rem]">{title}</div>
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex min-w-[12rem] items-center space-x-2 text-[0.8rem]',
+        className,
+      )}
+    >
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-3 h-8 data-[state=open]:bg-accent"
+          >
+            <span className="text-[0.8rem]">{title}</span>
+            {column.getIsSorted() === 'desc' ? (
+              <ArrowDownIcon className="ml-2 w-3 h-3" />
+            ) : column.getIsSorted() === 'asc' ? (
+              <ArrowUpIcon className="ml-2 w-3 h-3" />
+            ) : (
+              <ArrowDownIcon className="ml-2 w-3 h-3" />
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
+            <ArrowUpIcon className="mr-2 w-3 h-3 text-muted-foreground/70" />
+            {t('dataTable.asc')}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
+            <ArrowDownIcon className="mr-2 w-3 h-3 text-muted-foreground/70" />
+            {t('dataTable.desc')}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
+            <ArrowUpIcon className="mr-2 w-3 h-3 text-muted-foreground/70" />
+            {t('dataTable.hide')}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
+}
+
+export function DataTableColumnActionHeader<TData, TValue>({
+  column,
+  title,
+  className,
+}: DataTableColumnHeaderProps<TData, TValue>) {
+  const { t } = useTranslation(['common'])
+  if (!column.getCanSort()) {
+    return <div className="text-[0.8rem]">{title}</div>
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex items-center justify-center space-x-2 text-[0.8rem]',
+        className,
+      )}
+    >
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-3 h-8 data-[state=open]:bg-accent"
+          >
+            <span className="text-[0.8rem]">{title}</span>
+            {column.getIsSorted() === 'desc' ? (
+              <ArrowDownIcon className="ml-2 w-3 h-3" />
+            ) : column.getIsSorted() === 'asc' ? (
+              <ArrowUpIcon className="ml-2 w-3 h-3" />
+            ) : (
+              <ArrowDownIcon className="ml-2 w-3 h-3" />
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
+            <ArrowUpIcon className="mr-2 w-3 h-3 text-muted-foreground/70" />
+            {t('dataTable.asc')}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
+            <ArrowDownIcon className="mr-2 w-3 h-3 text-muted-foreground/70" />
+            {t('dataTable.desc')}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
+            <ArrowUpIcon className="mr-2 w-3 h-3 text-muted-foreground/70" />
+            {t('dataTable.hide')}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
+}
+
+export function DataTablePagination<TData>({
+  table,
+  onPageChange,
+  onPageSizeChange,
+  controlled,
+}: DataTablePaginationProps<TData>) {
+  const [searchParams] = useSearchParams();
+
+  return (
+    <div className="flex flex-wrap justify-between items-center px-2">
+      <div className="flex items-center space-x-6 lg:space-x-8">
+        <div className="flex items-center space-x-2">
+          <p className="text-sm font-medium sr-only">Rows per page</p>
+          <Select
+            value={
+              controlled
+                ? `${table.getState().pagination.pageSize}`
+                : `${searchParams.get('size') || table.getState().pagination.pageSize}`
+            }
+            onValueChange={(value) => {
+              if (controlled) {
+                table.setPageSize(Number(value))
+              } else {
+                table.setPageSize(Number(value))
+                onPageSizeChange?.(Number(value))
+              }
+            }}
+          >
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue placeholder={table.getState().pagination.pageSize} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {[10, 20, 30, 40, 50, 100, 300, 500, 1000].map((pageSize) => (
+                <SelectItem key={pageSize} value={`${pageSize}`}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="sr-only flex w-[100px] items-center justify-center text-sm font-medium">
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="hidden p-0 w-8 h-8 lg:flex"
+            onClick={() => {
+              if (controlled) {
+                table.setPageIndex(0)
+              } else {
+                table.setPageIndex(0)
+                onPageChange?.(1)
+              }
+            }}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <span className="sr-only">Go to first page</span>
+            <DoubleArrowLeftIcon className="w-4 h-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="p-0 w-8 h-8"
+            onClick={() => {
+              if (controlled) {
+                table.previousPage()
+              } else {
+                onPageChange(table.getState().pagination.pageIndex)
+                table.previousPage()
+              }
+            }}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <span className="sr-only">Go to previous page</span>
+            <ChevronLeftIcon className="w-4 h-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="p-0 w-8 h-8"
+            onClick={() => {
+              if (controlled) {
+                table.nextPage()
+              } else {
+                onPageChange(table.getState().pagination.pageIndex + 2)
+                table.nextPage()
+              }
+            }}
+            disabled={!table.getCanNextPage()}
+          >
+            <span className="sr-only">Go to next page</span>
+            <ChevronRightIcon className="w-4 h-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="hidden p-0 w-8 h-8 lg:flex"
+            onClick={() => {
+              if (controlled) {
+                table.setPageIndex(table.getPageCount() - 1)
+              } else {
+                onPageChange(table.getPageCount())
+                table.setPageIndex(table.getPageCount() - 1)
+              }
+            }}
+            disabled={!table.getCanNextPage()}
+          >
+            <span className="sr-only">Go to last page</span>
+            <DoubleArrowRightIcon className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function DataTableViewOptions<TData>({
+  table,
+}: DataTableViewOptionsProps<TData>) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1 items-center h-10 lg:flex"
+        >
+          <MixerHorizontalIcon className="mr-2 w-4 h-4" />
+          Hiển thị
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[150px]">
+        <DropdownMenuLabel>Hiện thị cột</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {table
+          .getAllColumns()
+          .filter(
+            (column) =>
+              typeof column.accessorFn !== 'undefined' && column.getCanHide(),
+          )
+          .map((column) => {
+            return (
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                className="capitalize cursor-pointer"
+                checked={column.getIsVisible()}
+                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+              >
+                {column.id}
+              </DropdownMenuCheckboxItem>
+            )
+          })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}

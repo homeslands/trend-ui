@@ -1,0 +1,18 @@
+{
+    "booking": {
+        "title": "Booking Information",
+        "noContent": "No content",
+        "partyPersonal": "Party Personal",
+        "partyPersonalDescription": "For personal dates, anniversaries, small birthday parties, or intimate meetups, Trend Coffee provides a set menu designed to include drinks, snacks, and desserts, suitable for two people.",
+        "partyPersonalThemeDescription": "Customers can choose between Romantic Date, Sweet Moment, or Simple & Cozy themes, accompanied by light decorations in their preferred color (fresh flowers, candles, greeting cards, table decor).",
+        "partyPersonalDecorationDescription": "All items are meticulously prepared to make each date at Trend Coffee a memorable experience.",
+        "partyGroup": "Party Group",
+        "partyGroupDescription": "Trend Coffee is the perfect choice for group gatherings, team building mini parties, company events, class meetings, or small workshops.",
+        "partyGroupDescription2": "We provide menu design services according to your requirements, including drink combos, light snacks, desserts, or custom menus for each event. The space can be set up flexibly.",
+        "partyGroupDescription3": "Trend Coffee accompanies businesses and groups to create professional, warm events that reflect the spirit of “dedicated in every product”",
+        "bookingContact": "Booking Contact",
+        "bookingContactDescription": "Please contact via hotline",
+        "bookingContactDescription2": "or leave your information on the Trend Coffee and Foods Fanpage for detailed consultation.",
+        "clickHere": "Click Here"
+    }
+}

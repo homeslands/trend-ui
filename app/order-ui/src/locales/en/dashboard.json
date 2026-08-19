@@ -1,0 +1,42 @@
+{
+  "dashboard": {
+    "chooseTool": "Choose tool",
+    "daily": "Daily",
+    "exportExcel": "Export Excel",
+    "exportPDF": "Export PDF",
+    "exportProductRevenue": "Export product sales Excel",
+    "filter": "Filtering by",
+    "hourly": "Hourly",
+    "referenceNumberOrder": "Order sequence number",
+    "title": "Dashboard",
+    "titleDetail": "Overview of branches",
+    "tool": "Tool",
+    "topProducts": "Top products",
+    "order": {
+      "title": "Order overview"
+    },
+    "cardOrder": {
+      "label": "orders",
+      "date": "Date",
+      "title": "Card order overview",
+      "totalRevenue": "Total renenue",
+      "bankRevenue": "Bank revenue",
+      "cashRevenue": "Cash revenue",
+      "cardCount": "Cards sold",
+      "totalCardOrders": "Card orders",
+      "selfTopupOrderCount": "Self top-up orders",
+      "giftTopupOrderCount": "Gift top-up orders",
+      "cardPurchaseOrderCount": "Card purchase orders",
+      "giftCard": "gift card",
+      "totalCardOrdersByBank": "Orders paid by bank",
+      "totalCardOrdersByCash": "Orders paid by cash",
+      "orderSequence": "Order sequence",
+      "revenueChart": "Revenue chart",
+      "estimatedRevenue": "Total revenue",
+      "estimatedBankRevenue": "Bank revenue",
+      "estimatedCashRevenue": "Cash revenue",
+      "revenueOverview": "Revenue overview",
+      "coinOverview": "Coin overview"
+    }
+  }
+}

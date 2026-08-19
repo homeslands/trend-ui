@@ -1,0 +1,482 @@
+diff --git a/node_modules/@capacitor/share/android/build/.transforms/1a3701e433eaebec154e788d3cd6eed4/results.bin b/node_modules/@capacitor/share/android/build/.transforms/1a3701e433eaebec154e788d3cd6eed4/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/.transforms/1a3701e433eaebec154e788d3cd6eed4/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/@capacitor/share/android/build/.transforms/1a3701e433eaebec154e788d3cd6eed4/transformed/classes/classes_dex/classes.dex b/node_modules/@capacitor/share/android/build/.transforms/1a3701e433eaebec154e788d3cd6eed4/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..e4bf179
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/.transforms/1a3701e433eaebec154e788d3cd6eed4/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/results.bin b/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/results.bin
+new file mode 100644
+index 0000000..7ed749e
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/results.bin
+@@ -0,0 +1 @@
++o/bundleLibRuntimeToDirDebug
+diff --git a/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/capacitorjs/plugins/share/SharePlugin$1.dex b/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/capacitorjs/plugins/share/SharePlugin$1.dex
+new file mode 100644
+index 0000000..c4a37b1
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/capacitorjs/plugins/share/SharePlugin$1.dex differ
+diff --git a/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/capacitorjs/plugins/share/SharePlugin.dex b/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/capacitorjs/plugins/share/SharePlugin.dex
+new file mode 100644
+index 0000000..d92f398
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/capacitorjs/plugins/share/SharePlugin.dex differ
+diff --git a/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
+new file mode 100644
+index 0000000..40a0051
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/.transforms/777765cc132b7652ade9bafdfcb5c9d3/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..265c4c9
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.capacitorjs.plugins.share" >
++
++    <uses-sdk android:minSdkVersion="23" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..ad9f861
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.capacitorjs.plugins.share",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest/aapt/AndroidManifest.xml b/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..265c4c9
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.capacitorjs.plugins.share" >
++
++    <uses-sdk android:minSdkVersion="23" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest/aapt/output-metadata.json b/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..8187d21
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.capacitorjs.plugins.share",
++  "variantName": "release",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/@capacitor/share/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/aar_metadata/release/writeReleaseAarMetadata/aar-metadata.properties b/node_modules/@capacitor/share/android/build/intermediates/aar_metadata/release/writeReleaseAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/aar_metadata/release/writeReleaseAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/@capacitor/share/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/annotation_processor_list/release/javaPreCompileRelease/annotationProcessors.json b/node_modules/@capacitor/share/android/build/intermediates/annotation_processor_list/release/javaPreCompileRelease/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/annotation_processor_list/release/javaPreCompileRelease/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/@capacitor/share/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..5292397
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/compile_library_classes_jar/release/bundleLibCompileToJarRelease/classes.jar b/node_modules/@capacitor/share/android/build/intermediates/compile_library_classes_jar/release/bundleLibCompileToJarRelease/classes.jar
+new file mode 100644
+index 0000000..b627d06
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/compile_library_classes_jar/release/bundleLibCompileToJarRelease/classes.jar differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/@capacitor/share/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..a711cbf
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/compile_r_class_jar/release/generateReleaseRFile/R.jar b/node_modules/@capacitor/share/android/build/intermediates/compile_r_class_jar/release/generateReleaseRFile/R.jar
+new file mode 100644
+index 0000000..a711cbf
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/compile_r_class_jar/release/generateReleaseRFile/R.jar differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/@capacitor/share/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/compile_symbol_list/release/generateReleaseRFile/R.txt b/node_modules/@capacitor/share/android/build/intermediates/compile_symbol_list/release/generateReleaseRFile/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/@capacitor/share/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..602e0fb
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Tue Jan 20 16:32:22 ICT 2026
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/@capacitor/share/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..00db42b
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/build/generated/res/resValues/debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..3e438aa
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..122ff2d
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml b/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..4b6d935
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/jniLibs"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/release/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml b/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
+new file mode 100644
+index 0000000..f70e7d7
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/shaders"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/release/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/@capacitor/share/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+new file mode 100644
+index 0000000..bb27450
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/debug/assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/packageReleaseAssets/merger.xml b/node_modules/@capacitor/share/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
+new file mode 100644
+index 0000000..6fa27ba
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/assets"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/release/assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/build/intermediates/shader_assets/release/compileReleaseShaders/out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/release/packageReleaseResources/compile-file-map.properties b/node_modules/@capacitor/share/android/build/intermediates/incremental/release/packageReleaseResources/compile-file-map.properties
+new file mode 100644
+index 0000000..cac2517
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/release/packageReleaseResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Wed Jan 21 13:59:42 ICT 2026
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/incremental/release/packageReleaseResources/merger.xml b/node_modules/@capacitor/share/android/build/intermediates/incremental/release/packageReleaseResources/merger.xml
+new file mode 100644
+index 0000000..461b9bd
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/incremental/release/packageReleaseResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release" generated-set="release$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/build/generated/res/resValues/release"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin$1.class b/node_modules/@capacitor/share/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin$1.class
+new file mode 100644
+index 0000000..e0ecfb8
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin$1.class differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin.class b/node_modules/@capacitor/share/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin.class
+new file mode 100644
+index 0000000..06e6c88
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin.class differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin$1.class b/node_modules/@capacitor/share/android/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin$1.class
+new file mode 100644
+index 0000000..e0ecfb8
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin$1.class differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin.class b/node_modules/@capacitor/share/android/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin.class
+new file mode 100644
+index 0000000..75776bf
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/capacitorjs/plugins/share/SharePlugin.class differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/@capacitor/share/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/local_only_symbol_list/release/parseReleaseLocalResources/R-def.txt b/node_modules/@capacitor/share/android/build/intermediates/local_only_symbol_list/release/parseReleaseLocalResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/local_only_symbol_list/release/parseReleaseLocalResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/@capacitor/share/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..7c89d1d
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,7 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="com.capacitorjs.plugins.share" >
++4
++5    <uses-sdk android:minSdkVersion="23" />
++6
++7</manifest>
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/manifest_merge_blame_file/release/processReleaseManifest/manifest-merger-blame-release-report.txt b/node_modules/@capacitor/share/android/build/intermediates/manifest_merge_blame_file/release/processReleaseManifest/manifest-merger-blame-release-report.txt
+new file mode 100644
+index 0000000..7c89d1d
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/manifest_merge_blame_file/release/processReleaseManifest/manifest-merger-blame-release-report.txt
+@@ -0,0 +1,7 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="com.capacitorjs.plugins.share" >
++4
++5    <uses-sdk android:minSdkVersion="23" />
++6
++7</manifest>
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/@capacitor/share/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..265c4c9
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.capacitorjs.plugins.share" >
++
++    <uses-sdk android:minSdkVersion="23" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml b/node_modules/@capacitor/share/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..265c4c9
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.capacitorjs.plugins.share" >
++
++    <uses-sdk android:minSdkVersion="23" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/@capacitor/share/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/navigation_json/release/extractDeepLinksRelease/navigation.json b/node_modules/@capacitor/share/android/build/intermediates/navigation_json/release/extractDeepLinksRelease/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/navigation_json/release/extractDeepLinksRelease/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/@capacitor/share/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/nested_resources_validation_report/release/generateReleaseResources/nestedResourcesValidationReport.txt b/node_modules/@capacitor/share/android/build/intermediates/nested_resources_validation_report/release/generateReleaseResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/nested_resources_validation_report/release/generateReleaseResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/capacitorjs/plugins/share/SharePlugin$1.class b/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/capacitorjs/plugins/share/SharePlugin$1.class
+new file mode 100644
+index 0000000..e0ecfb8
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/capacitorjs/plugins/share/SharePlugin$1.class differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/capacitorjs/plugins/share/SharePlugin.class b/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/capacitorjs/plugins/share/SharePlugin.class
+new file mode 100644
+index 0000000..06e6c88
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/capacitorjs/plugins/share/SharePlugin.class differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..ebdb007
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_jar/release/bundleLibRuntimeToJarRelease/classes.jar b/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_jar/release/bundleLibRuntimeToJarRelease/classes.jar
+new file mode 100644
+index 0000000..365a288
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/intermediates/runtime_library_classes_jar/release/bundleLibRuntimeToJarRelease/classes.jar differ
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/@capacitor/share/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..13ace8c
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1 @@
++com.capacitorjs.plugins.share
+diff --git a/node_modules/@capacitor/share/android/build/intermediates/symbol_list_with_package_name/release/generateReleaseRFile/package-aware-r.txt b/node_modules/@capacitor/share/android/build/intermediates/symbol_list_with_package_name/release/generateReleaseRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..13ace8c
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/intermediates/symbol_list_with_package_name/release/generateReleaseRFile/package-aware-r.txt
+@@ -0,0 +1 @@
++com.capacitorjs.plugins.share
+diff --git a/node_modules/@capacitor/share/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/@capacitor/share/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..80af90e
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,16 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml:1:1-2:12
++INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml:1:1-2:12
++	package
++		INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml:1:11-69
++uses-sdk
++INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
++INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/@capacitor/share/android/build/outputs/logs/manifest-merger-release-report.txt b/node_modules/@capacitor/share/android/build/outputs/logs/manifest-merger-release-report.txt
+new file mode 100644
+index 0000000..80af90e
+--- /dev/null
++++ b/node_modules/@capacitor/share/android/build/outputs/logs/manifest-merger-release-report.txt
+@@ -0,0 +1,16 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml:1:1-2:12
++INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml:1:1-2:12
++	package
++		INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml:1:11-69
++uses-sdk
++INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
++INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/phanquyetthang/order/app/order-ui/node_modules/@capacitor/share/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/@capacitor/share/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/SharePlugin$1.class.uniqueId1 b/node_modules/@capacitor/share/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/SharePlugin$1.class.uniqueId1
+new file mode 100644
+index 0000000..e0ecfb8
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/SharePlugin$1.class.uniqueId1 differ
+diff --git a/node_modules/@capacitor/share/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/SharePlugin.class.uniqueId0 b/node_modules/@capacitor/share/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/SharePlugin.class.uniqueId0
+new file mode 100644
+index 0000000..75776bf
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/SharePlugin.class.uniqueId0 differ
+diff --git a/node_modules/@capacitor/share/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/@capacitor/share/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..0fd304e
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/@capacitor/share/android/build/tmp/compileReleaseJavaWithJavac/previous-compilation-data.bin b/node_modules/@capacitor/share/android/build/tmp/compileReleaseJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..dfe8269
+Binary files /dev/null and b/node_modules/@capacitor/share/android/build/tmp/compileReleaseJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/@capacitor/share/android/src/main/java/com/capacitorjs/plugins/share/SharePlugin.java b/node_modules/@capacitor/share/android/src/main/java/com/capacitorjs/plugins/share/SharePlugin.java
+index 63b3635..1e07d10 100644
+--- a/node_modules/@capacitor/share/android/src/main/java/com/capacitorjs/plugins/share/SharePlugin.java
++++ b/node_modules/@capacitor/share/android/src/main/java/com/capacitorjs/plugins/share/SharePlugin.java
+@@ -41,7 +41,12 @@ public class SharePlugin extends Plugin {
+                     }
+                 }
+             };
+-        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(Intent.EXTRA_CHOSEN_COMPONENT));
++        // Fix for Android 14+ (API 34+) - RECEIVER_NOT_EXPORTED required
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
++            getActivity().registerReceiver(broadcastReceiver, new IntentFilter(Intent.EXTRA_CHOSEN_COMPONENT), Context.RECEIVER_NOT_EXPORTED);
++        } else {
++            getActivity().registerReceiver(broadcastReceiver, new IntentFilter(Intent.EXTRA_CHOSEN_COMPONENT));
++        }
+     }
+ 
+     @SuppressWarnings("deprecation")

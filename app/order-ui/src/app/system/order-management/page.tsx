@@ -1,0 +1,262 @@
+import { useEffect, useState, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import moment from 'moment'
+import { Helmet } from 'react-helmet'
+import { SquareMenu } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+
+import { DataTable } from '@/components/ui'
+import { useOrders, usePagination, useOrderBySlug, useUsers } from '@/hooks'
+import { useUserStore } from '@/stores'
+import { useOrderHistoryColumns } from './DataTable/columns'
+import { IOrder, OrderStatus } from '@/types'
+import OrderFilter from './DataTable/actions/order-filter'
+import { OrderHistoryDetailSheet } from '@/components/app/sheet'
+import { showToast } from '@/utils'
+import { notificationSound } from '@/assets/sound'
+import { useDebouncedInput } from '@/hooks/use-debounced-input'
+import { PrinterJobStatus } from '@/constants'
+
+export default function OrderHistoryPage() {
+  const { t } = useTranslation(['menu'])
+  const { t: tCommon } = useTranslation('common')
+  const { t: tToast } = useTranslation('toast')
+  const { t: tHelmet } = useTranslation('helmet')
+  const { userInfo } = useUserStore()
+  const { pagination, handlePageChange, handlePageSizeChange, setPagination } = usePagination()
+  const [status, setStatus] = useState<OrderStatus | 'all'>('all')
+  const [isSelected, setIsSelected] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null)
+  const [startDate, setStartDate] = useState<string>(moment().format('YYYY-MM-DD'))
+  const [endDate, setEndDate] = useState<string>(moment().format('YYYY-MM-DD'))
+  const [previousOrderCount, setPreviousOrderCount] = useState(0)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const order = searchParams.get('order')
+  const [shouldFetchOrderBySlug, setShouldFetchOrderBySlug] = useState(false)
+  const {
+    inputValue: phoneInput,
+    setInputValue: setPhoneInput,
+    debouncedInputValue: debouncedPhoneInput,
+  } = useDebouncedInput({ defaultValue: '' })
+
+  const immediateTrimmedPhone = (phoneInput ?? '').trim()
+  const debouncedTrimmedPhone = (debouncedPhoneInput ?? '').trim()
+  const hasPhone = immediateTrimmedPhone.length > 0
+
+  const { data: userInfoData } = useUsers(
+    hasPhone
+      ? {
+        phonenumber: debouncedTrimmedPhone,
+        page: 1,
+        size: 1,
+        order: 'DESC',
+        hasPaging: true,
+      }
+      : null,
+    true
+  )
+
+  const ownerSlug = (() => {
+    if (!hasPhone) return null
+    const items = userInfoData?.result?.items
+    if (!items || items.length !== 1) return null
+    return items[0]?.slug || null
+  })()
+
+  const { data, isLoading, refetch } = useOrders({
+    page: pagination.pageIndex,
+    size: pagination.pageSize,
+    order: 'DESC',
+    branch: userInfo?.branch?.slug || '',
+    hasPaging: true,
+    startDate: startDate,
+    endDate: endDate,
+    owner: ownerSlug,
+    status: status !== 'all' ? status : [OrderStatus.PENDING, OrderStatus.SHIPPING, OrderStatus.PAID, OrderStatus.FAILED, OrderStatus.COMPLETED].join(','),
+  })
+
+  // console.log(data?.items)
+
+  // Fetch order by slug when not found in current data
+  const { data: orderBySlugData } = useOrderBySlug(
+    shouldFetchOrderBySlug ? order : null
+  )
+
+  // use useEffect to check is there order param in url, then check is there order in data, if there is, then set selected order and open the dialog
+  useEffect(() => {
+    if (order) {
+      const orderData: IOrder | undefined = data?.items?.find((item: IOrder) => item.slug === order)
+      if (orderData) {
+        setSelectedOrder(orderData)
+        setIsSelected(true)
+        setShouldFetchOrderBySlug(false) // Reset flag when found in current data
+      } else {
+        // If order not found in current data, fetch by slug
+        setShouldFetchOrderBySlug(true)
+      }
+    }
+  }, [data?.items, order])
+
+  // Handle order fetched by slug
+  useEffect(() => {
+    if (orderBySlugData?.result && shouldFetchOrderBySlug) {
+      setSelectedOrder(orderBySlugData.result)
+      setIsSelected(true)
+      setShouldFetchOrderBySlug(false) // Reset flag after successful fetch
+    }
+  }, [orderBySlugData, shouldFetchOrderBySlug])
+
+  // Reset flag when order param changes
+  useEffect(() => {
+    setShouldFetchOrderBySlug(false)
+  }, [order])
+
+  // Handle order param from URL when component mounts or order changes
+  useEffect(() => {
+    if (order && !selectedOrder) {
+      // If there's an order param but no selected order, fetch it immediately
+      setShouldFetchOrderBySlug(true)
+    }
+  }, [order, selectedOrder])
+
+  // Check for new orders and play sound
+  useEffect(() => {
+    const currentOrderCount = data?.items?.length || 0
+    if (currentOrderCount > previousOrderCount && previousOrderCount > 0) {
+      // Play notification sound
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0 // Reset the audio to start
+        audioRef.current.play()
+      }
+    }
+    setPreviousOrderCount(currentOrderCount)
+  }, [data?.items, previousOrderCount])
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPagination(prev => ({
+      ...prev,
+      pageIndex: 1
+    }))
+  }, [startDate, endDate, status, immediateTrimmedPhone, hasPhone, setPagination])
+
+  // handle refresh and show toast when success
+  const handleRefresh = () => {
+    refetch()
+    showToast(tToast('toast.refreshSuccess'))
+  }
+
+  // polling useOrders every 5 seconds, but only when dialog is not open
+  useEffect(() => {
+    if (isSelected) return // Skip polling when dialog is open
+
+    const interval = setInterval(() => {
+      refetch()
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [refetch, isSelected])
+
+  const filterConfig = [
+    {
+      id: 'status',
+      label: t('order.status'),
+      options: [
+        { label: tCommon('dataTable.all'), value: 'all' },
+        { label: t('order.pending'), value: OrderStatus.PENDING },
+        { label: t('order.shipping'), value: OrderStatus.SHIPPING },
+        { label: t('order.paid'), value: OrderStatus.PAID },
+        { label: t('order.failed'), value: OrderStatus.FAILED },
+        { label: t('order.completed'), value: OrderStatus.COMPLETED },
+      ],
+    },
+  ]
+
+  const handleFilterChange = (filterId: string, value: string) => {
+    if (filterId === 'status') {
+      setStatus(value as OrderStatus | 'all')
+    } else if (filterId === 'owner') {
+      setPhoneInput(value)
+    }
+  }
+
+  const handleOrderClick = (order: IOrder) => {
+    setIsSelected(true)
+    setSelectedOrder(order)
+    setShouldFetchOrderBySlug(false) // Reset flag when clicking on order
+    setSearchParams(prev => {
+      prev.set('order', order.slug)
+      return prev
+    })
+  }
+
+  return (
+    <div className="flex flex-col">
+      <audio ref={audioRef} src={notificationSound} preload="auto" />
+      <Helmet>
+        <meta charSet='utf-8' />
+        <title>
+          {tHelmet('helmet.orderManagement.title')}
+        </title>
+        <meta name='description' content={tHelmet('helmet.orderManagement.title')} />
+      </Helmet>
+      <span className="flex gap-1 justify-start items-center w-full text-lg">
+        <SquareMenu />
+        {t('order.orderManagement')}
+      </span>
+      <div className="grid grid-cols-1 h-full">
+        <DataTable
+          columns={useOrderHistoryColumns()}
+          data={data?.items || []}
+          isLoading={isLoading}
+          pages={data?.totalPages || 0}
+          hiddenInput={false}
+          searchPlaceholder={t('order.searchByPhoneNumber')}
+          onInputChange={setPhoneInput}
+          hiddenDatePicker={false}
+          onRowClick={handleOrderClick}
+          filterOptions={OrderFilter}
+          filterConfig={filterConfig}
+          onDateChange={(start, end) => {
+            setStartDate(start)
+            setEndDate(end)
+          }}
+          onFilterChange={handleFilterChange}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          onRefresh={handleRefresh}
+          rowClassName={(row) => {
+            const hasFailedPrinterJobs = row.printerInvoices?.some(
+              job => job.status === PrinterJobStatus.FAILED
+            ) || false
+            const isSelected = row.slug === selectedOrder?.slug
+            
+            if (hasFailedPrinterJobs && isSelected) {
+              return 'bg-destructive/20 border border-destructive'
+            }
+            if (hasFailedPrinterJobs) {
+              return 'bg-destructive/10 border border-destructive/60'
+            }
+            if (isSelected) {
+              return 'bg-primary/20 border border-primary'
+            }
+            return ''
+          }}
+        />
+        <OrderHistoryDetailSheet
+          order={selectedOrder}
+          isOpen={isSelected}
+          onClose={() => {
+            setIsSelected(false)
+            setShouldFetchOrderBySlug(false) // Reset flag when closing dialog
+            setSearchParams(prev => {
+              prev.delete('order')
+              return prev
+            })
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+

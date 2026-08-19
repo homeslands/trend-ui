@@ -1,0 +1,10 @@
+{
+  "setting": {
+    "dark": "Dark",
+    "language": "Language",
+    "light": "Light",
+    "logout": "Logout",
+    "theme": "Theme",
+    "title": "Setting"
+  }
+}

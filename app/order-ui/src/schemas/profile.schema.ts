@@ -1,0 +1,111 @@
+import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
+
+import { AuthRules, EMOJI_REGEX, NAME_REGEX, PASSWORD_REGEX } from '@/constants'
+import moment from 'moment'
+
+export function useUpdateProfileSchema() {
+  const { t } = useTranslation('profile')
+
+  return z.object({
+    firstName: z.preprocess(
+      (val) => (typeof val === 'string' ? val.trim() : val),
+      z
+        .string()
+        .min(AuthRules.MIN_NAME_LENGTH, t('profile.firstNameRequired'))
+        .max(AuthRules.MAX_NAME_LENGTH, t('profile.firstNameTooLong'))
+        .regex(NAME_REGEX, t('profile.firstNameInvalid'))
+        .refine((val) => !EMOJI_REGEX.test(val), {
+          message: t('profile.firstNameEmojiInvalid'),
+        }),
+    ),
+
+    lastName: z.preprocess(
+      (val) => (typeof val === 'string' ? val.trim() : val),
+      z
+        .string()
+        .min(AuthRules.MIN_NAME_LENGTH, t('profile.lastNameRequired'))
+        .max(AuthRules.MAX_NAME_LENGTH, t('profile.lastNameTooLong'))
+        .regex(NAME_REGEX, t('profile.lastNameInvalid'))
+        .refine((val) => !EMOJI_REGEX.test(val), {
+          message: t('profile.lastNameEmojiInvalid'),
+        }),
+    ),
+
+    dob: z.preprocess(
+      (val) => {
+        if (!val || (typeof val === 'string' && val.trim() === '')) return null
+        return typeof val === 'string' ? val.trim() : null
+      },
+      z
+        .string()
+        .refine((val) => moment(val, 'DD/MM/YYYY', true).isValid(), {
+          message: t('profile.dobInvalid'),
+        })
+        .nullable()
+        .optional(),
+    ),
+
+    address: z.preprocess(
+      (val) => (typeof val === 'string' ? val.trim() : val),
+      z
+        .string()
+        .min(1, t('profile.addressRequired'))
+        .max(AuthRules.MAX_ADDRESS_LENGTH, t('profile.addressTooLong'))
+        .refine((val) => !EMOJI_REGEX.test(val), {
+          message: t('profile.addressEmojiInvalid'),
+        }),
+    ),
+
+    branch: z.preprocess(
+      (val) => (typeof val === 'string' ? val.trim() : val),
+      z.string().optional(),
+    ),
+  })
+}
+
+export function useUpdatePasswordSchema() {
+  const { t } = useTranslation('auth')
+
+  return z
+    .object({
+      oldPassword: z.string().min(1, t('login.oldPasswordRequired')),
+      newPassword: z
+        .string()
+        .min(AuthRules.MIN_LENGTH, {
+          message: t('login.minLength', { length: AuthRules.MIN_LENGTH }),
+        })
+        .max(AuthRules.MAX_LENGTH, {
+          message: t('login.maxLength', { length: AuthRules.MAX_LENGTH }),
+        })
+        .regex(PASSWORD_REGEX, t('login.passwordInvalid')),
+      confirmPassword: z.string().min(1, t('login.confirmPasswordRequired')),
+    })
+    .refine((data) => data.newPassword !== data.oldPassword, {
+      message: t('login.passwordSameAsOld'),
+      path: ['newPassword'],
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t('login.passwordNotMatch'),
+      path: ['confirmPassword'],
+    })
+}
+
+export type TUpdateProfileSchema = z.infer<
+  ReturnType<typeof useUpdateProfileSchema>
+>
+export type TUpdatePasswordSchema = z.infer<
+  ReturnType<typeof useUpdatePasswordSchema>
+>
+
+export function useDeleteAccountSchema() {
+  const { t } = useTranslation('profile')
+
+  return z.object({
+    password: z.string().min(1, t('profile.deleteAccount.passwordRequired')),
+  })
+}
+
+export type TDeleteAccountSchema = z.infer<
+  ReturnType<typeof useDeleteAccountSchema>
+>

@@ -1,0 +1,21 @@
+{
+  "staticPage": {
+    "content": "Nội dung trang tĩnh",
+    "create": "Tạo trang tĩnh",
+    "createDescription": "Tạo mới trang tĩnh",
+    "createdAt": "Ngày tạo",
+    "delete": "Xóa",
+    "deleteStaticPageConfirmation": "Bạn có chắc chắn muốn xóa trang tĩnh này không?",
+    "deleteStaticPageWarning": "Bạn sắp sửa xóa trang tĩnh ",
+    "enterKey": "Nhập từ khóa (Ví dụ ABOUT-US)",
+    "enterTitle": "Nhập tiêu đề",
+    "key": "Từ khóa",
+    "preview": "Xem trước",
+    "slug": "Mã trang",
+    "staticPageTitle": "Quản lý trang tĩnh",
+    "title": "Tiêu đề",
+    "update": "Cập nhật",
+    "updateDescription": "Cập nhật trang tĩnh",
+    "warning": "Bạn có chắc chắn muốn tạo trang tĩnh này?"
+  }
+}

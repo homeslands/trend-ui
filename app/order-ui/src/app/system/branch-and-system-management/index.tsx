@@ -1,0 +1,2 @@
+export { BranchAndSystemManagementPage } from './page'
+

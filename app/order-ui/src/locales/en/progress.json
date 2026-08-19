@@ -1,0 +1,10 @@
+{
+  "progress": {
+    "cancel": "Cancelled",
+    "completed": "Completed",
+    "downloading": "Downloading",
+    "paid": "Paid",
+    "pending": "Pending",
+    "shipping": "Shipping"
+  }
+}

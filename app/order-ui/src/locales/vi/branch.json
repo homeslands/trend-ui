@@ -1,0 +1,31 @@
+{
+  "branch": {
+    "branchAddress": "Địa chỉ chi nhánh",
+    "branchDescription": "Mô tả",
+    "branchEmail": "Email",
+    "branchName": "Tên chi nhánh",
+    "branchPhone": "Số điện thoại",
+    "chooseBranch": "Chọn chi nhánh",
+    "chooseBranchDescription": "Chọn chi nhánh để xem món",
+    "create": "Tạo chi nhánh",
+    "createBranchDescription": "Điền đầy đủ thông tin để tạo chi nhánh mới",
+    "delete": "Xóa chi nhánh",
+    "deleteBranchConfirmation": "Bạn có chắc chắn muốn xóa chi nhánh này không?",
+    "deleteBranchWarning1": "Bạn sắp sửa xóa chi nhánh ",
+    "enterBranchAddress": "Nhập địa chỉ chi nhánh",
+    "enterBranchName": "Nhập tên chi nhánh",
+    "manageBranch": "Chi nhánh",
+    "manageBranchAndSystem": "Quản lý cửa hàng",
+    "slug": "Mã chi nhánh",
+    "title": "Chi nhánh",
+    "update": "Cập nhật chi nhánh",
+    "updateBranchDescription": "Thay đổi thông tin để cập nhật chi nhánh",
+    "branchInfo": "Thông tin chi nhánh",
+    "configKeys": {
+      "MAX_DISTANCE_DELIVERY": "Khoảng cách giao hàng tối đa (km)",
+      "DELIVERY_FEE_PER_KM": "Phí giao hàng mỗi km",
+      "WIFI_NAME": "Tên WiFi",
+      "WIFI_PASSWORD": "Mật khẩu WiFi"
+    }
+  }
+}

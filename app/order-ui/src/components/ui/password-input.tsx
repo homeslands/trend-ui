@@ -1,0 +1,57 @@
+import { forwardRef, useState } from 'react'
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input, InputProps } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
+
+interface PasswordInputProps extends InputProps {
+  /**
+   * Màu cho nút hiện/ẩn mật khẩu. Mặc định icon thừa hưởng màu chữ của thẻ cha,
+   * nên trên nền tối phải truyền màu sáng kẻo icon chìm vào nền.
+   */
+  toggleClassName?: string
+}
+
+const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(({ className, toggleClassName, ...props }, ref) => {
+  const [showPassword, setShowPassword] = useState(false)
+  const disabled = props.disabled
+
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? 'text' : 'password'}
+        className={cn('pr-10 hide-password-toggle', className)}
+        ref={ref}
+        {...props}
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={cn('absolute top-0 right-0 px-3 py-2 h-full hover:bg-transparent', toggleClassName)}
+        onClick={() => setShowPassword((prev) => !prev)}
+        disabled={disabled}
+      >
+        {showPassword && !disabled ? (
+          <EyeIcon className="w-4 h-4" aria-hidden="true" />
+        ) : (
+          <EyeOffIcon className="w-4 h-4" aria-hidden="true" />
+        )}
+        <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+      </Button>
+
+      {/* hides browsers password toggles */}
+      <style>{`
+					.hide-password-toggle::-ms-reveal,
+					.hide-password-toggle::-ms-clear {
+						visibility: hidden;
+						pointer-events: none;
+						display: none;
+					}
+				`}</style>
+    </div>
+  )
+})
+PasswordInput.displayName = 'PasswordInput'
+
+export { PasswordInput }

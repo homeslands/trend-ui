@@ -1,0 +1,162 @@
+import React from 'react'
+import { useParams } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { NumberFormatValues, NumericFormat } from 'react-number-format'
+
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Input,
+  Form,
+  Button,
+} from '@/components/ui'
+import {
+  useCreateProductVariantSchema,
+  TCreateProductVariantSchema,
+} from '@/schemas'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ICreateProductVariantRequest } from '@/types'
+import { useCreateProductVariant } from '@/hooks'
+import { showToast } from '@/utils'
+import { SizeSelect } from '@/components/app/select'
+import { QUERYKEY } from '@/constants'
+
+interface IFormCreateProductVariantProps {
+  onSubmit: (isOpen: boolean) => void
+}
+
+export const CreateProductVariantForm: React.FC<
+  IFormCreateProductVariantProps
+> = ({ onSubmit }) => {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation(['product'])
+  const { slug } = useParams()
+  const { mutate: createProductVariant } = useCreateProductVariant()
+  const form = useForm<TCreateProductVariantSchema>({
+    resolver: zodResolver(useCreateProductVariantSchema()),
+    defaultValues: {
+      price: 0,
+      costPrice: 0,
+      size: '',
+      product: slug,
+    },
+  })
+
+  const handleSubmit = (data: ICreateProductVariantRequest) => {
+    createProductVariant(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [QUERYKEY.specificProduct, slug],
+        })
+        onSubmit(false)
+        form.reset()
+        showToast(t('toast.createProductVariantSuccess'))
+      },
+    })
+  }
+
+  const formFields = {
+    price: (
+      <FormField
+        control={form.control}
+        name="price"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t('product.price')}</FormLabel>
+            <FormControl>
+              <div className="flex relative items-center">
+                <NumericFormat
+                  thousandSeparator
+                  allowNegative={false}
+                  customInput={Input}
+                  inputMode="numeric"
+                  placeholder={t('product.enterPrice')}
+                  value={field.value ?? ''}
+                  onValueChange={(values: NumberFormatValues) => {
+                    field.onChange(values.floatValue ?? '')
+                  }}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  className="pr-8 font-medium tracking-wide text-right"
+                />
+                <span className="absolute right-2 text-muted-foreground">₫</span>
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ),
+    costPrice: (
+      <FormField
+        control={form.control}
+        name="costPrice"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t('productVariant.costPrice')}</FormLabel>
+            <FormControl>
+              <div className="flex relative items-center">
+                <NumericFormat
+                  thousandSeparator
+                  allowNegative={false}
+                  customInput={Input}
+                  inputMode="numeric"
+                  placeholder={t('productVariant.enterCostPrice')}
+                  value={field.value ?? ''}
+                  onValueChange={(values: NumberFormatValues) => {
+                    field.onChange(values.floatValue ?? '')
+                  }}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  className="pr-8 font-medium tracking-wide text-right"
+                />
+                <span className="absolute right-2 text-muted-foreground">₫</span>
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ),
+    size: (
+      <FormField
+        control={form.control}
+        name="size"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t('product.size')}</FormLabel>
+            <FormControl>
+              <SizeSelect {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ),
+  }
+
+  return (
+    <div className="mt-3">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 gap-2">
+            {Object.keys(formFields).map((key) => (
+              <React.Fragment key={key}>
+                {formFields[key as keyof typeof formFields]}
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="flex justify-end">
+            <Button className="flex justify-end" type="submit">
+              {t('product.createVariant')}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
+  )
+}

@@ -1,0 +1,1440 @@
+import { Suspense } from 'react'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
+
+import { SkeletonCart } from '@/components/app/skeleton'
+import { SuspenseElement } from '@/components/app/elements'
+import { ROUTE } from '@/constants'
+import {
+  MenuPage,
+  SystemLayout,
+  LoginPage,
+  TablePage,
+  OrderSuccessPage,
+  RegisterPage,
+  RegisterOtpPage,
+  RegisterProfilePage,
+  ProductManagementPage,
+  LoggerPage,
+  ProductDetailPage,
+  ProfilePage,
+  MenuManagementPage,
+  OrderPaymentPage,
+  BankConfigPage,
+  MenuDetailManagementPage,
+  DeliveryManagementPage,
+  OrderManagementPage,
+  OrderDetailPage,
+  EmployeeListPage,
+  ForgotPasswordPage,
+  ConfigPage,
+  ClientMenuPage,
+  ClientProductDetailPage,
+  ClientHomePage,
+  ClientCartPage,
+  ClientOrderHistoryPage,
+  ProfileLayout,
+  ProfileOverview,
+  ClientInfoPage,
+  OrderHistoryPage,
+  LoyaltyPointPage,
+  CoinPage,
+  GiftCardPageProfile,
+  ClientPaymentPage,
+  RevenuePage,
+  StaticPageManagementPage,
+  CustomerPage,
+  CustomerAndMarketingManagementPage,
+  OverviewDetailPage,
+  ClientUpdateOrderPage,
+  ClientAboutPage,
+  ClientPolicyPage,
+  StaticPageDetailPage,
+  DocsPage,
+  VoucherPage,
+  PromotionPage,
+  BannerPage,
+  RolePage,
+  RoleDetailPage,
+  ChefAreaPage,
+  BranchAndSystemManagementPage,
+  SystemManagementPage,
+  ChefAreaDetailPage,
+  InvoiceAreaPage,
+  InvoiceAreaDetailPage,
+  BranchDetailPage,
+  ChefOrderPage,
+  ClientSecurityTermPage,
+  UpdateOrderPage,
+  CustomerDisplayPage,
+  CustomerDisplayLayout,
+  OrdersPublicPage,
+  PublicOrderDetailPage,
+  ClientOrderSuccessPage,
+  GiftCardPage,
+  GiftCardMenuPage,
+  ClientGiftCardPage,
+  ClientGiftCardCheckoutPage,
+  OrderInstructionsPage,
+  PaymentInstructionsPage,
+  ClientGiftCardCheckoutWithSlugPage,
+  GiftCardSuccessPage,
+  FeatureLockManagementPage,
+  SystemGiftCardCheckoutWithSlugPage,
+  CardOrderHistoryPage,
+  CustomerInfoPage,
+  SystemLockManagementPage,
+  UserGroupMembersPage,
+  ForgotPasswordByEmailPage,
+  ForgotPasswordByPhonePage,
+  CoinPolicyPage,
+  AccountDeletionPage,
+  BookingPage,
+  NewsPage,
+  NewsArticleDetailPage,
+  DownloadPage,
+} from './loadable'
+import ProtectedElement from '@/components/app/elements/protected-element'
+import { ClientLayout, PublicClientLayout, AdaptiveClientShell } from '@/app/layouts/client'
+import { BranchManagementPage } from '@/app/system/branch'
+import { DocsLayout } from '@/app/layouts/system'
+import RootLayout from '@/app/layouts/root-layout'
+import ErrorPage from '@/app/error-page'
+import NotFoundPage from '@/app/not-found-page'
+import ForbiddenPage from '@/app/forbidden-page'
+import { RedirectToCustomerGroup, RedirectToVoucherGroup } from './redirects'
+import { SystemGiftCardSuccessPage } from '@/app/system/gift-card/checkout/success'
+
+export const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { path: ROUTE.LOGIN, element: <SuspenseElement component={LoginPage} /> },
+      {
+        path: ROUTE.REGISTER,
+        element: <SuspenseElement component={RegisterPage} />,
+      },
+      {
+        path: ROUTE.REGISTER_OTP,
+        element: <SuspenseElement component={RegisterOtpPage} />,
+      },
+      {
+        path: ROUTE.REGISTER_PROFILE,
+        element: <SuspenseElement component={RegisterProfilePage} />,
+      },
+      {
+        path: ROUTE.FORGOT_PASSWORD,
+        element: <SuspenseElement component={ForgotPasswordPage} />,
+      },
+      {
+        path: ROUTE.FORGOT_PASSWORD_BY_EMAIL,
+        element: <SuspenseElement component={ForgotPasswordByEmailPage} />,
+      },
+      {
+        path: ROUTE.FORGOT_PASSWORD_BY_PHONE,
+        element: <SuspenseElement component={ForgotPasswordByPhonePage} />,
+      },
+      {
+        path: ROUTE.ABOUT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <PublicClientLayout />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={ClientAboutPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.CLIENT_BOOKING,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <PublicClientLayout />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={BookingPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.CLIENT_NEWS,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <PublicClientLayout />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={NewsPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.ACCOUNT_DELETION,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <PublicClientLayout />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={AccountDeletionPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.ORDER_INSTRUCTIONS,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <PublicClientLayout />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={OrderInstructionsPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.PAYMENT_INSTRUCTIONS,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <PublicClientLayout />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={PaymentInstructionsPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.POLICY,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <PublicClientLayout />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={ClientPolicyPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.SECURITY,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <PublicClientLayout />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={ClientSecurityTermPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.OVERVIEW,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={<SuspenseElement component={OverviewDetailPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      // {
+      //   path: ROUTE.OVERVIEW_DETAIL,
+      //   element: (
+      //     <Suspense fallback={<SkeletonCart />}>
+      //       <SuspenseElement component={SystemLayout} />
+      //     </Suspense>
+      //   ),
+      //   children: [
+      //     {
+      //       index: true,
+      //       element: (
+      //         <ProtectedElement
+      //           // allowedRoles={[
+      //           //   Role.CHEF,
+      //           //   Role.STAFF,
+      //           //   Role.MANAGER,
+      //           //   Role.ADMIN,
+      //           //   Role.SUPER_ADMIN,
+      //           // ]}
+      //           element={<SuspenseElement component={OverviewDetailPage} />}
+      //         />
+      //       ),
+      //     },
+      //   ],
+      // },
+      {
+        path: ROUTE.STAFF_MENU,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.STAFF]}
+                element={<SuspenseElement component={MenuPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_CUSTOMER_DISPLAY,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={CustomerDisplayLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={CustomerDisplayPage} />,
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_ORDER_PAYMENT}`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[
+                //   Role.STAFF,
+                //   Role.MANAGER,
+                //   Role.ADMIN,
+                //   Role.SUPER_ADMIN,
+                // ]}
+                element={<SuspenseElement component={OrderPaymentPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.ORDER_SUCCESS}/:slug`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={OrderSuccessPage} />,
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.SYSTEM_GIFT_CARD_SUCCESS}/:slug`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <SuspenseElement component={SystemGiftCardSuccessPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_DELIVERY_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={<SuspenseElement component={DeliveryManagementPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_CHEF_ORDER,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={<SuspenseElement component={ChefOrderPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_ORDER_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.STAFF, Role.MANAGER]}
+                element={<SuspenseElement component={OrderManagementPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_ORDER_MANAGEMENT}/:slug/update`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.STAFF, Role.MANAGER]}
+                element={<SuspenseElement component={UpdateOrderPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_ORDER_MANAGEMENT}/:slug`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.STAFF, Role.MANAGER]}
+                element={<SuspenseElement component={OrderDetailPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_TABLE_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER]}
+                element={<SuspenseElement component={TablePage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_PRODUCT_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER]}
+                element={<SuspenseElement component={ProductManagementPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_PRODUCT_MANAGEMENT}/:slug`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.ADMIN, Role.MANAGER]}
+                element={<SuspenseElement component={ProductDetailPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_MENU_AND_PRODUCT_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.CHEF, Role.MANAGER]}
+                element={<SuspenseElement component={MenuManagementPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_MENU_AND_PRODUCT_MANAGEMENT}/:slug`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.CHEF, Role.MANAGER]}
+                element={
+                  <SuspenseElement component={MenuDetailManagementPage} />
+                }
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_CUSTOMER_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={CustomerPage} />}
+              />
+            ),
+          },
+          {
+            path: ":slug",
+            element: <SuspenseElement component={CustomerInfoPage} />,
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_CUSTOMER_AND_MARKETING_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={CustomerAndMarketingManagementPage} />}
+              />
+            ),
+          },
+          {
+            path: 'voucher-group/:slug',
+            element: (
+              <ProtectedElement
+                element={<SuspenseElement component={VoucherPage} />}
+              />
+            ),
+          },
+          {
+            path: 'customer-group/:slug',
+            element: (
+              <ProtectedElement
+                element={<SuspenseElement component={UserGroupMembersPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_USER_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={EmployeeListPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_CUSTOMER_GROUP_MANAGEMENT,
+        element: <Navigate to={`${ROUTE.STAFF_CUSTOMER_AND_MARKETING_MANAGEMENT}?tab=customer-group`} replace />,
+      },
+      {
+        path: `${ROUTE.STAFF_CUSTOMER_GROUP_MANAGEMENT}/:slug`,
+        element: <RedirectToCustomerGroup />,
+      },
+      {
+        path: ROUTE.STAFF_ROLE_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={RolePage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_ROLE_MANAGEMENT}/:slug`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={RoleDetailPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_SYSTEM_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={SystemManagementPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_BRANCH,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER]}
+                element={<SuspenseElement component={BranchManagementPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_BRANCH_AND_SYSTEM_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER]}
+                element={<SuspenseElement component={BranchAndSystemManagementPage} />}
+              />
+            ),
+          },
+          {
+            path: 'branch/:slug',
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={BranchDetailPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.OVERVIEW,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[
+                //   Role.STAFF,
+                //   Role.CHEF,
+                //   Role.MANAGER,
+                //   Role.ADMIN,
+                //   Role.SUPER_ADMIN,
+                // ]}
+                element={<SuspenseElement component={RevenuePage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_STATIC_PAGE,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER]}
+                element={
+                  <SuspenseElement component={StaticPageManagementPage} />
+                }
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_STATIC_PAGE}/:key`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER]}
+                element={<SuspenseElement component={StaticPageDetailPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_LOG_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={LoggerPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_PROFILE,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[
+                //   Role.STAFF,
+                //   Role.CHEF,
+                //   Role.MANAGER,
+                //   Role.ADMIN,
+                //   Role.SUPER_ADMIN,
+                // ]}
+                element={<SuspenseElement component={ProfilePage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_BANK_CONFIG}`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={BankConfigPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_SYSTEM_LOCK_MANAGEMENT}`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={SystemLockManagementPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.ADMIN_CONFIG}`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={ConfigPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_VOUCHER_GROUP,
+        element: <Navigate to={`${ROUTE.STAFF_CUSTOMER_AND_MARKETING_MANAGEMENT}?tab=voucher`} replace />,
+      },
+      {
+        path: `${ROUTE.STAFF_VOUCHER_GROUP}/:slug`,
+        element: <RedirectToVoucherGroup />,
+      },
+      {
+        path: ROUTE.STAFF_PROMOTION,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={PromotionPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_GIFT_CARD,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={GiftCardPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_GIFT_CARD_MENU,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={GiftCardMenuPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_CARD_ORDER_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={CardOrderHistoryPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_GIFT_CARD_FEATURE_FLAG,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={
+                  <SuspenseElement component={FeatureLockManagementPage} />
+                }
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_CARD_ORDER_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={
+                  <SuspenseElement component={CardOrderHistoryPage} />
+                }
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_COIN_POLICY,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={
+                  <SuspenseElement component={CoinPolicyPage} />
+                }
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_CHEF_AREA_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={<SuspenseElement component={ChefAreaPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_CHEF_AREA_MANAGEMENT}/:slug`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={<SuspenseElement component={ChefAreaDetailPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_INVOICE_AREA_MANAGEMENT,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={<SuspenseElement component={InvoiceAreaPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_INVOICE_AREA_MANAGEMENT}/:slug`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                element={<SuspenseElement component={InvoiceAreaDetailPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.ADMIN_BANNER,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN]}
+                element={<SuspenseElement component={BannerPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        path: `${ROUTE.STAFF_BANNER}/:slug`,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+      },
+      {
+        path: ROUTE.DOCS,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={DocsLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedElement
+                // allowedRoles={[Role.CHEF, Role.STAFF, Role.MANAGER, Role.ADMIN]}
+                element={<SuspenseElement component={DocsPage} />}
+              />
+            ),
+          },
+        ],
+      },
+      // Client routes with shell
+      {
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={AdaptiveClientShell} />
+          </Suspense>
+        ),
+        children: [
+          {
+            path: ROUTE.CLIENT_HOME,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={ClientHomePage} />,
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_MENU,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={ClientMenuPage} />,
+              },
+            ],
+          },
+          {
+            path: `${ROUTE.CLIENT_MENU_ITEM}`,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={ClientProductDetailPage} />,
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_CART,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={ClientCartPage} />,
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_PAYMENT,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={ClientPaymentPage} />,
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_ORDERS_PUBLIC,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={OrdersPublicPage} />,
+              },
+            ],
+          },
+          {
+            path: `${ROUTE.CLIENT_ORDERS_PUBLIC}/:slug`,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={PublicOrderDetailPage} />,
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_ORDER_HISTORY,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: (
+                  <ProtectedElement
+                    // allowedRoles={[Role.CUSTOMER]}
+                    element={<SuspenseElement component={ClientOrderHistoryPage} />}
+                  />
+                ),
+              },
+            ],
+          },
+          {
+            path: `${ROUTE.CLIENT_UPDATE_ORDER}/:slug`,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: (
+                  <ProtectedElement
+                    // allowedRoles={[Role.CUSTOMER]}
+                    element={<SuspenseElement component={ClientUpdateOrderPage} />}
+                  />
+                ),
+              },
+            ],
+          },
+          {
+            path: ROUTE.HOME,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: (
+                  <ProtectedElement
+                    // allowedRoles={RoutePermissions[ROUTE.HOME]}
+                    element={<ClientHomePage />}
+                  />
+                ),
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_PROFILE,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                element: (
+                  <ProtectedElement
+                    element={<SuspenseElement component={ProfileLayout} />}
+                  />
+                ),
+                children: [
+                  {
+                    index: true,
+                    element: <SuspenseElement component={ProfileOverview} />,
+                  },
+                  {
+                    path: 'info',
+                    element: <SuspenseElement component={ClientInfoPage} />,
+                  },
+                  {
+                    path: 'history',
+                    element: <SuspenseElement component={OrderHistoryPage} />,
+                  },
+                  {
+                    path: 'loyalty-point',
+                    element: <SuspenseElement component={LoyaltyPointPage} />,
+                  },
+                  {
+                    path: 'coin',
+                    element: <SuspenseElement component={CoinPage} />,
+                  },
+                  {
+                    path: 'gift-card',
+                    element: <SuspenseElement component={GiftCardPageProfile} />,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_GIFT_CARD,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={ClientGiftCardPage} />,
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_GIFT_CARD_CHECKOUT,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={ClientGiftCardCheckoutPage} />,
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_GIFT_CARD_CHECKOUT_WITH_SLUG,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: (
+                  <SuspenseElement component={ClientGiftCardCheckoutWithSlugPage} />
+                ),
+              },
+            ],
+          },
+          {
+            path: `${ROUTE.CLIENT_ORDER_SUCCESS}/:slug`,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={ClientOrderSuccessPage} />,
+              },
+            ],
+          },
+          {
+            path: `${ROUTE.CLIENT_GIFT_CARD_SUCCESS}/:slug`,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={GiftCardSuccessPage} />,
+              },
+            ],
+          },
+          {
+            path: ROUTE.CLIENT_NEWS_DETAIL,
+            element: <SuspenseElement component={ClientLayout} />,
+            children: [
+              {
+                index: true,
+                element: <SuspenseElement component={NewsArticleDetailPage} />,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: ROUTE.STAFF_GIFT_CARD_CHECKOUT_WITH_SLUG,
+        element: (
+          <Suspense fallback={<SkeletonCart />}>
+            <SuspenseElement component={SystemLayout} />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <SuspenseElement component={SystemGiftCardCheckoutWithSlugPage} />
+            ),
+          },
+        ],
+      },
+      {
+        path: ROUTE.CLIENT_DOWNLOAD,
+        element: <SuspenseElement component={DownloadPage} />,
+      },
+      {
+        path: ROUTE.FORBIDDEN,
+        element: <SuspenseElement component={ForbiddenPage} />,
+      },
+      {
+        path: '*',
+        element: <SuspenseElement component={NotFoundPage} />,
+      },
+    ],
+  },
+])

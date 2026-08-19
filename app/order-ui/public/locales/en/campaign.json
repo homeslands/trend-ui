@@ -1,0 +1,51 @@
+{
+  "campaign": {
+    "title": "Marketing campaigns",
+    "createCampaign": "Create campaign",
+    "editCampaign": "Edit campaign",
+    "deleteCampaign": "Delete campaign",
+    "confirmDelete": "Are you sure you want to delete this campaign?",
+    "name": "Campaign name",
+    "type": "Campaign type",
+    "status": "Status",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "recipientLimit": "Recipient limit",
+    "voucherGroups": "Voucher groups",
+    "types": {
+      "new-user": "New user",
+      "user-birthday": "Birthday"
+    },
+    "statuses": {
+      "opening": "Opening",
+      "scheduled": "Scheduled",
+      "closed": "Closed"
+    },
+    "template": {
+      "title": "Voucher",
+      "addTemplate": "Add template",
+      "editTemplate": "Edit template",
+      "deleteTemplate": "Delete template",
+      "templateTitle": "Voucher title",
+      "description": "Description",
+      "type": "Voucher type",
+      "value": "Value",
+      "maxUsage": "Max usage",
+      "minOrderValue": "Min order value",
+      "maxItems": "Max items",
+      "duration": "Duration (days)",
+      "usageFrequencyUnit": "Frequency unit",
+      "usageFrequencyValue": "Frequency value",
+      "applicabilityRule": "Applicability rule",
+      "paymentMethods": "Payment methods",
+      "products": "Applicable products",
+      "typeKey": "Campaign type key",
+      "templateStartDate": "Template start date",
+      "templateEndDate": "Template end date"
+    },
+    "empty": "No campaigns yet",
+    "createSuccess": "Campaign created successfully",
+    "updateSuccess": "Campaign updated successfully",
+    "deleteSuccess": "Campaign deleted successfully"
+  }
+}

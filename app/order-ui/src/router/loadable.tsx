@@ -1,0 +1,638 @@
+import React from 'react'
+
+// Layout
+export const SystemLayout = React.lazy(() =>
+  import('@/app/layouts/system').then((module) => ({
+    default: module.SystemLayout,
+  })),
+)
+
+export const ClientViewLayout = React.lazy(() =>
+  import('@/app/layouts/system').then((module) => ({
+    default: module.ClientViewLayout,
+  })),
+)
+
+export const CustomerDisplayLayout = React.lazy(() =>
+  import('@/app/layouts/system').then((module) => ({
+    default: module.CustomerDisplayLayout,
+  })),
+)
+
+//Auth
+export const LoginPage = React.lazy(() =>
+  import('@/app/auth').then((module) => ({
+    default: module.LoginPage,
+  })),
+)
+
+export const RegisterPage = React.lazy(() =>
+  import('@/app/auth').then((module) => ({
+    default: module.RegisterPage,
+  })),
+)
+
+export const RegisterOtpPage = React.lazy(() =>
+  import('@/app/auth').then((module) => ({
+    default: module.RegisterOtpPage,
+  })),
+)
+
+export const RegisterProfilePage = React.lazy(() =>
+  import('@/app/auth').then((module) => ({
+    default: module.RegisterProfilePage,
+  })),
+)
+
+
+export const ForgotPasswordPage = React.lazy(() =>
+  import('@/app/auth').then((module) => ({
+    default: module.ForgotPasswordPage,
+  })),
+)
+
+export const ForgotPasswordByEmailPage = React.lazy(() =>
+  import('@/app/auth').then((module) => ({
+    default: module.ForgotPasswordByEmailPage,
+  })),
+)
+
+export const ForgotPasswordByPhonePage = React.lazy(() =>
+  import('@/app/auth').then((module) => ({
+    default: module.ForgotPasswordByPhonePage,
+  })),
+)
+
+export const AccountDeletionPage = React.lazy(() =>
+  import('@/app/client/account-deletion').then((module) => ({
+    default: module.AccountDeletionPage,
+  })),
+)
+
+//Views
+//----------------------------------------------//
+//Admin
+//Home page
+export const OverviewPage = React.lazy(() =>
+  import('@/app/system/home').then((module) => ({
+    default: module.OverviewPage,
+  })),
+)
+
+export const OverviewDetailPage = React.lazy(() =>
+  import('@/app/system/home').then((module) => ({
+    default: module.OverviewDetailPage,
+  })),
+)
+
+//Menu page
+export const MenuPage = React.lazy(() =>
+  import('@/app/system/menu').then((module) => ({
+    default: module.MenuPage,
+  })),
+)
+
+export const OrderSuccessPage = React.lazy(() =>
+  import('@/app/system/menu').then((module) => ({
+    default: module.OrderSuccessPage,
+  })),
+)
+
+export const ClientOrderSuccessPage = React.lazy(() =>
+  import('@/app/client/payment/components').then((module) => ({
+    default: module.ClientOrderSuccessPage,
+  })),
+)
+
+export const GiftCardSuccessPage = React.lazy(() =>
+  import('@/app/client/gift-card/checkout/success').then((module) => ({
+    default: module.ClientGiftCardSuccessPage,
+  })),
+)
+
+//Delivery management page
+export const DeliveryManagementPage = React.lazy(() =>
+  import('@/app/system/delivery-management').then((module) => ({
+    default: module.DeliveryManagementPage,
+  })),
+)
+
+//Client view page
+export const CustomerDisplayPage = React.lazy(() =>
+  import('@/app/system/customer-display').then((module) => ({
+    default: module.CustomerDisplayPage,
+  })),
+)
+// Chef order management page
+export const ChefOrderPage = React.lazy(() =>
+  import('@/app/system/chef-order').then((module) => ({
+    default: module.ChefOrderPage,
+  })),
+)
+
+//Order management page
+export const OrderManagementPage = React.lazy(() =>
+  import('@/app/system/order-management').then((module) => ({
+    default: module.OrderManagementPage,
+  })),
+)
+
+//Order public page
+export const OrdersPublicPage = React.lazy(() =>
+  import('@/app/client/orders-public').then((module) => ({
+    default: module.OrdersPublicPage,
+  })),
+)
+
+//Order public detail page
+export const PublicOrderDetailPage = React.lazy(() =>
+  import('@/app/client/public-order-detail').then((module) => ({
+    default: module.PublicOrderDetailPage,
+  })),
+)
+//Update order page for staff
+export const UpdateOrderPage = React.lazy(() =>
+  import('@/app/system/update-order').then((module) => ({
+    default: module.UpdateOrderPage,
+  })),
+)
+//Order detail page
+export const OrderDetailPage = React.lazy(() =>
+  import('@/app/system/order-management').then((module) => ({
+    default: module.OrderDetailPage,
+  })),
+)
+
+//Table page
+export const TablePage = React.lazy(() =>
+  import('@/app/system/table').then((module) => ({
+    default: module.TablePage,
+  })),
+)
+
+//Product page
+export const ProductManagementPage = React.lazy(() =>
+  import('@/app/system/products').then((module) => ({
+    default: module.ProductManagementPage,
+  })),
+)
+
+//Menu page
+export const MenuManagementPage = React.lazy(() =>
+  import('@/app/system/menu-management').then((module) => ({
+    default: module.MenuManagementPage,
+  })),
+)
+
+export const MenuDetailManagementPage = React.lazy(() =>
+  import('@/app/system/menu-detail-management').then((module) => ({
+    default: module.MenuDetailManagementPage,
+  })),
+)
+
+export const ProductDetailPage = React.lazy(() =>
+  import('@/app/system/products').then((module) => ({
+    default: module.ProductDetail,
+  })),
+)
+
+//User list page
+export const EmployeeListPage = React.lazy(() =>
+  import('@/app/system/users').then((module) => ({
+    default: module.EmployeeListPage,
+  })),
+)
+
+export const CustomerPage = React.lazy(() =>
+  import('@/app/system/customers').then((module) => ({
+    default: module.CustomerPage,
+  })),
+)
+
+export const CustomerAndMarketingManagementPage = React.lazy(() =>
+  import('@/app/system/customer-and-marketing-management').then((module) => ({
+    default: module.CustomerAndMarketingManagementPage,
+  })),
+)
+
+// Customer info page
+export const CustomerInfoPage = React.lazy(() =>
+  import('@/app/system/customers/components').then((module) => ({
+    default: module.CustomerInfoPage,
+  })),
+)
+
+// Customer group page
+export const UserGroupPage = React.lazy(() =>
+  import('@/app/system/customer-group').then((module) => ({
+    default: module.UserGroupPage,
+  })),
+)
+
+// Customer group members page
+export const UserGroupMembersPage = React.lazy(() =>
+  import('@/app/system/customer-group/components').then((module) => ({
+    default: module.UserGroupMembersPage,
+  })),
+)
+
+// Role page
+export const RolePage = React.lazy(() =>
+  import('@/app/system/role').then((module) => ({
+    default: module.RolePage,
+  })),
+)
+
+// Role detail page
+export const RoleDetailPage = React.lazy(() =>
+  import('@/app/system/role').then((module) => ({
+    default: module.RoleDetailPage,
+  })),
+)
+
+// Branch detail page
+export const BranchDetailPage = React.lazy(() =>
+  import('@/app/system/branch/[slug]').then((module) => ({
+    default: module.BranchDetailPage,
+  })),
+)
+
+//Branch page
+export const BranchPage = React.lazy(() =>
+  import('@/app/system/branch').then((module) => ({
+    default: module.BranchManagementPage,
+  })),
+)
+
+export const BranchAndSystemManagementPage = React.lazy(() =>
+  import('@/app/system/branch-and-system-management').then((module) => ({
+    default: module.BranchAndSystemManagementPage,
+  })),
+)
+
+export const SystemManagementPage = React.lazy(() =>
+  import('@/app/system/system-management').then((module) => ({
+    default: module.SystemManagementPage,
+  })),
+)
+
+//Log page
+export const LoggerPage = React.lazy(() =>
+  import('@/app/system/logger').then((module) => ({
+    default: module.LoggerPage,
+  })),
+)
+
+//Profile page
+export const ProfilePage = React.lazy(() =>
+  import('@/app/system/profile').then((module) => ({
+    default: module.ProfilePage,
+  })),
+)
+
+//Order payment page
+export const OrderPaymentPage = React.lazy(() =>
+  import('@/app/system/payment').then((module) => ({
+    default: module.PaymentPage,
+  })),
+)
+
+//Revenue page
+export const RevenuePage = React.lazy(() =>
+  import('@/app/system/revenue').then((module) => ({
+    default: module.RevenuePage,
+  })),
+)
+
+//Bank config page
+export const BankConfigPage = React.lazy(() =>
+  import('@/app/system/payment').then((module) => ({
+    default: module.BankConfigPage,
+  })),
+)
+
+//Static page
+export const StaticPageManagementPage = React.lazy(() =>
+  import('@/app/system/static-page').then((module) => ({
+    default: module.StaticPageManagementPage,
+  })),
+)
+
+//Static page detail page
+export const StaticPageDetailPage = React.lazy(() =>
+  import('@/app/system/static-page').then((module) => ({
+    default: module.StaticPageDetailPage,
+  })),
+)
+
+//Config page
+export const ConfigPage = React.lazy(() =>
+  import('@/app/system/config').then((module) => ({
+    default: module.ConfigPage,
+  })),
+)
+
+//Voucher group page
+export const VoucherGroupPage = React.lazy(() =>
+  import('@/app/system/voucher').then((module) => ({
+    default: module.VoucherGroupPage,
+  })),
+)
+export const VoucherPage = React.lazy(() =>
+  import('@/app/system/voucher/components').then((module) => ({
+    default: module.VoucherPage,
+  })),
+)
+
+export const PromotionPage = React.lazy(() =>
+  import('@/app/system/promotion').then((module) => ({
+    default: module.PromotionPage,
+  })),
+)
+
+export const ChefAreaPage = React.lazy(() =>
+  import('@/app/system/chef-area').then((module) => ({
+    default: module.ChefAreaPage,
+  })),
+)
+
+export const ChefAreaDetailPage = React.lazy(() =>
+  import('@/app/system/chef-area').then((module) => ({
+    default: module.ChefAreaDetailPage,
+  })),
+)
+
+export const InvoiceAreaPage = React.lazy(() =>
+  import('@/app/system/invoice-area').then((module) => ({
+    default: module.InvoiceAreaPage,
+  })),
+)
+
+export const InvoiceAreaDetailPage = React.lazy(() =>
+  import('@/app/system/invoice-area').then((module) => ({
+    default: module.InvoiceAreaDetailPage,
+  })),
+)
+
+export const DocsPage = React.lazy(() =>
+  import('@/app/system/docs').then((module) => ({
+    default: module.DocsPage,
+  })),
+)
+
+//----------------------------------------------//
+//Client
+//Home page
+export const ClientHomePage = React.lazy(() =>
+  import('@/app/client/home').then((module) => ({
+    default: module.HomePage,
+  })),
+)
+
+//Menu page
+export const ClientMenuPage = React.lazy(() =>
+  import('@/app/client/menu').then((module) => ({
+    default: module.MenuPage,
+  })),
+)
+
+//Product detail page
+export const ClientProductDetailPage = React.lazy(() =>
+  import('@/app/client/product-detail').then((module) => ({
+    default: module.ProductDetail,
+  })),
+)
+
+//Cart page
+export const ClientCartPage = React.lazy(() =>
+  import('@/app/client/cart').then((module) => ({
+    default: module.CartPage,
+  })),
+)
+
+//Payment page
+export const ClientPaymentPage = React.lazy(() =>
+  import('@/app/client/payment').then((module) => ({
+    default: module.ClientPaymentPage,
+  })),
+)
+
+export const ClientOrderHistoryPage = React.lazy(() =>
+  import('@/app/client/order-history').then((module) => ({
+    default: module.OrderHistoryPage,
+  })),
+)
+
+// Profile Layout
+export const ProfileLayout = React.lazy(() =>
+  import('@/app/client/profile/layout').then((module) => ({
+    default: module.default,
+  })),
+)
+
+// Profile Overview (Mobile menu)
+export const ProfileOverview = React.lazy(() =>
+  import('@/app/client/profile/components/profile-overview').then((module) => ({
+    default: module.default,
+  })),
+)
+
+// Profile Info Page
+export const ClientInfoPage = React.lazy(() =>
+  import('@/app/client/profile/components/client-info-page').then((module) => ({
+    default: module.default,
+  })),
+)
+
+// Profile History Page
+export const OrderHistoryPage = React.lazy(() =>
+  import('@/app/client/profile/components/order-history-page').then((module) => ({
+    default: module.default,
+  })),
+)
+
+// Profile Loyalty Point Page
+export const LoyaltyPointPage = React.lazy(() =>
+  import('@/app/client/profile/components/loyalty-point-page').then((module) => ({
+    default: module.default,
+  })),
+)
+
+// Profile Coin Page
+export const CoinPage = React.lazy(() =>
+  import('@/app/client/profile/components/coin-page').then((module) => ({
+    default: module.default,
+  })),
+)
+
+// Profile Gift Card Page
+export const GiftCardPageProfile = React.lazy(() =>
+  import('@/app/client/profile/components/gift-card-page').then((module) => ({
+    default: module.default,
+  })),
+)
+
+//Update order page
+export const ClientUpdateOrderPage = React.lazy(() =>
+  import('@/app/client/update-order').then((module) => ({
+    default: module.ClientUpdateOrderPage,
+  })),
+)
+
+//About page
+export const ClientAboutPage = React.lazy(() =>
+  import('@/app/client/about').then((module) => ({
+    default: module.AboutPage,
+  })),
+)
+
+// order instructions page
+export const OrderInstructionsPage = React.lazy(() =>
+  import('@/app/client/order-instructions').then((module) => ({
+    default: module.OrderInstructionsPage,
+  })),
+)
+
+// payment instructions page
+export const PaymentInstructionsPage = React.lazy(() =>
+  import('@/app/client/payment-instructions').then((module) => ({
+    default: module.PaymentInstructionsPage,
+  })),
+)
+
+//Policy page
+export const ClientPolicyPage = React.lazy(() =>
+  import('@/app/client/policy').then((module) => ({
+    default: module.PolicyPage,
+  })),
+)
+
+//Security term page
+export const ClientSecurityTermPage = React.lazy(() =>
+  import('@/app/client/security-term').then((module) => ({
+    default: module.SecurityTermPage,
+  })),
+)
+
+//Banner page
+export const BannerPage = React.lazy(() =>
+  import('@/app/system/banner').then((module) => ({
+    default: module.BannerPage,
+  })),
+)
+
+//Booking page
+export const BookingPage = React.lazy(() =>
+  import('@/app/client/booking').then((module) => ({
+    default: module.BookingPage,
+  })),
+)
+
+//Voucher and promotion page
+// export const VoucherAndPromotionPage = React.lazy(() =>
+//   import('@/app/client/voucher-promotion').then((module) => ({
+//     default: module.VoucherAndPromotionPage,
+//   })),
+// )
+
+//Gift card page
+export const GiftCardPage = React.lazy(() =>
+  import('@/app/system/gift-card').then((module) => ({
+    default: module.GiftCardPage,
+  })),
+)
+
+//System gift card menu page
+export const GiftCardMenuPage = React.lazy(() =>
+  import('@/app/system/gift-card/catalog').then((module) => ({
+    default: module.GiftCardCatalogPage,
+  })),
+)
+
+//System gift card checkout
+export const GiftCardCheckoutPage = React.lazy(() =>
+  import('@/app/system/gift-card/checkout').then((module) => ({
+    default: module.SystemGiftCardCheckoutPage,
+  })),
+)
+
+// System gift card checkout with slug page
+export const SystemGiftCardCheckoutWithSlugPage = React.lazy(() =>
+  import('@/app/system/gift-card/checkout/[slug]').then((module) => ({
+    default: module.SystemGiftCardCheckoutPageBySlug,
+  })),
+)
+
+// System gift card success page
+export const SystemGiftCardSuccessPage = React.lazy(() =>
+  import('@/app/system/gift-card/checkout/success').then((module) => ({
+    default: module.SystemGiftCardSuccessPage,
+  })),
+)
+
+//Client Gift card page
+export const ClientGiftCardPage = React.lazy(() =>
+  import('@/app/client/gift-card').then((module) => ({
+    default: module.ClientGiftCardPage,
+  })),
+)
+
+//Client Gift card checkout page
+export const ClientGiftCardCheckoutPage = React.lazy(() =>
+  import('@/app/client/gift-card/checkout').then((module) => ({
+    default: module.ClientGiftCardCheckoutPage,
+  })),
+)
+
+//Client Gift card checkout with slug page
+export const ClientGiftCardCheckoutWithSlugPage = React.lazy(() =>
+  import('@/app/client/gift-card/checkout/[slug]').then((module) => ({
+    default: module.ClientGiftCardCheckoutPageBySlug,
+  })),
+)
+
+//Feature lock management page
+export const FeatureLockManagementPage = React.lazy(() =>
+  import('@/app/system/feature-lock-management').then((module) => ({
+    default: module.FeatureLockManagementPage,
+  })),
+)
+
+export const CardOrderHistoryPage = React.lazy(() =>
+  import('@/app/system/card-order-history').then((module) => ({
+    default: module.CardOrderHistoryPage,
+  })),
+)
+
+// System lock management page
+export const SystemLockManagementPage = React.lazy(() =>
+  import('@/app/system/system-lock-management').then((module) => ({
+    default: module.SystemLockManagementPage,
+  })),
+)
+
+export const CoinPolicyPage = React.lazy(() =>
+  import('@/app/system/coin-policy/page').then((module) => ({
+    default: module.default,
+  })),
+)
+
+//News page
+export const NewsPage = React.lazy(() =>
+  import('@/app/client/news').then((module) => ({
+    default: module.NewsPage,
+  })),
+)
+
+//News article detail page
+export const NewsArticleDetailPage = React.lazy(() =>
+  import('@/app/client/news/[slug]').then((module) => ({
+    default: module.NewsArticleDetailPage,
+  })),
+)
+
+export const DownloadPage = React.lazy(() =>
+  import('@/app/client/download').then((module) => ({
+    default: module.DownloadPage,
+  })),
+)

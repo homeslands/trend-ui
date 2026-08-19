@@ -1,0 +1,25 @@
+{
+  "config": {
+    "addNewConfig": "Add new configuration",
+    "addRow": "Add Row",
+    "delete": "Delete",
+    "deleteContent": "Are you sure you want to delete the configuration with key ",
+    "deleteContent2": " and value ",
+    "deleteContent3": "?",
+    "deleteSystemConfig": "Delete system configuration",
+    "deleteBranchConfig": "Delete branch configuration",
+    "description": "Description",
+    "enterDescription": "Enter description",
+    "enterKey": "Enter key",
+    "enterValue": "Enter value",
+    "key": "Key",
+    "noSavedConfig": "No configuration saved",
+    "save": "Save",
+    "savedConfigs": "Saved configurations",
+    "title": "System configuration",
+    "update": "Update",
+    "updateSystemConfigDescription": "Update system configuration",
+    "updateBranchConfigDescription": "Update branch configuration",
+    "value": "Value"
+  }
+}

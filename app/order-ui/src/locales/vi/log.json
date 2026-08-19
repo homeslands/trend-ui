@@ -1,0 +1,12 @@
+{
+  "log": {
+    "context": "Ngữ cảnh",
+    "createdAt": "Thời gian tạo",
+    "level": "Cấp độ",
+    "message": "Nội dung",
+    "pid": "PID",
+    "slug": "Slug",
+    "timestamp": "Thời gian",
+    "title": "Quản lý log"
+  }
+}

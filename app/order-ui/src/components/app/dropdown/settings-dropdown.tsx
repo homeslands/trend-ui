@@ -1,0 +1,134 @@
+import { Moon, Sun, Settings } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui'
+import { useTheme } from '@/components/app/theme-provider'
+import { USFlag, VIFlag } from '@/assets/images'
+import { useUpdateLanguage } from '@/hooks'
+import { useUserStore } from '@/stores'
+import { useEffect } from 'react'
+
+export default function SettingsDropdown() {
+  const { t, i18n } = useTranslation('setting')
+  const { theme, setTheme } = useTheme()
+  const { userInfo, setUserInfo } = useUserStore()
+  const {mutate: updateLanguage} = useUpdateLanguage()
+
+  const handleUpdateLanguage = (language: string) => {
+    // Nếu có userInfo và có slug thì gọi API để cập nhật trên server
+    if (userInfo?.slug) {
+      updateLanguage({ userSlug: userInfo.slug, language }, {
+        onSuccess: (response) => {
+          // Chỉ cập nhật language thay vì thay thế toàn bộ userInfo
+          setUserInfo({
+            ...userInfo,
+            language: response.result.language
+          })
+          i18n.changeLanguage(language)
+        }
+      })
+    } else {
+      // Nếu không có slug hoặc không có userInfo, chỉ lưu vào localStorage và cập nhật i18n
+      window.localStorage.setItem('i18nextLng', language)
+      i18n.changeLanguage(language)
+    }
+  }
+
+  // Update language when userInfo changes
+  useEffect(() => {
+    if (userInfo?.language) {
+      i18n.changeLanguage(userInfo.language)
+    }
+  }, [userInfo?.language, i18n])
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-primary/10 hover:text-primary"
+        >
+          <Settings className="h-[1.1rem] w-[1.1rem]" />
+          <span className="sr-only">Open settings</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56 mt-1 mr-2">
+        <DropdownMenuLabel>{t('setting.title')}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <div className="flex flex-col gap-2 p-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            {t('setting.language')}
+          </span>
+          <Select
+            value={i18n.language}
+            onValueChange={handleUpdateLanguage}
+          >
+            <SelectTrigger className="w-full h-8">
+              <SelectValue
+                className="text-sm"
+                placeholder={t('setting.selectLanguage')}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="en">
+                <img
+                  src={USFlag}
+                  className="inline-block w-4 mr-2"
+                  alt="English"
+                />
+                <span className="text-xs">English</span>
+              </SelectItem>
+              <SelectItem value="vi">
+                <img
+                  src={VIFlag}
+                  className="inline-block w-4 mr-2"
+                  alt="Tiếng Việt"
+                />
+                <span className="text-xs">Tiếng Việt</span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <DropdownMenuSeparator />
+        <div className="flex flex-col gap-2 p-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            {t('setting.theme')}
+          </span>
+          <Select
+            value={theme}
+            onValueChange={(value: 'light' | 'dark') =>
+              setTheme(value)
+            }
+          >
+            <SelectTrigger className="w-full h-8">
+              <SelectValue placeholder={t('setting.selectTheme')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light">
+                <Sun className="inline-block w-4 h-4 mr-2" />
+                <span className="text-xs">{t('setting.light')}</span>
+              </SelectItem>
+              <SelectItem value="dark">
+                <Moon className="inline-block w-4 h-4 mr-2" />
+                <span className="text-xs">{t('setting.dark')}</span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
