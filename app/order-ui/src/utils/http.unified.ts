@@ -97,7 +97,7 @@ axiosInstance.interceptors.request.use(
         setIsRefreshing(false)
       }
     } else if (isRefreshing) {
-      return new Promise((resolve, reject) => {
+      return new Promise<InternalAxiosRequestConfig>((resolve, reject) => {
         failedQueue.push({
           resolve: (currentToken: string) => {
             config.headers['Authorization'] = `Bearer ${currentToken}`

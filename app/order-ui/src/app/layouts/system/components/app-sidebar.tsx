@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { ChevronRight, House, Sparkles } from 'lucide-react'
 import { useLocation, NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { jwtDecode } from "jwt-decode";
 
 import { useSidebar } from '@/components/ui'
 import {
@@ -29,22 +28,19 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from '@/components/ui'
-import { useAuthStore, useUserStore } from '@/stores'
+import { useUserStore } from '@/stores'
 import { sidebarRoutes } from '@/router/routes'
-import { IToken } from '@/types'
 import { Logo } from '@/assets/images'
 import { cn } from '@/lib'
 import { NotificationMessageCode, ROUTE } from '@/constants'
-import { useNotification, usePagination } from '@/hooks';
+import { useNotification, usePagination, usePermissions } from '@/hooks';
 
 export function AppSidebar() {
   const { t } = useTranslation('sidebar')
   const location = useLocation()
   const { userInfo } = useUserStore()
   const { state, toggleSidebar } = useSidebar()
-  const authStore = useAuthStore.getState()
-  const { token } = authStore
-  const decoded: IToken = jwtDecode(token || '');
+  const permissions = usePermissions()
   const { pagination } = usePagination()
   const {
     data: notificationsData
@@ -108,15 +104,11 @@ export function AppSidebar() {
 
   // Filter routes by permission
   const filteredRoutes = useMemo(() => {
-    if (!decoded.scope) return []
-    const scope = typeof decoded.scope === "string" ? JSON.parse(decoded.scope) : decoded.scope;
-    const permissions = scope.permissions || [];
-
     return updatedRoutes.filter((route) => {
       // Check if route has permission and user has that permission
       return route?.permission && permissions.includes(route.permission)
     })
-  }, [updatedRoutes, decoded])
+  }, [updatedRoutes, permissions])
 
   return (
     <Sidebar

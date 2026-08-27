@@ -21,17 +21,16 @@ import {
 } from '@/components/ui'
 import { IOrder, OrderStatus, OrderTypeEnum } from '@/types'
 import { PaymentMethod, paymentStatus, PrinterJobStatus, ROUTE } from '@/constants'
-import { useCallCustomerToGetOrder, useExportOrderInvoice, useExportPayment, useGetAuthorityGroup, useReprintFailedInvoicePrinterJobs } from '@/hooks'
+import { useCallCustomerToGetOrder, useExportOrderInvoice, useExportPayment, useGetAuthorityGroup, usePermissions, useReprintFailedInvoicePrinterJobs } from '@/hooks'
 import { formatCurrency, hasPermissionInBoth, loadDataToPrinter, showToast } from '@/utils'
 import OrderStatusBadge from '@/components/app/badge/order-status-badge'
 import { CreateChefOrderDialog, OutlineCancelOrderDialog } from '@/components/app/dialog'
-import { useUserStore } from '@/stores'
 
 export const useOrderHistoryColumns = (): ColumnDef<IOrder>[] => {
   const { t } = useTranslation(['menu'])
   const { t: tToast } = useTranslation(['toast'])
   const { t: tCommon } = useTranslation(['common'])
-  const { userInfo } = useUserStore()
+  const userPermissionCodes = usePermissions()
   const { data: authorityData } = useGetAuthorityGroup({})
 
   const authorityGroup = authorityData?.result ?? [];
@@ -45,7 +44,6 @@ export const useOrderHistoryColumns = (): ColumnDef<IOrder>[] => {
     )
     : [];
 
-  const userPermissionCodes = userInfo?.role.permissions.map(p => p.authority.code) ?? [];
   const isDeletePermissionValid = hasPermissionInBoth("DELETE_ORDER", authorityGroupCodes, userPermissionCodes);
   const { mutate: exportPayment } = useExportPayment()
   const { mutate: exportOrderInvoice } = useExportOrderInvoice()

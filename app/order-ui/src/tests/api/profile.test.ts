@@ -1,6 +1,5 @@
-import { httpMock } from '../__mocks__/httpMock'
+import { httpMock, httpAuthMock } from '../__mocks__/httpMock'
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest'
-import { http } from '@/utils'
 import {
   getProfile,
   updateProfile,
@@ -10,8 +9,11 @@ import {
 import { SERVER_ERROR } from '../constants'
 import { Role } from '@/constants/role'
 
+// getProfile gọi http (trend, cần merge role/branch) — đổi/avatar vẫn gọi
+// httpAuth (shared-user) — xem progress/trend-ui.md giai đoạn 1.
 vi.mock('@/utils', () => ({
   http: httpMock,
+  httpAuth: httpAuthMock,
 }))
 
 describe('Profile API', () => {
@@ -46,15 +48,15 @@ describe('Profile API', () => {
           isVerifiedPhonenumber: true,
         },
       }
-      ;(http.get as Mock).mockResolvedValue(mockResponse)
+      ;(httpMock.get as Mock).mockResolvedValue(mockResponse)
 
       const result = await getProfile()
-      expect(http.get).toHaveBeenCalledWith('/auth/profile')
+      expect(httpMock.get).toHaveBeenCalledWith('/auth/profile')
       expect(result).toEqual(mockResponse.data)
     })
 
     it('should handle server error', async () => {
-      ;(http.get as Mock).mockRejectedValue(SERVER_ERROR)
+      ;(httpMock.get as Mock).mockRejectedValue(SERVER_ERROR)
       await expect(getProfile()).rejects.toEqual(SERVER_ERROR)
     })
   })
@@ -75,10 +77,10 @@ describe('Profile API', () => {
           ...updateData,
         },
       }
-      ;(http.patch as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.patch as Mock).mockResolvedValue(mockResponse)
 
       const result = await updateProfile(updateData)
-      expect(http.patch).toHaveBeenCalledWith('/auth/profile', updateData)
+      expect(httpAuthMock.patch).toHaveBeenCalledWith('/auth/profile', updateData)
       expect(result).toEqual(mockResponse.data)
     })
 
@@ -89,7 +91,7 @@ describe('Profile API', () => {
           data: { message: 'Invalid profile data' },
         },
       }
-      ;(http.patch as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.patch as Mock).mockRejectedValue(mockError)
       await expect(updateProfile(updateData)).rejects.toEqual(mockError)
     })
   })
@@ -106,10 +108,10 @@ describe('Profile API', () => {
           message: 'Password updated successfully',
         },
       }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
 
       const result = await updatePassword(passwordData)
-      expect(http.post).toHaveBeenCalledWith(
+      expect(httpAuthMock.post).toHaveBeenCalledWith(
         '/auth/change-password',
         passwordData,
       )
@@ -123,7 +125,7 @@ describe('Profile API', () => {
           data: { message: 'Incorrect old password' },
         },
       }
-      ;(http.post as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(mockError)
       await expect(updatePassword(passwordData)).rejects.toEqual(mockError)
     })
   })
@@ -137,10 +139,10 @@ describe('Profile API', () => {
           image: 'new-profile-picture.jpg',
         },
       }
-      ;(http.patch as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.patch as Mock).mockResolvedValue(mockResponse)
 
       const result = await uploadProfilePicture(mockFile)
-      expect(http.patch).toHaveBeenCalledWith(
+      expect(httpAuthMock.patch).toHaveBeenCalledWith(
         '/auth/upload',
         expect.any(FormData),
       )
@@ -155,13 +157,13 @@ describe('Profile API', () => {
           data: { message: 'Invalid file format' },
         },
       }
-      ;(http.patch as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.patch as Mock).mockRejectedValue(mockError)
       await expect(uploadProfilePicture(mockFile)).rejects.toEqual(mockError)
     })
 
     it('should handle server error during upload', async () => {
       const mockFile = new File(['test'], 'profile.jpg', { type: 'image/jpeg' })
-      ;(http.patch as Mock).mockRejectedValue(SERVER_ERROR)
+      ;(httpAuthMock.patch as Mock).mockRejectedValue(SERVER_ERROR)
       await expect(uploadProfilePicture(mockFile)).rejects.toEqual(SERVER_ERROR)
     })
   })

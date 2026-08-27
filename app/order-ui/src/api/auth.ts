@@ -1,5 +1,6 @@
 import {
   IApiResponse,
+  IAuthScope,
   ILoginResponse,
   IVerifyEmailRequest,
   IGetAuthorityGroupsRequest,
@@ -19,20 +20,28 @@ import {
   IVerifyOTPForgotPasswordResponse,
   IInitiateForgotPasswordResponse,
 } from '@/types'
-import { http } from '@/utils'
+import { http, httpAuth } from '@/utils'
 
+// Đăng nhập/đăng ký/xác thực OTP/quên mật khẩu: gọi shared-user (identity
+// service) qua httpAuth, không còn gọi trend — xem progress/trend-ui.md
+// giai đoạn 1.
 export async function login(params: {
   phonenumber: string
   password: string
 }): Promise<ILoginResponse> {
-  const response = await http.post<ILoginResponse>('/auth/login', params)
+  const response = await httpAuth.post<ILoginResponse>('/auth/login', params)
+  return response.data
+}
+
+export async function getAuthScope(): Promise<IApiResponse<IAuthScope>> {
+  const response = await http.get<IApiResponse<IAuthScope>>('/auth/scope')
   return response.data
 }
 
 export async function initiateRegister(
   params: IInitiateRegisterRequest,
 ): Promise<IApiResponse<IInitiateRegisterResponse>> {
-  const response = await http.post<IApiResponse<IInitiateRegisterResponse>>(
+  const response = await httpAuth.post<IApiResponse<IInitiateRegisterResponse>>(
     '/auth/register/initiate',
     params,
   )
@@ -42,7 +51,7 @@ export async function initiateRegister(
 export async function resendRegisterOtp(
   params: IResendRegisterOtpRequest,
 ): Promise<IApiResponse<IInitiateRegisterResponse>> {
-  const response = await http.post<IApiResponse<IInitiateRegisterResponse>>(
+  const response = await httpAuth.post<IApiResponse<IInitiateRegisterResponse>>(
     '/auth/register/resend',
     params,
   )
@@ -52,7 +61,7 @@ export async function resendRegisterOtp(
 export async function completeRegister(
   params: ICompleteRegisterRequest,
 ): Promise<IApiResponse<ICompleteRegisterResponse>> {
-  const response = await http.post<IApiResponse<ICompleteRegisterResponse>>(
+  const response = await httpAuth.post<IApiResponse<ICompleteRegisterResponse>>(
     '/auth/register/complete',
     params,
   )
@@ -62,7 +71,7 @@ export async function completeRegister(
 export async function initiateForgotPassword(
   params: IInitiateForgotPasswordRequest,
 ): Promise<IApiResponse<IInitiateForgotPasswordResponse>> {
-  const response = await http.post<
+  const response = await httpAuth.post<
     IApiResponse<IInitiateForgotPasswordResponse>
   >('/auth/forgot-password/initiate', params)
   return response.data
@@ -71,7 +80,7 @@ export async function initiateForgotPassword(
 export async function verifyOTPForgotPassword(
   params: IVerifyOTPForgotPasswordRequest,
 ): Promise<IApiResponse<IVerifyOTPForgotPasswordResponse>> {
-  const response = await http.post<
+  const response = await httpAuth.post<
     IApiResponse<IVerifyOTPForgotPasswordResponse>
   >('/auth/forgot-password/confirm', params)
   return response.data
@@ -80,7 +89,7 @@ export async function verifyOTPForgotPassword(
 export async function resendOTPForgotPassword(
   params: IResendOTPForgotPasswordRequest,
 ): Promise<IApiResponse<IInitiateForgotPasswordResponse>> {
-  const response = await http.post<
+  const response = await httpAuth.post<
     IApiResponse<IInitiateForgotPasswordResponse>
   >('/auth/forgot-password/resend', params)
   return response.data
@@ -89,7 +98,7 @@ export async function resendOTPForgotPassword(
 export async function confirmForgotPassword(
   params: IConfirmForgotPasswordRequest,
 ): Promise<IApiResponse<null>> {
-  const response = await http.post<IApiResponse<null>>(
+  const response = await httpAuth.post<IApiResponse<null>>(
     '/auth/forgot-password/change',
     params,
   )
@@ -99,7 +108,7 @@ export async function confirmForgotPassword(
 export async function verifyEmail(
   verifyParams: IVerifyEmailRequest,
 ): Promise<IApiResponse<IEmailVerificationResponse>> {
-  const response = await http.post<IApiResponse<IEmailVerificationResponse>>(
+  const response = await httpAuth.post<IApiResponse<IEmailVerificationResponse>>(
     `/auth/initiate-verify-email`,
     verifyParams,
   )
@@ -109,7 +118,7 @@ export async function verifyEmail(
 export async function verifyPhoneNumber(): Promise<
   IApiResponse<IVerifyPhoneNumberRequest>
 > {
-  const response = await http.post<IApiResponse<IVerifyPhoneNumberRequest>>(
+  const response = await httpAuth.post<IApiResponse<IVerifyPhoneNumberRequest>>(
     `/auth/initiate-verify-phone-number`,
   )
   return response.data
@@ -118,7 +127,7 @@ export async function verifyPhoneNumber(): Promise<
 export async function confirmEmailVerification(
   code: string,
 ): Promise<IApiResponse<null>> {
-  const response = await http.post<IApiResponse<null>>(
+  const response = await httpAuth.post<IApiResponse<null>>(
     `/auth/confirm-email-verification/code`,
     { code },
   )
@@ -128,7 +137,7 @@ export async function confirmEmailVerification(
 export async function confirmPhoneNumberVerification(
   code: string,
 ): Promise<IApiResponse<null>> {
-  const response = await http.post<IApiResponse<null>>(
+  const response = await httpAuth.post<IApiResponse<null>>(
     `/auth/confirm-phone-number-verification/code`,
     { code },
   )
@@ -138,7 +147,7 @@ export async function confirmPhoneNumberVerification(
 export async function resendEmailVerification(): Promise<
   IApiResponse<IEmailVerificationResponse>
 > {
-  const response = await http.post<IApiResponse<IEmailVerificationResponse>>(
+  const response = await httpAuth.post<IApiResponse<IEmailVerificationResponse>>(
     `/auth/resend-verify-email`,
   )
   return response.data
@@ -147,7 +156,7 @@ export async function resendEmailVerification(): Promise<
 export async function resendPhoneNumberVerification(): Promise<
   IApiResponse<IVerifyPhoneNumberRequest>
 > {
-  const response = await http.post<IApiResponse<IVerifyPhoneNumberRequest>>(
+  const response = await httpAuth.post<IApiResponse<IVerifyPhoneNumberRequest>>(
     `/auth/resend-verify-phone-number`,
   )
   return response.data
