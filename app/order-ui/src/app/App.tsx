@@ -143,9 +143,9 @@ function App() {
   // ✅ Show loading during auth initialization to prevent race conditions
   if (!isAuthInitialized) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col gap-4 items-center">
-          <Loader2 className="w-8 h-8 rounded-full border-b-2 border-blue-600 animate-spin"></Loader2>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></Loader2>
           <p className="text-sm text-gray-600">Đang khởi tạo...</p>
         </div>
       </div>

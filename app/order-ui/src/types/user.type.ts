@@ -45,13 +45,19 @@ export interface IUserInfo {
     slug: string
     name: string
     address: string
-  }
+  } | null
+  // GET {trend}/auth/profile trả field này (role/branch đã đúng, không còn
+  // là bản sao cũ của shared-user — xem architect-http.md mục 1.1 quy tắc
+  // 4). `permissions` KHÔNG có trong response nữa (backend cố tình không
+  // load quan hệ này ở AuthService.getProfile vì không nơi nào đọc tới) —
+  // luôn `undefined`. Muốn check quyền phải dùng usePermissions()/
+  // GET /auth/scope, không dùng field này.
   role: {
     name: Role
     slug: string
     createdAt: string
     description: string
-    permissions: IPermission[]
+    permissions?: IPermission[]
   }
   isVerifiedEmail: boolean
   isVerifiedPhonenumber: boolean
@@ -121,8 +127,11 @@ export interface IUpdatePasswordRequest {
   newPassword: string
 }
 
+// Gán role: trend gọi sang shared-user xác minh user tồn tại qua
+// phonenumber (khoá đăng nhập dùng chung), không còn dùng slug cục bộ của
+// trend nữa — xem progress/trend-api.md giai đoạn 1 (bổ sung).
 export interface IUpdateUserRoleRequest {
-  slug: string
+  phonenumber: string
   role: string
 }
 

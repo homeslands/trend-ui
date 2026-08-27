@@ -2,14 +2,13 @@ import { useCallback, useEffect, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { jwtDecode } from 'jwt-decode'
 
 import { ROUTE } from '@/constants'
 import { sidebarRoutes } from '@/router/routes'
 import { useAuthStore, useCartItemStore, useCurrentUrlStore, useUserStore } from '@/stores'
 import { Role } from '@/constants/role'
 import { showToast, isAuthLoading, safeNavigate, isValidRedirectUrl } from '@/utils'
-import { IToken } from '@/types'
+import { usePermissions } from '@/hooks'
 
 interface ProtectedElementProps {
   element: ReactNode,
@@ -31,20 +30,7 @@ export default function ProtectedElement({
   // Kiểm tra trạng thái loading của auth data - sử dụng helper function
   const isAuthDataLoading = isAuthLoading()
 
-  // Helper: Extract permissions từ token với caching
-  const tokenPermissions = useMemo(() => {
-    if (!token) return []
-
-    try {
-      const decoded: IToken = jwtDecode(token)
-      if (!decoded.scope) return []
-
-      const scope = typeof decoded.scope === "string" ? JSON.parse(decoded.scope) : decoded.scope
-      return scope.permissions || []
-    } catch {
-      return []
-    }
-  }, [token])
+  const tokenPermissions = usePermissions()
 
   // Helper: Các route không cần kiểm tra permission đặc biệt
   const publicStaffRoutes = useMemo(() => [
@@ -113,7 +99,7 @@ export default function ProtectedElement({
     }
 
     // 7. Kiểm tra permission cụ thể
-    const hasRequiredPermission = tokenPermissions.includes(route.permission);
+    const hasRequiredPermission = !!route.permission && tokenPermissions.includes(route.permission);
 
     return hasRequiredPermission;
   }, [

@@ -2,8 +2,8 @@ import { Helmet } from 'react-helmet'
 import { useTranslation } from 'react-i18next'
 import { SquareMenu } from 'lucide-react'
 
-import { useBranch, useGetAuthorityGroup, useGetChefAreas } from '@/hooks'
-import { useBranchStore, useUserStore } from '@/stores'
+import { useBranch, useGetAuthorityGroup, useGetChefAreas, usePermissions } from '@/hooks'
+import { useBranchStore } from '@/stores'
 import { CreateChefAreaDialog } from '@/components/app/dialog'
 import { ChefAreaCard } from './components'
 import { BranchSelect } from '@/components/app/select'
@@ -13,11 +13,10 @@ export default function ChefAreaPage() {
     const { t } = useTranslation(['chefArea'])
     const { t: tHelmet } = useTranslation('helmet')
     const { data: authorityData } = useGetAuthorityGroup({})
-    const { userInfo } = useUserStore()
+    const userPermissionCodes = usePermissions()
     const { branch } = useBranchStore()
     const authorityGroup = authorityData?.result ?? [];
     const authorityGroupCodes = authorityGroup.flatMap(group => group.authorities.map(auth => auth.code));
-    const userPermissionCodes = userInfo?.role.permissions.map(p => p.authority.code) ?? [];
 
     const isViewPermissionValid = hasPermissionInBoth("VIEW_KITCHEN_AREA", authorityGroupCodes, userPermissionCodes);
     const isDeletePermissionValid = hasPermissionInBoth("DELETE_KITCHEN_AREA", authorityGroupCodes, userPermissionCodes);

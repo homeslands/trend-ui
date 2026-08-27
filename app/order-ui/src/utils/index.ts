@@ -2,6 +2,7 @@
 export * from './cart'
 export * from './toast'
 export { default as http } from './http'
+export { default as httpAuth } from './http-auth'
 export * from './formatCurrency'
 export * from './printer'
 export * from './permission'

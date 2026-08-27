@@ -1,9 +1,10 @@
-import { httpMock } from '../__mocks__/httpMock'
+import { httpMock, httpAuthMock } from '../__mocks__/httpMock'
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest'
 import { http } from '@/utils'
 import {
   getUsers,
   resetPassword,
+  lockUser,
   updateUserRole,
   createUser,
   updateUser,
@@ -12,8 +13,12 @@ import {
 import { SERVER_ERROR } from '../constants'
 import { Role } from '@/constants/role'
 
+// resetPassword/createUser gọi shared-user (httpAuth) cho phần identity;
+// updateUserRole và phần gán role/branch của createUser gọi trend (http) —
+// xem progress/trend-api.md giai đoạn 1 (bổ sung).
 vi.mock('@/utils', () => ({
   http: httpMock,
+  httpAuth: httpAuthMock,
 }))
 
 describe('User API', () => {
@@ -69,38 +74,85 @@ describe('User API', () => {
   })
 
   describe('resetPassword', () => {
-    it('should reset user password correctly', async () => {
-      const mockResponse = {
-        data: null,
+    it('should look up the shared-user slug by phonenumber, then reset there', async () => {
+      const listResponse = {
+        data: { result: { items: [{ slug: 'shared-user-1' }] } },
       }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      const resetResponse = { data: null }
+      ;(httpAuthMock.get as Mock).mockResolvedValue(listResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(resetResponse)
 
-      const result = await resetPassword('user-1')
-      expect(http.post).toHaveBeenCalledWith('/user/user-1/reset-password')
-      expect(result).toEqual(mockResponse.data)
+      const result = await resetPassword('1234567890')
+
+      expect(httpAuthMock.get).toHaveBeenCalledWith('/user', {
+        params: { phonenumber: '1234567890' },
+      })
+      expect(httpAuthMock.post).toHaveBeenCalledWith(
+        '/user/shared-user-1/reset-password',
+      )
+      expect(result).toEqual(resetResponse.data)
     })
 
-    it('should handle user not found error', async () => {
-      const mockError = {
-        response: {
-          status: 404,
-          data: { message: 'User not found' },
-        },
+    it('should throw when no shared-user account matches the phonenumber', async () => {
+      ;(httpAuthMock.get as Mock).mockResolvedValue({
+        data: { result: { items: [] } },
+      })
+      await expect(resetPassword('non-existent')).rejects.toThrow(
+        'User not found on shared-user',
+      )
+    })
+
+    it('should handle server error', async () => {
+      ;(httpAuthMock.get as Mock).mockRejectedValue(SERVER_ERROR)
+      await expect(resetPassword('1234567890')).rejects.toEqual(SERVER_ERROR)
+    })
+  })
+
+  describe('lockUser', () => {
+    it('should look up the shared-user slug by phonenumber, then toggle-active there', async () => {
+      const listResponse = {
+        data: { result: { items: [{ slug: 'shared-user-1' }] } },
       }
-      ;(http.post as Mock).mockRejectedValue(mockError)
-      await expect(resetPassword('non-existent')).rejects.toEqual(mockError)
+      const toggleResponse = { data: null }
+      ;(httpAuthMock.get as Mock).mockResolvedValue(listResponse)
+      ;(httpAuthMock.patch as Mock).mockResolvedValue(toggleResponse)
+
+      const result = await lockUser('1234567890')
+
+      expect(httpAuthMock.get).toHaveBeenCalledWith('/user', {
+        params: { phonenumber: '1234567890' },
+      })
+      expect(httpAuthMock.patch).toHaveBeenCalledWith(
+        '/user/shared-user-1/toggle-active',
+      )
+      expect(result).toEqual(toggleResponse.data)
+    })
+
+    it('should throw when no shared-user account matches the phonenumber', async () => {
+      ;(httpAuthMock.get as Mock).mockResolvedValue({
+        data: { result: { items: [] } },
+      })
+      await expect(lockUser('non-existent')).rejects.toThrow(
+        'User not found on shared-user',
+      )
+    })
+
+    it('should handle server error', async () => {
+      ;(httpAuthMock.get as Mock).mockRejectedValue(SERVER_ERROR)
+      await expect(lockUser('1234567890')).rejects.toEqual(SERVER_ERROR)
     })
   })
 
   describe('updateUserRole', () => {
-    it('should update user role correctly', async () => {
+    it('should update user role correctly via phonenumber', async () => {
       const mockResponse = {
         data: null,
       }
       ;(http.post as Mock).mockResolvedValue(mockResponse)
 
-      const result = await updateUserRole('user-1', 'admin')
-      expect(http.post).toHaveBeenCalledWith('/user/user-1/role', {
+      const result = await updateUserRole('1234567890', 'admin')
+      expect(http.post).toHaveBeenCalledWith('/user/role', {
+        phonenumber: '1234567890',
         role: 'admin',
       })
       expect(result).toEqual(mockResponse.data)
@@ -114,9 +166,9 @@ describe('User API', () => {
         },
       }
       ;(http.post as Mock).mockRejectedValue(mockError)
-      await expect(updateUserRole('user-1', 'invalid-role')).rejects.toEqual(
-        mockError,
-      )
+      await expect(
+        updateUserRole('1234567890', 'invalid-role'),
+      ).rejects.toEqual(mockError)
     })
   })
 
@@ -131,15 +183,17 @@ describe('User API', () => {
       role: 'admin',
     }
 
-    it('should create user correctly', async () => {
+    it('should create user correctly (trend orchestrates shared-user internally)', async () => {
       const mockResponse = {
         data: {
-          slug: 'new-user',
-          phonenumber: userData.phonenumber,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          branch: { slug: userData.branch },
-          role: { slug: userData.role },
+          result: {
+            slug: 'new-user',
+            phonenumber: userData.phonenumber,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            branch: { slug: userData.branch },
+            role: { slug: userData.role },
+          },
         },
       }
       ;(http.post as Mock).mockResolvedValue(mockResponse)

@@ -40,7 +40,7 @@ export function TableItem({
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: ['tables', getUserInfo()?.branch.slug],
+            queryKey: ['tables', getUserInfo()?.branch?.slug],
           })
           showToast(tToast('toast.updateTableStatusSuccess'))
         },

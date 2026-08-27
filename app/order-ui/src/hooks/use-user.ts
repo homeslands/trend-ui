@@ -92,24 +92,30 @@ export const useUpdateUser = () => {
 
 export const useResetPassword = () => {
   return useMutation({
-    mutationFn: async (user: string) => {
-      return resetPassword(user)
+    mutationFn: async (phonenumber: string) => {
+      return resetPassword(phonenumber)
     },
   })
 }
 
 export const useLockUser = () => {
   return useMutation({
-    mutationFn: async (slug: string) => {
-      return lockUser(slug)
+    mutationFn: async (phonenumber: string) => {
+      return lockUser(phonenumber)
     },
   })
 }
 
 export const useUpdateUserRole = () => {
   return useMutation({
-    mutationFn: async ({ slug, role }: { slug: string; role: string }) => {
-      return updateUserRole(slug, role)
+    mutationFn: async ({
+      phonenumber,
+      role,
+    }: {
+      phonenumber: string
+      role: string
+    }) => {
+      return updateUserRole(phonenumber, role)
     },
   })
 }

@@ -11,7 +11,7 @@ export default function SystemTableSelectInUpdateOrder({ order }: { order: IOrde
     const { t } = useTranslation(['table'])
     const { getUserInfo } = useUserStore()
     // const { addTable } = useOrderTypeStore()
-    const { data: tables } = useTables(getUserInfo()?.branch.slug)
+    const { data: tables } = useTables(getUserInfo()?.branch?.slug)
     const { setDraftTable, getOrderItems } = useOrderFlowStore()
     const updatingOrder = getOrderItems()?.updateDraft
     const [selectedTableId, setSelectedTableId] = useState<string | undefined>(
