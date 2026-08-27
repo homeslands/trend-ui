@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { jwtDecode } from 'jwt-decode'
 
 import {
   useAuthStore,
@@ -10,8 +9,8 @@ import {
   useUserStore,
 } from '@/stores'
 import { calculateSmartNavigationUrl, safeNavigate } from '@/utils'
-import { ICompleteRegisterResponse, IToken } from '@/types'
-import { getProfile } from '@/api'
+import { ICompleteRegisterResponse } from '@/types'
+import { getAuthScope, getProfile } from '@/api'
 import { QUERYKEY } from '@/constants'
 
 export interface IHandleAuthSuccessOptions {
@@ -54,33 +53,29 @@ export const useHandleAuthSuccess = () => {
         setExpireTime(tokens.expireTime)
         setExpireTimeRefreshToken(tokens.expireTimeRefreshToken)
 
-        // Gọi thẳng hàm API chứ không mount useProfile(): hook đó là useQuery
-        // không có `enabled`, nên chỉ cần form nào dùng useHandleAuthSuccess là
-        // nó bắn request /auth/profile ngay lúc render — kể cả màn nhập OTP,
-        // nơi khách chưa có token, đẻ ra một chuỗi 401 kèm retry.
+        // Gọi thẳng hàm API chứ không mount useProfile()/usePermissions(): đó là
+        // các useQuery không có `enabled`, nên chỉ cần form nào dùng
+        // useHandleAuthSuccess là nó bắn request /auth/profile, /auth/scope
+        // ngay lúc render — kể cả màn nhập OTP, nơi khách chưa có token, đẻ ra
+        // một chuỗi 401 kèm retry.
+        // getProfile() giờ gọi trend (không phải shared-user) — trend tự gọi
+        // nội bộ sang shared-user ghép identity, nên profile.result đã có
+        // sẵn role/branch đúng (nguồn thật), không cần tự ghép ở đây nữa
+        // (architect-http.md mục 1.1 quy tắc 4). scope vẫn giữ để lấy
+        // permissions cho tính năng điều hướng theo quyền.
         const profile = await getProfile()
         if (!profile?.result) {
           throw new Error('Failed to fetch user profile')
         }
-        // Mồi cache để các màn dùng useProfile() không phải gọi lại.
+        const scopeResponse = await getAuthScope()
+        // Mồi cache để các màn dùng useProfile()/usePermissions() không phải gọi lại.
         queryClient.setQueryData([QUERYKEY.profile], profile)
+        queryClient.setQueryData([QUERYKEY.authScope], scopeResponse)
 
         const userInfo = profile.result
         setUserInfo(userInfo)
 
-        let permissions: string[] = []
-        try {
-          const decoded: IToken = jwtDecode(tokens.accessToken)
-          if (decoded.scope) {
-            const scope =
-              typeof decoded.scope === 'string'
-                ? JSON.parse(decoded.scope)
-                : decoded.scope
-            permissions = scope.permissions || []
-          }
-        } catch {
-          permissions = []
-        }
+        const permissions = scopeResponse?.result?.permissions ?? []
 
         const navigationUrl = calculateSmartNavigationUrl({
           userInfo,

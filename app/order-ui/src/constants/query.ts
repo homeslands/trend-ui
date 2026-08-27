@@ -1,5 +1,6 @@
 export const QUERYKEY = {
   profile: ['profile'],
+  authScope: ['authScope'],
   branches: ['branches'],
   catalog: ['catalog'],
   chefAreaPrinters: ['chefAreaPrinters'],

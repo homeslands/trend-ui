@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios'
 import moment from 'moment'
 
-import { http } from '@/utils'
+import { http, httpAuth } from '@/utils'
 import { useDownloadStore } from '@/stores'
 import {
   IApiResponse,
@@ -46,23 +46,52 @@ export async function getUserBySlug(
   return response.data
 }
 
-export async function resetPassword(user: string): Promise<IApiResponse<null>> {
-  const response = await http.post<IApiResponse<null>>(
-    `/user/${user}/reset-password`,
+// Slug cục bộ của trend khác slug thật bên shared-user — các thao tác chỉ
+// tồn tại ở shared-user (reset mật khẩu, khoá/mở khoá tài khoản...) đều
+// cần tra lại slug thật theo phonenumber trước khi gọi.
+async function findSharedUserSlugByPhonenumber(
+  phonenumber: string,
+): Promise<string> {
+  const listResponse = await httpAuth.get<
+    IApiResponse<IPaginationResponse<IUserInfo>>
+  >('/user', { params: { phonenumber } })
+  const sharedUser = listResponse.data.result.items[0]
+  if (!sharedUser) {
+    throw new Error('User not found on shared-user')
+  }
+  return sharedUser.slug
+}
+
+// Mật khẩu/tài khoản thuộc shared-user — trend không còn giữ mật khẩu nên
+// không thể tự reset — xem progress/trend-api.md giai đoạn 1 (bổ sung).
+export async function resetPassword(
+  phonenumber: string,
+): Promise<IApiResponse<null>> {
+  const slug = await findSharedUserSlugByPhonenumber(phonenumber)
+  const response = await httpAuth.post<IApiResponse<null>>(
+    `/user/${slug}/reset-password`,
   )
   return response.data
 }
 
+// Gán role cho user đã tồn tại bên shared-user (tra theo phonenumber) —
+// trend tự tạo row cục bộ tối giản nếu đây là lần đầu user này được cấp
+// quyền ở trend.
 export async function updateUserRole(
-  slug: string,
+  phonenumber: string,
   role: string,
-): Promise<IApiResponse<null>> {
-  const response = await http.post<IApiResponse<null>>(`/user/${slug}/role`, {
+): Promise<IApiResponse<IUserInfo>> {
+  const response = await http.post<IApiResponse<IUserInfo>>('/user/role', {
+    phonenumber,
     role,
   })
   return response.data
 }
 
+// Tạo user: gọi trend — trend quyết định role/branch (nghiệp vụ của nó),
+// rồi tự gọi nội bộ sang shared-user để lưu identity (mật khẩu, họ tên...).
+// UI chỉ gọi đúng 1 API, không tự orchestrate — xem
+// progress/trend-api.md giai đoạn 1 (bổ sung).
 export async function createUser(
   data: ICreateUserRequest,
 ): Promise<IApiResponse<IUserInfo>> {
@@ -80,8 +109,13 @@ export async function updateUser(
   return response.data
 }
 
-export async function lockUser(slug: string): Promise<IApiResponse<null>> {
-  const response = await http.patch<IApiResponse<null>>(
+// Khoá/mở khoá tài khoản quy hẳn về shared-user (không còn route trung
+// gian ở trend) — xem progress/trend-api.md giai đoạn 1 (bổ sung).
+export async function lockUser(
+  phonenumber: string,
+): Promise<IApiResponse<null>> {
+  const slug = await findSharedUserSlugByPhonenumber(phonenumber)
+  const response = await httpAuth.patch<IApiResponse<null>>(
     `/user/${slug}/toggle-active`,
   )
   return response.data

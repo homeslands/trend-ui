@@ -1,6 +1,5 @@
-import { httpMock } from '../__mocks__/httpMock'
+import { httpMock, httpAuthMock } from '../__mocks__/httpMock'
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest'
-import { http } from '@/utils'
 import {
   login,
   initiateRegister,
@@ -14,8 +13,11 @@ import {
 } from '@/api'
 import { VerificationMethod } from '@/constants'
 
+// Đăng nhập/đăng ký/quên mật khẩu/xác thực OTP gọi httpAuth (shared-user),
+// không còn gọi http (trend) — xem progress/trend-ui.md giai đoạn 1.
 vi.mock('@/utils', () => ({
   http: httpMock,
+  httpAuth: httpAuthMock,
 }))
 
 describe('Auth API', () => {
@@ -33,12 +35,12 @@ describe('Auth API', () => {
   describe('login', () => {
     it('should call login endpoint with correct parameters', async () => {
       const mockResponse = { data: { token: 'test-token', user: { id: 1 } } }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
 
       const loginParams = { phonenumber: '1234567890', password: 'password123' }
       const result = await login(loginParams)
 
-      expect(http.post).toHaveBeenCalledWith('/auth/login', loginParams)
+      expect(httpAuthMock.post).toHaveBeenCalledWith('/auth/login', loginParams)
       expect(result).toEqual(mockResponse.data)
     })
 
@@ -46,7 +48,7 @@ describe('Auth API', () => {
       const mockResponse = {
         response: { status: 401, data: { message: 'Unauthorized' } },
       }
-      ;(http.post as Mock).mockRejectedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(mockResponse)
 
       const loginParams = { phonenumber: '1234567890', password: 'password123' }
 
@@ -60,7 +62,7 @@ describe('Auth API', () => {
           data: { message: 'Server error' },
         },
       }
-      ;(http.post as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(mockError)
 
       const loginParams = { phonenumber: '1234567890', password: 'password123' }
 
@@ -74,7 +76,7 @@ describe('Auth API', () => {
           data: { message: 'Invalid credentials' },
         },
       }
-      ;(http.post as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(mockError)
 
       const loginParams = {
         phonenumber: '1234567890',
@@ -85,7 +87,7 @@ describe('Auth API', () => {
 
     it('should handle network error', async () => {
       const networkError = new Error('Network Error')
-      ;(http.post as Mock).mockRejectedValue(networkError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(networkError)
 
       const loginParams = { phonenumber: '1234567890', password: 'password123' }
 
@@ -96,7 +98,7 @@ describe('Auth API', () => {
   describe('initiateForgotPassword', () => {
     it('should call forgot password token endpoint', async () => {
       const mockResponse = { data: { success: true } }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
 
       const email = {
         email: 'test@example.com',
@@ -104,7 +106,7 @@ describe('Auth API', () => {
       }
       const result = await initiateForgotPassword(email)
 
-      expect(http.post).toHaveBeenCalledWith(
+      expect(httpAuthMock.post).toHaveBeenCalledWith(
         '/auth/forgot-password/initiate',
         email,
       )
@@ -118,7 +120,7 @@ describe('Auth API', () => {
           data: { message: 'Email not found' },
         },
       }
-      ;(http.post as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(mockError)
 
       const params = {
         email: 'nonexistent@example.com',
@@ -128,7 +130,7 @@ describe('Auth API', () => {
     })
 
     it('should handle server error', async () => {
-      ;(http.post as Mock).mockRejectedValue(serverError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(serverError)
       const params = {
         email: 'test@example.com',
         verificationMethod: VerificationMethod.EMAIL,
@@ -140,10 +142,10 @@ describe('Auth API', () => {
   describe('verifyOTPForgotPassword', () => {
     it('should call verify OTP forgot password endpoint', async () => {
       const mockResponse = { data: { success: true } }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
       const params = { code: '123456' }
       const result = await verifyOTPForgotPassword(params)
-      expect(http.post).toHaveBeenCalledWith(
+      expect(httpAuthMock.post).toHaveBeenCalledWith(
         '/auth/forgot-password/confirm',
         params,
       )
@@ -154,12 +156,12 @@ describe('Auth API', () => {
   describe('confirmForgotPassword', () => {
     it('should call confirm forgot password endpoint with token and new password', async () => {
       const mockResponse = { data: { success: true } }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
 
       const resetData = { newPassword: 'newpass123', token: 'reset-token' }
       const result = await confirmForgotPassword(resetData)
 
-      expect(http.post).toHaveBeenCalledWith(
+      expect(httpAuthMock.post).toHaveBeenCalledWith(
         '/auth/forgot-password/change',
         resetData,
       )
@@ -173,14 +175,14 @@ describe('Auth API', () => {
           data: { message: 'Invalid or expired token' },
         },
       }
-      ;(http.post as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(mockError)
 
       const resetData = { newPassword: 'newpass123', token: 'confirm-token' }
       await expect(confirmForgotPassword(resetData)).rejects.toEqual(mockError)
     })
 
     it('should handle server error', async () => {
-      ;(http.post as Mock).mockRejectedValue(serverError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(serverError)
       const resetData = { newPassword: 'newpass123', token: 'confirm-token' }
       await expect(confirmForgotPassword(resetData)).rejects.toEqual(
         serverError,
@@ -191,7 +193,7 @@ describe('Auth API', () => {
   describe('verifyEmail', () => {
     it('should call verify email endpoint', async () => {
       const mockResponse = { data: { success: true } }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
 
       const verifyParams = {
         email: 'test@example.com',
@@ -199,7 +201,7 @@ describe('Auth API', () => {
       }
       const result = await verifyEmail(verifyParams)
 
-      expect(http.post).toHaveBeenCalledWith(
+      expect(httpAuthMock.post).toHaveBeenCalledWith(
         '/auth/initiate-verify-email',
         verifyParams,
       )
@@ -213,7 +215,7 @@ describe('Auth API', () => {
           data: { message: 'Invalid access token' },
         },
       }
-      ;(http.post as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(mockError)
 
       const verifyParams = {
         email: 'test@example.com',
@@ -223,7 +225,7 @@ describe('Auth API', () => {
     })
 
     it('should handle server error', async () => {
-      ;(http.post as Mock).mockRejectedValue(serverError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(serverError)
       const verifyParams = {
         email: 'test@example.com',
         accessToken: 'test-token',
@@ -235,12 +237,12 @@ describe('Auth API', () => {
   describe('confirmEmailVerification', () => {
     it('should call confirm email verification endpoint', async () => {
       const mockResponse = { data: { success: true } }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
 
       const code = 'verify-token'
       const result = await confirmEmailVerification(code)
 
-      expect(http.post).toHaveBeenCalledWith(
+      expect(httpAuthMock.post).toHaveBeenCalledWith(
         '/auth/confirm-email-verification/code',
         { code },
       )
@@ -254,7 +256,7 @@ describe('Auth API', () => {
           data: { message: 'Verification token expired' },
         },
       }
-      ;(http.post as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(mockError)
 
       const code = 'expired-code'
       await expect(confirmEmailVerification(code)).rejects.toEqual(mockError)
@@ -262,14 +264,14 @@ describe('Auth API', () => {
 
     it('should handle network error', async () => {
       const mockError = new Error('Network Error')
-      ;(http.post as Mock).mockRejectedValue(mockError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(mockError)
 
       const code = 'test-code'
       await expect(confirmEmailVerification(code)).rejects.toEqual(mockError)
     })
 
     it('should handle server error', async () => {
-      ;(http.post as Mock).mockRejectedValue(serverError)
+      ;(httpAuthMock.post as Mock).mockRejectedValue(serverError)
       const code = 'test-code'
       await expect(confirmEmailVerification(code)).rejects.toEqual(serverError)
     })
@@ -280,18 +282,18 @@ describe('Auth API', () => {
       const mockResponse = {
         data: { result: { expiresAt: '2026-08-11T10:00:00.000Z' } },
       }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
 
       const result = await initiateRegister({ phonenumber: '0376295216' })
 
-      expect(http.post).toHaveBeenCalledWith('/auth/register/initiate', {
+      expect(httpAuthMock.post).toHaveBeenCalledWith('/auth/register/initiate', {
         phonenumber: '0376295216',
       })
       expect(result).toEqual(mockResponse.data)
     })
 
     it('should propagate the 119041 error when the phone number exists', async () => {
-      ;(http.post as Mock).mockRejectedValue({
+      ;(httpAuthMock.post as Mock).mockRejectedValue({
         response: { status: 400, data: { statusCode: 119041 } },
       })
 
@@ -306,11 +308,11 @@ describe('Auth API', () => {
       const mockResponse = {
         data: { result: { expiresAt: '2026-08-11T10:10:00.000Z' } },
       }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
 
       const result = await resendRegisterOtp({ phonenumber: '0376295216' })
 
-      expect(http.post).toHaveBeenCalledWith('/auth/register/resend', {
+      expect(httpAuthMock.post).toHaveBeenCalledWith('/auth/register/resend', {
         phonenumber: '0376295216',
       })
       expect(result).toEqual(mockResponse.data)
@@ -329,7 +331,7 @@ describe('Auth API', () => {
           },
         },
       }
-      ;(http.post as Mock).mockResolvedValue(mockResponse)
+      ;(httpAuthMock.post as Mock).mockResolvedValue(mockResponse)
 
       const params = {
         phonenumber: '0376295216',
@@ -338,12 +340,12 @@ describe('Auth API', () => {
       }
       const result = await completeRegister(params)
 
-      expect(http.post).toHaveBeenCalledWith('/auth/register/complete', params)
+      expect(httpAuthMock.post).toHaveBeenCalledWith('/auth/register/complete', params)
       expect(result).toEqual(mockResponse.data)
     })
 
     it('should propagate the 119049 error when the OTP is wrong', async () => {
-      ;(http.post as Mock).mockRejectedValue({
+      ;(httpAuthMock.post as Mock).mockRejectedValue({
         response: { status: 400, data: { statusCode: 119049 } },
       })
 

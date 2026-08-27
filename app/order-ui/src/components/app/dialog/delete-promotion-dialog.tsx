@@ -34,7 +34,7 @@ export default function DeletePromotionDialog({ promotion }: { promotion: IPromo
     deletePromotion(promotionSlug, {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: [QUERYKEY.promotions, userInfo?.branch.slug],
+          queryKey: [QUERYKEY.promotions, userInfo?.branch?.slug],
         })
         setIsOpen(false)
         showToast(tToast('toast.deletePromotionSuccess'))

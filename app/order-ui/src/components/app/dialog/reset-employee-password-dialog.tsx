@@ -79,7 +79,7 @@ export default function ResetEmployeePasswordDialog({ user }: { user?: IUserInfo
             </Button>
             <Button
               variant="destructive"
-              onClick={() => user && handleSubmit(user.slug || '')}
+              onClick={() => user && handleSubmit(user.phonenumber || '')}
             >
               {tCommon('common.confirm')}
             </Button>

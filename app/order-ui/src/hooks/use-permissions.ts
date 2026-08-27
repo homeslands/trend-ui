@@ -1,31 +1,22 @@
-import { useMemo } from 'react'
-import { jwtDecode } from 'jwt-decode'
+import { useQuery } from '@tanstack/react-query'
+import { getAuthScope } from '@/api'
+import { QUERYKEY } from '@/constants'
 import { useAuthStore } from '@/stores'
-import { IToken } from '@/types'
 
 /**
- * Hook để lấy danh sách permissions từ JWT token
+ * Hook để lấy danh sách permissions từ API (/auth/scope)
  * @returns Array of permission strings
  */
 export function usePermissions(): string[] {
   const { token } = useAuthStore()
 
-  return useMemo(() => {
-    if (!token) return []
+  const { data } = useQuery({
+    queryKey: [QUERYKEY.authScope],
+    queryFn: getAuthScope,
+    enabled: !!token,
+  })
 
-    try {
-      const decoded: IToken = jwtDecode(token)
-      if (!decoded.scope) return []
-
-      const scope = typeof decoded.scope === "string" 
-        ? JSON.parse(decoded.scope) 
-        : decoded.scope
-      
-      return scope.permissions || []
-    } catch {
-      return []
-    }
-  }, [token])
+  return data?.result?.permissions ?? []
 }
 
 /**
@@ -35,8 +26,5 @@ export function usePermissions(): string[] {
  */
 export function useHasPermission(permission: string): boolean {
   const permissions = usePermissions()
-  return useMemo(() => {
-    return permissions.includes(permission)
-  }, [permissions, permission])
+  return permissions.includes(permission)
 }
-

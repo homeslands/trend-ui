@@ -1,4 +1,5 @@
 import { VerificationMethod } from '@/constants'
+import { IUserInfo } from './user.type'
 
 export interface ILoginRequest {
   phonenumber: string
@@ -16,6 +17,14 @@ export interface ILoginResponse {
   method: string
   status: number
   timestamp: string
+}
+
+export interface IAuthScope {
+  role: string
+  permissions: string[]
+  // Nguồn thật cho branch của userInfo sau đăng nhập (architect-http.md
+  // mục 1.1 quy tắc 4) — không lấy branch từ response profile (shared-user).
+  branch: IUserInfo['branch']
 }
 
 export interface IInitiateRegisterRequest {
@@ -79,9 +88,3 @@ export interface IRefreshTokenResponse {
   refreshToken: string
 }
 
-export interface IToken {
-  scope: {
-    role: string
-    permissions: string[]
-  }
-}
