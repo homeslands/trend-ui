@@ -1,5 +1,7 @@
 // Types cho Firebase Cloud Messaging
 
+import { NOTIFICATION_TYPE } from '@/constants'
+
 export interface FcmTokenData {
   token: string
   platform: 'web' | 'ios' | 'android'
@@ -20,7 +22,9 @@ export interface NotificationPayload {
 }
 
 export interface NotificationData {
-  type?: 'order' | 'chef_order' | 'system' | 'promotion'
+  // Backend gửi NotificationType trong data.payload (order | card-order | voucher |
+  // gift | coin); FCM là kênh untyped nên vẫn chấp nhận chuỗi lạ qua index signature.
+  type?: `${NOTIFICATION_TYPE}`
   orderId?: string
   url?: string
   [key: string]: string | undefined

@@ -30,6 +30,7 @@ import {
   Badge,
   Checkbox,
 } from '@/components/ui'
+import { VoucherQrScanButton } from '@/components/app/button'
 
 import {
   useIsMobile,
@@ -41,8 +42,10 @@ import {
   useValidatePublicVoucher,
   useValidateVoucher,
   useVouchersForOrder,
+  useVoucherCartFix,
+  useVoucherScanRejection,
 } from '@/hooks'
-import { calculateCartItemDisplay, calculateCartTotals, formatCurrency, isVoucherApplicableToCartItems, showErrorToast, showToast } from '@/utils'
+import { calculateCartItemDisplay, calculateCartTotals, formatCurrency, isVoucherApplicableToCartItems, showErrorToast, showToast, normalizeVoucherCartLines } from '@/utils'
 import { isVoucherExpired, isVoucherInActiveTimeWindow } from '@/utils/voucher-time'
 import {
   IGetAllVoucherRequest,
@@ -69,6 +72,11 @@ export default function VoucherListSheet() {
   const [localVoucherList, setLocalVoucherList] = useState<IVoucher[]>([])
   const [selectedVoucher, setSelectedVoucher] = useState<string>('')
   const [tempSelectedVoucher, setTempSelectedVoucher] = useState<string>('')
+  // Voucher vừa quét từ QR. Phải giữ riêng ra vì effect gom trang bên dưới có
+  // `localVoucherList.length` trong deps: chính cú unshift của luồng quét làm length đổi
+  // → effect chạy lại → nhánh "replace" dựng lại danh sách từ trang đã fetch và xoá mất
+  // voucher vừa chèn. Giữ nó ở đây để nhánh replace chèn lại, y như `specificVoucher`.
+  const [scannedVoucher, setScannedVoucher] = useState<IVoucher | null>(null)
   // Pagination state for load more
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
@@ -320,6 +328,15 @@ export default function VoucherListSheet() {
         }
       }
 
+      // Voucher quét từ QR không nằm trong trang fetch được, nên nhánh replace này sẽ
+      // xoá mất nó nếu không chèn lại — giống hệt cách `specificVoucher` được giữ ở trên.
+      if (scannedVoucher) {
+        const existingIndex = newList.findIndex(v => v.slug === scannedVoucher.slug)
+        if (existingIndex === -1) {
+          newList = [scannedVoucher, ...newList]
+        }
+      }
+
       setLocalVoucherList(newList)
     } else {
       // Append new items to existing list
@@ -343,10 +360,16 @@ export default function VoucherListSheet() {
             unique.unshift(specificPublicVoucher.result)
           }
         }
+        if (scannedVoucher) {
+          const existingIndex = unique.findIndex(v => v.slug === scannedVoucher.slug)
+          if (existingIndex === -1) {
+            unique.unshift(scannedVoucher)
+          }
+        }
         return unique
       })
     }
-  }, [voucherList?.result, publicVoucherList?.result, currentPage, userInfo, cartItems?.ownerRole, cartItems?.owner, specificVoucher?.result, specificPublicVoucher?.result, localVoucherList.length])
+  }, [voucherList?.result, publicVoucherList?.result, currentPage, userInfo, cartItems?.ownerRole, cartItems?.owner, specificVoucher?.result, specificPublicVoucher?.result, scannedVoucher, localVoucherList.length])
 
   // Load more handler
   const handleLoadMore = useCallback(() => {
@@ -364,6 +387,8 @@ export default function VoucherListSheet() {
       setIsLoadingMore(false)
       // Reset voucher list để lấy danh sách mới nhất
       setLocalVoucherList([])
+      // Quên voucher đã quét ở lần mở trước, tránh nó dính lại ở phiên mở mới.
+      setScannedVoucher(null)
 
       // Không cần invalidate hoặc refetch thủ công ở đây vì:
       // - React Query sẽ tự động refetch khi enabled thay đổi từ false -> true
@@ -395,6 +420,23 @@ export default function VoucherListSheet() {
       setTempSelectedVoucher('');
     }
   }, [cartItems?.voucher, refetchSpecificVoucher]);
+
+  // MỘT nguồn giỏ hàng cho cả bộ phân loại lẫn bộ dựng lời khuyên: hai
+  // chỗ đọc hai field khác nhau từng khiến chúng nói hai chuyện khác nhau.
+  const cartLines = useMemo(() => normalizeVoucherCartLines(cartItems?.orderItems), [cartItems?.orderItems])
+  const voucherCartFix = useVoucherCartFix()
+  const getVoucherCartFix = useCallback(
+    (voucher: IVoucher) =>
+      voucherCartFix(voucher, { cartItems: cartLines, subTotal: minOrderValue }),
+    [voucherCartFix, cartLines, minOrderValue],
+  )
+  const buildScanRejection = useVoucherScanRejection({
+    cartLines,
+    subTotal: minOrderValue,
+    // Định danh của KHÁCH trên đơn, không phải của người đang đăng nhập.
+    isOrderOwnerIdentified: isCustomerOwner,
+    canAddCustomer: false,
+  })
 
   // If cartItems is not hydrated, return null
   if (!isHydrated) {
@@ -432,9 +474,16 @@ export default function VoucherListSheet() {
     return `${voucher.usageFrequencyValue} ${t('voucher.times')}/${unitText}`
   }
 
-  const handleCompleteSelection = async () => {
+  // `overrideVoucher`: voucher được truyền thẳng vào (luồng quét QR). Bắt buộc phải có
+  // vì state React set ở cùng một tick chưa nhìn thấy được trong hàm gọi ngay sau đó —
+  // đọc `tempSelectedVoucher` lúc ấy sẽ ra giá trị CŨ và áp nhầm voucher.
+  // Lưu ý: mọi call site truyền hàm này vào `onClick` phải bọc `() => ...`, nếu không
+  // React sẽ nhét MouseEvent vào tham số này (TypeScript không bắt được).
+  const handleCompleteSelection = async (overrideVoucher?: IVoucher) => {
+    const effectiveSlug = overrideVoucher?.slug ?? tempSelectedVoucher
+
     // Nếu không có voucher nào được chọn, chỉ đóng sheet
-    if (!tempSelectedVoucher) {
+    if (!effectiveSlug) {
       // Nếu có voucher đang áp dụng, xóa nó
       if (cartItems?.voucher) {
         removeVoucher();
@@ -444,8 +493,10 @@ export default function VoucherListSheet() {
       return;
     }
 
-    // Tìm voucher được chọn
-    const selectedVoucherData = localVoucherList.find(v => v.slug === tempSelectedVoucher);
+    // Tìm voucher được chọn. Voucher quét từ QR gần như không nằm trong
+    // `localVoucherList` (danh sách chỉ chứa các trang đã tải) nên phải ưu tiên bản
+    // truyền thẳng vào, không thì luôn rơi vào nhánh lỗi 1000 bên dưới.
+    const selectedVoucherData = overrideVoucher ?? localVoucherList.find(v => v.slug === effectiveSlug);
 
     if (!selectedVoucherData) {
       showErrorToast(1000);
@@ -453,7 +504,7 @@ export default function VoucherListSheet() {
     }
 
     // Nếu voucher được chọn giống với voucher hiện tại, chỉ đóng sheet
-    if (cartItems?.voucher?.slug === tempSelectedVoucher) {
+    if (cartItems?.voucher?.slug === effectiveSlug) {
       setSheetOpen(false);
       return;
     }
@@ -483,6 +534,36 @@ export default function VoucherListSheet() {
       validatePublicVoucher(validateVoucherParam, { onSuccess: onValidated })
     }
   };
+
+  const handleQrResolved = (voucher: IVoucher) => {
+    if (cartItems?.voucher?.slug === voucher.slug) {
+      showToast(tToast('toast.voucherAlreadyApplied'))
+      return
+    }
+
+    // Chặn tại máy trước khi phiền tới server, và nói RÕ lý do thay vì để toast
+    // lỗi chung chung từ handler toàn cục. Trả `false` để màn quét ở lại cho
+    // khách thử phiếu khác ngay.
+    if (!isVoucherValid(voucher)) {      return buildScanRejection(voucher, getVoucherErrorMessage(voucher))
+    }
+
+    // Nhớ lại voucher này để effect gom trang chèn nó vào mỗi lần dựng lại danh sách.
+    setScannedVoucher(voucher)
+
+    // Chèn vào danh sách để thẻ voucher hiện ra ngay sau khi áp — cùng khuôn với effect
+    // tra cứu theo code ở trên.
+    setLocalVoucherList((prevList) => {
+      const newList = [...(prevList || [])]
+      if (!newList.some((v) => v.slug === voucher.slug)) {
+        newList.unshift(voucher)
+      }
+      return newList
+    })
+    setTempSelectedVoucher(voucher.slug)
+
+    // Truyền thẳng voucher: hai state vừa set ở trên CHƯA thấy được trong lượt render này.
+    handleCompleteSelection(voucher)
+  }
 
   const isVoucherValid = (voucher: IVoucher) => {
     const isValidAmount =
@@ -524,14 +605,9 @@ export default function VoucherListSheet() {
     return isActive && !isExpired && hasUsage && isValidAmount && isValidDate && isIdentityValid && hasValidProducts && isInActiveWindow
   }
 
+
   const getVoucherErrorMessage = (voucher: IVoucher) => {
-    const cartProductSlugs = cartItems?.orderItems?.map((item) => item.slug) || []
-    const voucherProductSlugs = voucher.voucherProducts?.map((vp) => vp.product?.slug) || []
-
-    const allCartProductsInVoucher = cartProductSlugs.every(slug => voucherProductSlugs.includes(slug))
-    const hasAnyCartProductInVoucher = cartProductSlugs.some(slug => voucherProductSlugs.includes(slug))
-
-    const subTotalAfterPromotion = (cartTotals?.subTotalBeforeDiscount || 0) - (cartTotals?.promotionDiscount || 0)
+    const cartFix = getVoucherCartFix(voucher)
 
     const errorChecks: Array<{ condition: boolean; message: string }> = [
       {
@@ -556,24 +632,10 @@ export default function VoucherListSheet() {
         message: t('voucher.outOfStock'),
       },
       {
-        condition:
-          voucher.type !== VOUCHER_TYPE.SAME_PRICE_PRODUCT &&
-          voucher.minOrderValue > subTotalAfterPromotion,
-        message: t('voucher.minOrderNotMet'),
-      },
-      {
-        condition:
-          (voucher.voucherProducts?.length || 0) > 0 &&
-          voucher.applicabilityRule === APPLICABILITY_RULE.ALL_REQUIRED &&
-          !allCartProductsInVoucher,
-        message: t('voucher.requireOnlyApplicableProducts'),
-      },
-      {
-        condition:
-          (voucher.voucherProducts?.length || 0) > 0 &&
-          voucher.applicabilityRule === APPLICABILITY_RULE.AT_LEAST_ONE_REQUIRED &&
-          !hasAnyCartProductInVoucher,
-        message: t('voucher.requireSomeApplicableProducts'),
+        // Thiếu món, thừa món, chưa đủ tiền — gộp làm một, vì cả ba đều trả
+        // lời cùng câu hỏi "sửa đơn thế nào".
+        condition: !!cartFix,
+        message: cartFix?.message || '',
       },
     ]
 
@@ -636,6 +698,7 @@ export default function VoucherListSheet() {
 
     const isValid = isVoucherValid(voucher)
     const errorMessage = getVoucherErrorMessage(voucher)
+    const cartFixHint = getVoucherCartFix(voucher)?.hint
     const isOutOfStockError = errorMessage === t('voucher.outOfStock')
     const baseCardClass = `grid h-40 grid-cols-8 gap-2 p-2 rounded-md sm:h-36 relative
     ${isVoucherSelected(voucher.slug)
@@ -726,6 +789,11 @@ export default function VoucherListSheet() {
                     ? t('voucher.needVerifyIdentity')
                     : ''} */}
             </span>
+            {cartFixHint && (
+              <span className="text-xs italic text-muted-foreground">
+                {cartFixHint}
+              </span>
+            )}
             <span className="hidden text-muted-foreground/60 sm:text-xs">
               {t('voucher.minOrderValue')}: {formatCurrency(voucher.minOrderValue)}
             </span>
@@ -946,13 +1014,19 @@ export default function VoucherListSheet() {
             {/* Voucher search */}
             <div className="flex flex-col flex-1">
               <div className="grid grid-cols-1 gap-2">
-                <div className="relative p-1">
-                  <TicketPercent className="absolute left-2 top-1/2 text-gray-400 -translate-y-1/2" />
-                  <Input
-                    placeholder={t('voucher.enterVoucher')}
-                    className="pl-10"
-                    onChange={(e) => setSelectedVoucher(e.target.value)}
-                    value={selectedVoucher}
+                <div className="flex gap-2 items-center p-1">
+                  <div className="relative flex-1">
+                    <TicketPercent className="absolute left-2 top-1/2 text-gray-400 -translate-y-1/2" />
+                    <Input
+                      placeholder={t('voucher.enterVoucher')}
+                      className="pl-10"
+                      onChange={(e) => setSelectedVoucher(e.target.value)}
+                      value={selectedVoucher}
+                    />
+                  </div>
+                  <VoucherQrScanButton
+                    isPublic={!userInfo}
+                    onResolved={handleQrResolved}
                   />
                 </div>
               </div>
@@ -1023,7 +1097,9 @@ export default function VoucherListSheet() {
             </div>
           </ScrollArea>
           <SheetFooter className="shrink-0 p-4">
-            <Button className="w-full" onClick={handleCompleteSelection}>
+            {/* Bọc `() => ...`: truyền thẳng hàm sẽ khiến React nhét MouseEvent vào
+                tham số `overrideVoucher` và nó được coi như một voucher hợp lệ. */}
+            <Button className="w-full" onClick={() => handleCompleteSelection()}>
               {t('voucher.complete')}
             </Button>
           </SheetFooter>

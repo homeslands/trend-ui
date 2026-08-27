@@ -86,15 +86,22 @@
         "confirmClose": "Close this campaign?",
         "confirmCloseDescription": "The campaign moves to Closed and stops granting rewards immediately.",
         "closeNote1": "Rewards already granted stay with customers.",
-        "closeNote2": "You cannot reopen it from this screen.",
+        "closeNote2": "You can reopen the campaign later from the actions menu.",
         "closeSuccess": "Campaign closed",
+        "reopenCampaign": "Reopen campaign",
+        "confirmReopen": "Reopen this campaign?",
+        "confirmReopenDescription": "The campaign resumes granting rewards with its current settings.",
+        "reopenMinLimitHint": "The total coin budget must be at least {{minLimit}} so the remaining coins cover at least one grant.",
+        "reopenSuccess": "Campaign reopened",
         "rewardType": "Reward type",
         "rewardTypes": {
             "voucher": "Voucher",
-            "gift": "Gift"
+            "gift": "Gift",
+            "coin": "Coins"
         },
         "rewardTypeHintVoucher": "The customer receives a generated voucher code to use when ordering.",
         "rewardTypeHintGift": "The customer receives a gift. The reward type cannot be changed after the campaign is created.",
+        "rewardTypeHintCoin": "Each new member gets coins credited to their balance per the settings below. The reward type cannot be changed after the campaign is created.",
         "giftTemplate": {
             "sectionTitle": "Gift",
             "title": "Gift name",
@@ -103,6 +110,22 @@
             "readOnlyNote": "Gift details cannot be edited after creation — the backend does not support updating this yet.",
             "durationHintBirthday": "How many days the gift stays valid after a customer receives it. The campaign repeats every year; each customer receives it at most once a year.",
             "durationHintNewUser": "How many days the gift stays valid after the customer registers."
+        },
+        "coinTemplate": {
+            "sectionTitle": "Coin reward",
+            "title": "Coin reward name",
+            "titlePlaceholder": "e.g. New member coin gift",
+            "description": "Description",
+            "coinPerUser": "Coins per user",
+            "coinPerUserHint": "Coins credited to each new member's balance.",
+            "totalCoinLimit": "Total coin budget",
+            "totalCoinLimitHint": "The campaign closes automatically once the remaining coins cannot cover one grant.",
+            "totalCoinLimitHintUnlimited": "Leave empty for an unlimited budget.",
+            "totalCoinLimitHintKeepCurrent": "Leave empty to keep the current budget.",
+            "totalCoinLimitHintTopUp": "Raise the total budget to add coins: remaining coins = new budget − coins already granted.",
+            "topUpReopenNote": "Campaign closed because the budget ran out? Raise the total coin budget here, then reopen the campaign.",
+            "remainingCoin": "Remaining coins",
+            "unlimited": "Unlimited"
         }
     }
 }

@@ -30,6 +30,7 @@ export enum CAMPAIGN_STATUS {
 export enum CAMPAIGN_REWARD_TYPE {
   VOUCHER = 'voucher',
   GIFT = 'gift',
+  COIN = 'coin',
 }
 
 export enum VOUCHER_USAGE_FREQUENCY_UNIT {

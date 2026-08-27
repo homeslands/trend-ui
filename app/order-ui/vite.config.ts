@@ -23,12 +23,25 @@ export default defineConfig(({ mode }) => {
     server: {
       host: '0.0.0.0',
       port: 5173,
+      // Vite chặn host lạ để phòng tấn công DNS rebinding vào máy dev. Khi thử
+      // trên điện thoại qua tunnel HTTPS thì phải khai tên miền tunnel ra, mà
+      // tên miền đó đổi theo từng người và từng lần chạy — nên để trong `.env`
+      // (không vào git) thay vì viết cứng ở đây. Không khai thì giữ nguyên mức
+      // chặn mặc định.
+      allowedHosts: process.env.VITE_DEV_ALLOWED_HOSTS
+        ? process.env.VITE_DEV_ALLOWED_HOSTS.split(',').map((h) => h.trim())
+        : undefined,
       hmr: {
         port: 5173,
       },
       proxy: {
         '/api/v1': {
-          target: process.env.VITE_BASE_API_URL,
+          // `VITE_API_PROXY_TARGET` tách riêng khỏi `VITE_BASE_API_URL`: cái sau
+          // là thứ TRÌNH DUYỆT gọi (đường dẫn tương đối để tránh CORS), còn cái
+          // này là đích thật mà dev server chuyển tiếp tới. Fallback giữ nguyên
+          // hành vi cũ cho máy chưa khai biến mới.
+          target:
+            process.env.VITE_API_PROXY_TARGET || process.env.VITE_BASE_API_URL,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api\/v1/, ''),
         },

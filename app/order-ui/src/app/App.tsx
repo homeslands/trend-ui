@@ -30,7 +30,10 @@ const queryClient = new QueryClient({
         if (isAxiosError(error)) {
           const axiosError = error as AxiosError<IApiResponse<void>>
           if (axiosError.response?.data.code) {
-            showErrorToast(axiosError.response.data.code)
+            showErrorToast(
+              axiosError.response.data.code,
+              axiosError.response.data.message,
+            )
           }
         }
       } catch (err) {
@@ -48,7 +51,10 @@ const queryClient = new QueryClient({
         if (isAxiosError(error)) {
           const axiosError = error as AxiosError<IApiErrorResponse>
           if (axiosError.response?.data.statusCode) {
-            showErrorToast(axiosError.response?.data.statusCode)
+            showErrorToast(
+              axiosError.response?.data.statusCode,
+              axiosError.response?.data?.message,
+            )
           }
         }
       } catch (err) {

@@ -29,6 +29,7 @@ import {
   Progress,
   Badge,
 } from '@/components/ui'
+import { VoucherQrScanButton } from '@/components/app/button'
 import {
   useIsMobile,
   usePagination,
@@ -37,13 +38,14 @@ import {
   useValidateVoucher,
   useVouchersForOrder,
 } from '@/hooks'
-import { formatCurrency, isVoucherApplicableToCartItems, showErrorToast, showToast } from '@/utils'
+import { formatCurrency, isVoucherApplicableToCartItems, showErrorToast, showToast, normalizeVoucherCartLines } from '@/utils'
 import { isVoucherExpired, isVoucherInActiveTimeWindow } from '@/utils/voucher-time'
 import {
   IValidateVoucherRequest,
   IVoucher,
   IGetAllVoucherRequest,
 } from '@/types'
+import { useVoucherCartFix, useVoucherScanRejection } from '@/hooks'
 import { useOrderFlowStore, useThemeStore, useUserStore } from '@/stores'
 import { APPLICABILITY_RULE, Role, VOUCHER_TYPE, VOUCHER_USAGE_FREQUENCY_UNIT } from '@/constants'
 
@@ -95,6 +97,23 @@ export default function StaffVoucherListSheet() {
       return total + (original - promotionDiscount) * item.quantity
     }, 0)
   }, [nonGiftOrderItems])
+
+  // MỘT nguồn giỏ hàng cho cả bộ phân loại lẫn bộ dựng lời khuyên: hai
+  // chỗ đọc hai field khác nhau từng khiến chúng nói hai chuyện khác nhau.
+  const cartLines = useMemo(() => normalizeVoucherCartLines(nonGiftOrderItems), [nonGiftOrderItems])
+  const voucherCartFix = useVoucherCartFix()
+  const getVoucherCartFix = useCallback(
+    (voucher: IVoucher) =>
+      voucherCartFix(voucher, { cartItems: cartLines, subTotal: minOrderValue }),
+    [voucherCartFix, cartLines, minOrderValue],
+  )
+  const buildScanRejection = useVoucherScanRejection({
+    cartLines,
+    subTotal: minOrderValue,
+    // Định danh của KHÁCH trên đơn, không phải của người đang đăng nhập.
+    isOrderOwnerIdentified: isCustomerOwner,
+    canAddCustomer: true,
+  })
 
   const voucherForOrderRequestParam: IGetAllVoucherRequest = useMemo(() => ({
     hasPaging: true,
@@ -162,6 +181,28 @@ export default function StaffVoucherListSheet() {
       }
     }
   }, [cartItems, removeVoucher, addVoucher, setAppliedVoucher, setSelectedVoucher, setSheetOpen, tToast, validateVoucher, isVoucherSelected, isCustomerOwner, userInfo?.slug])
+
+  const handleQrResolved = useCallback(
+    (voucher: IVoucher) => {
+      // handleToggleVoucher là TOGGLE. Không có chốt chặn này, quét trúng
+      // voucher đang áp sẽ gỡ nó khỏi đơn — đúng ngược điều người dùng muốn,
+      // và không có lỗi nào bắn ra để phát hiện.
+      if (isVoucherSelected(voucher.slug)) {
+        showToast(tToast('toast.voucherAlreadyApplied'))
+        return
+      }
+
+      // Chặn tại máy trước khi phiền tới server, và nói RÕ lý do thay vì để
+      // toast lỗi chung chung từ handler toàn cục. Trả `false` để màn quét ở
+      // lại cho người dùng thử phiếu khác ngay.
+      if (!isVoucherValid(voucher)) {
+
+        return buildScanRejection(voucher, getVoucherErrorMessage(voucher))
+      }
+      handleToggleVoucher(voucher)
+    },
+    [isVoucherSelected, handleToggleVoucher, tToast],
+  )
 
   // Auto-check voucher validity when orderItems change
   useEffect(() => {
@@ -436,19 +477,9 @@ export default function StaffVoucherListSheet() {
   }
 
   const getVoucherErrorMessage = (voucher: IVoucher) => {
-    // ✅ Chỉ tính với nonGiftOrderItems (không tính gift items)
-    const cartProductSlugs = nonGiftOrderItems?.map((item) => item.slug) || []
-    const voucherProductSlugs = voucher.voucherProducts?.map((vp) => vp.product?.slug) || []
-
-    const allCartProductsInVoucher = cartProductSlugs.every(slug => voucherProductSlugs.includes(slug))
-    const hasAnyCartProductInVoucher = cartProductSlugs.some(slug => voucherProductSlugs.includes(slug))
-
-    // ✅ Tính subTotalAfterPromotion chỉ từ nonGiftOrderItems
-    const subTotalAfterPromotion = nonGiftOrderItems.reduce((total, item) => {
-      const original = item.originalPrice || 0
-      const promotionDiscount = item.promotionDiscount || 0
-      return total + (original - promotionDiscount) * item.quantity
-    }, 0)
+    // Ba lý do phụ thuộc giỏ hàng — thiếu món, thừa món, chưa đủ tiền — gộp làm
+    // một, vì cả ba đều trả lời cùng câu hỏi "sửa đơn thế nào".
+    const cartFix = getVoucherCartFix(voucher)
 
     // if (voucher.isVerificationIdentity && !isCustomerOwner) {
     //   return t('voucher.needVerifyIdentity')
@@ -511,24 +542,8 @@ export default function StaffVoucherListSheet() {
         message: t('voucher.outOfStock'),
       },
       {
-        condition:
-          voucher.type !== VOUCHER_TYPE.SAME_PRICE_PRODUCT &&
-          voucher.minOrderValue > subTotalAfterPromotion,
-        message: t('voucher.minOrderNotMet'),
-      },
-      {
-        condition:
-          (voucher.voucherProducts?.length || 0) > 0 &&
-          voucher.applicabilityRule === APPLICABILITY_RULE.ALL_REQUIRED &&
-          !allCartProductsInVoucher,
-        message: t('voucher.requireOnlyApplicableProducts'),
-      },
-      {
-        condition:
-          (voucher.voucherProducts?.length || 0) > 0 &&
-          voucher.applicabilityRule === APPLICABILITY_RULE.AT_LEAST_ONE_REQUIRED &&
-          !hasAnyCartProductInVoucher,
-        message: t('voucher.requireSomeApplicableProducts'),
+        condition: !!cartFix,
+        message: cartFix?.message || '',
       },
     ]
 
@@ -590,6 +605,7 @@ export default function StaffVoucherListSheet() {
     // }
     const isValid = isVoucherValid(voucher)
     const errorMessage = getVoucherErrorMessage(voucher)
+    const cartFixHint = getVoucherCartFix(voucher)?.hint
     const isOutOfStockError = errorMessage === t('voucher.outOfStock')
     const baseCardClass = `grid h-40 grid-cols-8 gap-2 p-2 rounded-md sm:h-36 relative
     ${isVoucherSelected(voucher.slug)
@@ -623,6 +639,11 @@ export default function StaffVoucherListSheet() {
             <span className="text-xs italic text-destructive">
               {errorMessage}
             </span>
+            {cartFixHint && (
+              <span className="text-xs italic text-muted-foreground">
+                {cartFixHint}
+              </span>
+            )}
           </div>
           <div className="flex gap-2 justify-between items-center">
             <div className="flex flex-col gap-1 w-full">
@@ -866,13 +887,20 @@ export default function StaffVoucherListSheet() {
                 </Button>
               </div> */}
               <div className="grid grid-cols-1 gap-2 items-center">
-                <div className="relative p-1">
-                  <TicketPercent className="absolute left-2 top-1/2 text-gray-400 -translate-y-1/2" />
-                  <Input
-                    placeholder={t('voucher.enterVoucher')}
-                    className="pl-10"
-                    onChange={(e) => setSelectedVoucher(e.target.value)}
-                    value={selectedVoucher}
+                <div className="flex gap-2 items-center p-1">
+                  <div className="relative flex-1">
+                    <TicketPercent className="absolute left-2 top-1/2 text-gray-400 -translate-y-1/2" />
+                    <Input
+                      placeholder={t('voucher.enterVoucher')}
+                      className="pl-10"
+                      onChange={(e) => setSelectedVoucher(e.target.value)}
+                      value={selectedVoucher}
+                    />
+                  </div>
+                  <VoucherQrScanButton
+                    isPublic={!userInfo}
+                    onResolved={handleQrResolved}
+                    scannerMode="hardware"
                   />
                 </div>
               </div>

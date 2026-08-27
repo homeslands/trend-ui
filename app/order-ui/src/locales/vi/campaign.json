@@ -86,15 +86,22 @@
 		"confirmClose": "Đóng chiến dịch?",
 		"confirmCloseDescription": "Chiến dịch sẽ chuyển sang trạng thái Đã đóng và ngừng phát thưởng ngay.",
 		"closeNote1": "Phần thưởng đã phát cho khách vẫn giữ nguyên.",
-		"closeNote2": "Không mở lại được từ giao diện này.",
+		"closeNote2": "Bạn có thể mở lại chiến dịch sau từ menu thao tác.",
 		"closeSuccess": "Đã đóng chiến dịch",
+		"reopenCampaign": "Mở lại chiến dịch",
+		"confirmReopen": "Mở lại chiến dịch?",
+		"confirmReopenDescription": "Chiến dịch sẽ tiếp tục phát thưởng theo cấu hình hiện tại.",
+		"reopenMinLimitHint": "Tổng ngân sách xu phải từ {{minLimit}} trở lên để số xu còn lại đủ cho ít nhất một lượt tặng.",
+		"reopenSuccess": "Đã mở lại chiến dịch",
 		"rewardType": "Loại phần thưởng",
 		"rewardTypes": {
 			"voucher": "Voucher",
-			"gift": "Quà tặng"
+			"gift": "Quà tặng",
+			"coin": "Xu"
 		},
 		"rewardTypeHintVoucher": "Khách nhận một mã voucher tự sinh, dùng khi đặt hàng.",
 		"rewardTypeHintGift": "Khách nhận một phần quà. Loại phần thưởng không đổi được sau khi tạo chiến dịch.",
+		"rewardTypeHintCoin": "Mỗi thành viên mới được cộng xu vào số dư theo cấu hình bên dưới. Loại phần thưởng không đổi được sau khi tạo chiến dịch.",
 		"giftTemplate": {
 			"sectionTitle": "Quà tặng",
 			"title": "Tên quà tặng",
@@ -103,6 +110,22 @@
 			"readOnlyNote": "Nội dung quà tặng không sửa được sau khi tạo — backend chưa hỗ trợ cập nhật phần này.",
 			"durationHintBirthday": "Số ngày quà có hiệu lực kể từ khi khách nhận. Chiến dịch lặp lại hằng năm, mỗi khách nhận tối đa 1 lần/năm.",
 			"durationHintNewUser": "Số ngày quà có hiệu lực kể từ khi khách đăng ký."
+		},
+		"coinTemplate": {
+			"sectionTitle": "Tặng xu",
+			"title": "Tên phần thưởng xu",
+			"titlePlaceholder": "Ví dụ: Tặng xu thành viên mới",
+			"description": "Mô tả",
+			"coinPerUser": "Số xu mỗi người",
+			"coinPerUserHint": "Số xu cộng vào số dư của mỗi thành viên mới.",
+			"totalCoinLimit": "Tổng ngân sách xu",
+			"totalCoinLimitHint": "Chiến dịch tự đóng khi số xu còn lại không đủ cho một lượt tặng.",
+			"totalCoinLimitHintUnlimited": "Để trống = không giới hạn ngân sách.",
+			"totalCoinLimitHintKeepCurrent": "Để trống = giữ nguyên ngân sách hiện tại.",
+			"totalCoinLimitHintTopUp": "Nâng tổng ngân sách để nạp thêm xu: số xu còn lại = ngân sách mới − số xu đã tặng.",
+			"topUpReopenNote": "Chiến dịch đã đóng vì hết ngân sách? Nâng tổng ngân sách xu tại đây rồi mở lại chiến dịch.",
+			"remainingCoin": "Số xu còn lại",
+			"unlimited": "Không giới hạn"
 		}
 	}
 }

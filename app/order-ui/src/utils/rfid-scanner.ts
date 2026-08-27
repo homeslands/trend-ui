@@ -60,3 +60,20 @@ export function listenRFID(callback?: RFIDCallback) {
     return () => {}
   }
 }
+
+/**
+ * Kiểm tra listener đã gắn được vào `document` hay chưa.
+ *
+ * Cần thiết vì `listenRFID` nuốt lỗi và luôn trả về một hàm cleanup, kể cả khi
+ * `onScan.attachTo` thất bại — mà nó thất bại khi đã có chỗ khác gắn vào cùng
+ * `document` (onscan.js chỉ cho một listener mỗi element). Không có hàm này,
+ * màn chờ quét sẽ đứng im vĩnh viễn mà không báo gì: người dùng quét hoài
+ * không thấy phản hồi và không có cách nào biết vì sao.
+ */
+export function isRfidListenerAttached(): boolean {
+  try {
+    return !!onScan.isAttachedTo(document)
+  } catch {
+    return false
+  }
+}

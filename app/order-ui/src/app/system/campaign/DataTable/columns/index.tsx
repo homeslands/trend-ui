@@ -30,6 +30,16 @@ export function useCampaignColumns(): ColumnDef<ICampaign>[] {
       },
     },
     {
+      id: 'rewardType',
+      header: t('campaign.rewardType'),
+      cell: ({ row }) => {
+        // Response không trả `campaignType`; suy ra bằng template nào tồn tại.
+        const c = row.original
+        const rewardKey = c.coinCampaignTemplate ? 'coin' : c.giftCampaignTemplate ? 'gift' : 'voucher'
+        return <span>{t(`campaign.rewardTypes.${rewardKey}`)}</span>
+      },
+    },
+    {
       accessorKey: 'status',
       header: t('campaign.status'),
       cell: ({ row }) => {

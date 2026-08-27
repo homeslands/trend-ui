@@ -20,6 +20,11 @@
     "voucher-new-user-received": "Welcome! You've just received a voucher for new customers.",
     "gift": "New gift",
     "gift-birthday-received": "A birthday gift just for you is ready!",
+    "coin": "New coins",
+    "coin-new-user-received": "Welcome! You've just received coins as a new member gift.",
+    "coin-campaign-budget-exhausted": "The coin campaign ran out of budget and was closed automatically. Add more coins to reopen it.",
+    "card-order": "Gift card",
+    "card-order-paid": "Your gift card order has been paid successfully!",
     "printerFailDialog": {
       "title": "Printing error",
       "titleMultiple": "Printing errors ({{count}} orders)",
@@ -45,7 +50,10 @@
       "order-paid": "Order paid",
       "voucher-birthday-received": "Birthday voucher",
       "voucher-new-user-received": "New customer voucher",
-      "gift-birthday-received": "Birthday gift"
+      "gift-birthday-received": "Birthday gift",
+      "coin-new-user-received": "New member coins",
+      "coin-campaign-budget-exhausted": "Coin campaign out of budget",
+      "card-order-paid": "Gift card order paid"
     },
     "read": "Read",
     "tabs": {

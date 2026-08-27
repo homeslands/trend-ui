@@ -29,7 +29,11 @@ import {
   Switch,
 } from '@/components/ui'
 import { DateAndTimePicker } from '@/components/app/picker'
-import { CampaignGiftTemplateFields, CampaignTemplateFields } from '@/components/app/form'
+import {
+  CampaignCoinTemplateFields,
+  CampaignGiftTemplateFields,
+  CampaignTemplateFields,
+} from '@/components/app/form'
 import { ConfirmCreateCampaignDialog } from '@/components/app/dialog'
 import {
   campaignCreateFormSchema,
@@ -54,6 +58,14 @@ const DEFAULT_VOUCHER_TEMPLATE = {
   applicabilityRule: APPLICABILITY_RULE.ALL_REQUIRED,
   paymentMethods: [VOUCHER_PAYMENT_METHOD.CASH],
   productSlugs: [],
+}
+
+const DEFAULT_COIN_TEMPLATE = {
+  title: '',
+  description: '',
+  // 0 để bắt buộc người dùng tự điền — schema chặn giá trị không dương khi submit.
+  coinPerUser: 0,
+  totalCoinLimit: null,
 }
 
 export default function CreateCampaignSheet() {
@@ -90,15 +102,21 @@ export default function CreateCampaignSheet() {
       recipientLimit: undefined,
       voucherGroupSlug: '',
       giftTemplate: undefined,
+      coinTemplate: undefined,
       template: DEFAULT_VOUCHER_TEMPLATE,
     },
   })
 
   const selectedCampaignType = useWatch({ control: form.control, name: 'type' })
   const selectedRewardType = useWatch({ control: form.control, name: 'campaignType' })
-  // Chỉ chiến dịch sinh nhật mới được chọn phần thưởng là quà tặng.
-  const canChooseReward = selectedCampaignType === CAMPAIGN_TYPE.BIRTHDAY
+  // Phần thưởng khả dụng theo loại chiến dịch: sinh nhật -> voucher/quà tặng,
+  // người dùng mới -> voucher/xu (backend chặn coin cho loại khác new-user, 159905).
+  const rewardOptions =
+    selectedCampaignType === CAMPAIGN_TYPE.BIRTHDAY
+      ? [CAMPAIGN_REWARD_TYPE.VOUCHER, CAMPAIGN_REWARD_TYPE.GIFT]
+      : [CAMPAIGN_REWARD_TYPE.VOUCHER, CAMPAIGN_REWARD_TYPE.COIN]
   const isGiftReward = selectedRewardType === CAMPAIGN_REWARD_TYPE.GIFT
+  const isCoinReward = selectedRewardType === CAMPAIGN_REWARD_TYPE.COIN
 
   const disableStartDate = (date: Date) => {
     const startOfToday = new Date()
@@ -128,7 +146,7 @@ export default function CreateCampaignSheet() {
     }
   }
 
-  // Hai nhánh template loại trừ nhau. Nhánh không được chọn phải xoá hẳn về `undefined`:
+  // Các nhánh template loại trừ nhau. Nhánh không được chọn phải xoá hẳn về `undefined`:
   // để lại object rỗng thì zod vẫn chạy validate nhánh đó và báo lỗi ở form người dùng
   // không nhìn thấy, khiến nút Tạo bấm không ăn mà không rõ vì sao.
   const handleRewardTypeChange = (value: string) => {
@@ -137,26 +155,31 @@ export default function CreateCampaignSheet() {
 
     if (rewardType === CAMPAIGN_REWARD_TYPE.GIFT) {
       form.setValue('template', undefined)
+      form.setValue('coinTemplate', undefined)
       form.setValue('giftTemplate', { title: '', description: '', duration: 30 })
+    } else if (rewardType === CAMPAIGN_REWARD_TYPE.COIN) {
+      form.setValue('template', undefined)
+      form.setValue('giftTemplate', undefined)
+      form.setValue('coinTemplate', DEFAULT_COIN_TEMPLATE)
     } else {
       form.setValue('giftTemplate', undefined)
+      form.setValue('coinTemplate', undefined)
       form.setValue('template', DEFAULT_VOUCHER_TEMPLATE)
     }
-    form.clearErrors(['template', 'giftTemplate'])
+    form.clearErrors(['template', 'giftTemplate', 'coinTemplate'])
   }
 
-  // Rời khỏi loại Sinh nhật thì selector phần thưởng biến mất, nên phải ép `campaignType`
-  // về voucher — nếu không, form vẫn giữ `gift` và gửi payload quà tặng cho chiến dịch
-  // người dùng mới, trong khi người dùng không còn thấy ô nào để sửa.
+  // Đổi loại chiến dịch thì tập phần thưởng khả dụng đổi theo (gift chỉ cho sinh nhật,
+  // coin chỉ cho người dùng mới), nên ép `campaignType` về voucher — lựa chọn hợp lệ
+  // với mọi loại — thay vì giữ lại phần thưởng không còn hợp lệ.
   const handleCampaignTypeChange = (value: string) => {
     form.setValue('type', value as CAMPAIGN_TYPE, { shouldValidate: false })
-    if (value !== CAMPAIGN_TYPE.BIRTHDAY) {
-      handleRewardTypeChange(CAMPAIGN_REWARD_TYPE.VOUCHER)
-    }
+    handleRewardTypeChange(CAMPAIGN_REWARD_TYPE.VOUCHER)
   }
 
   const handleSubmit = (data: TCampaignFormSchema) => {
     const isGift = data.campaignType === CAMPAIGN_REWARD_TYPE.GIFT
+    const isCoin = data.campaignType === CAMPAIGN_REWARD_TYPE.COIN
 
     setFormData({
       name: data.name,
@@ -165,10 +188,10 @@ export default function CreateCampaignSheet() {
       startDate: data.startDate,
       endDate: data.endDate || null,
       ...(data.recipientLimit ? { recipientLimit: data.recipientLimit } : {}),
-      // Chiến dịch phát quà không gắn nhóm voucher.
-      ...(isGift ? {} : { voucherGroupSlug: data.voucherGroupSlug }),
+      // Chỉ chiến dịch voucher mới gắn nhóm voucher.
+      ...(isGift || isCoin ? {} : { voucherGroupSlug: data.voucherGroupSlug }),
       // Gửi đúng một template khớp `campaignType`. Backend validate bằng
-      // `@MatchTemplateToCampaignType()` — gửi cả hai hoặc gửi lẫn đều bị 159910/159911.
+      // `@MatchTemplateToCampaignType()` — gửi thừa hoặc gửi lẫn đều bị 159910/159911.
       ...(isGift
         ? {
             giftCampaignTemplate: {
@@ -177,12 +200,24 @@ export default function CreateCampaignSheet() {
               duration: data.endDate ? null : (data.giftTemplate?.duration ?? null),
             },
           }
-        : {
-            voucherCampaignTemplate: {
-              ...(data.template as TCampaignVoucherTemplateSchema),
-              duration: data.endDate ? null : (data.template?.duration ?? null),
-            },
-          }),
+        : isCoin
+          ? {
+              coinCampaignTemplate: {
+                title: data.coinTemplate?.title ?? '',
+                description: data.coinTemplate?.description,
+                coinPerUser: data.coinTemplate?.coinPerUser ?? 0,
+                // Bỏ hẳn key khi không giới hạn — backend hiểu null/thiếu = unlimited.
+                ...(data.coinTemplate?.totalCoinLimit != null
+                  ? { totalCoinLimit: data.coinTemplate.totalCoinLimit }
+                  : {}),
+              },
+            }
+          : {
+              voucherCampaignTemplate: {
+                ...(data.template as TCampaignVoucherTemplateSchema),
+                duration: data.endDate ? null : (data.template?.duration ?? null),
+              },
+            }),
     })
     setIsConfirmOpen(true)
   }
@@ -256,7 +291,6 @@ export default function CreateCampaignSheet() {
                         </FormItem>
                       )}
                     />
-                    {canChooseReward && (
                     <FormField
                       control={form.control}
                       name="campaignType"
@@ -273,26 +307,26 @@ export default function CreateCampaignSheet() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value={CAMPAIGN_REWARD_TYPE.VOUCHER}>
-                                {t('campaign.rewardTypes.voucher')}
-                              </SelectItem>
-                              <SelectItem value={CAMPAIGN_REWARD_TYPE.GIFT}>
-                                {t('campaign.rewardTypes.gift')}
-                              </SelectItem>
+                              {rewardOptions.map((rewardType) => (
+                                <SelectItem key={rewardType} value={rewardType}>
+                                  {t(`campaign.rewardTypes.${rewardType}`)}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormDescription className="text-xs">
                             {t(
                               isGiftReward
                                 ? 'campaign.rewardTypeHintGift'
-                                : 'campaign.rewardTypeHintVoucher',
+                                : isCoinReward
+                                  ? 'campaign.rewardTypeHintCoin'
+                                  : 'campaign.rewardTypeHintVoucher',
                             )}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    )}
                     <div className="grid grid-cols-2 gap-3">
                       <FormField
                         control={form.control}
@@ -384,7 +418,7 @@ export default function CreateCampaignSheet() {
                         </FormItem>
                       )}
                     />
-                    {!isGiftReward && (
+                    {!isGiftReward && !isCoinReward && (
                     <FormField
                       control={form.control}
                       name="voucherGroupSlug"
@@ -417,9 +451,21 @@ export default function CreateCampaignSheet() {
 
                 {/* Phần thưởng — render đúng một nhánh theo `campaignType` */}
                 <p className="text-sm font-medium text-muted-foreground px-1">
-                  {t(isGiftReward ? 'campaign.giftTemplate.sectionTitle' : 'campaign.template.title')}
+                  {t(
+                    isGiftReward
+                      ? 'campaign.giftTemplate.sectionTitle'
+                      : isCoinReward
+                        ? 'campaign.coinTemplate.sectionTitle'
+                        : 'campaign.template.title',
+                  )}
                 </p>
-                {isGiftReward ? <CampaignGiftTemplateFields /> : <CampaignTemplateFields />}
+                {isGiftReward ? (
+                  <CampaignGiftTemplateFields />
+                ) : isCoinReward ? (
+                  <CampaignCoinTemplateFields />
+                ) : (
+                  <CampaignTemplateFields />
+                )}
               </form>
             </Form>
           </ScrollArea>

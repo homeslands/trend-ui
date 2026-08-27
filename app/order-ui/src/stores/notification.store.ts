@@ -52,7 +52,9 @@ const transformPayloadToNotification = (
   const slug = mergedData.slug || data.slug || payload.messageId || `${Date.now()}`
   const createdAt = mergedData.createdAt || data.createdAt || new Date().toISOString()
   const message = mergedData.message || data.message || payload.notification?.body || ''
-  const type = mergedData.type || data.type || 'system'
+  // FCM là kênh untyped: giữ nguyên chuỗi backend gửi (NOTIFICATION_TYPE), fallback
+  // 'system' cho payload thiếu type — cast vì giá trị lạ chỉ khiến UI rơi về nhánh mặc định.
+  const type = (mergedData.type || data.type || 'system') as INotification['type']
 
   const metadata: INotificationMetadata = {
     order: mergedData.order || data.order || '',

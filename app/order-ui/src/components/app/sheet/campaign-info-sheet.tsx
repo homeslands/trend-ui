@@ -63,6 +63,7 @@ export default function CampaignInfoSheet({ campaign, isOpen, onOpenChange }: Ca
 
   const tpl = detail.voucherCampaignTemplate
   const giftTpl = detail.giftCampaignTemplate
+  const coinTpl = detail.coinCampaignTemplate
   const applicableProducts = allProducts.filter((p) => productSlugs.includes(p.slug))
   const voucherGroup = detail.voucherGroup
   const { variant, className } = statusConfig[detail.status] ?? { variant: 'secondary' }
@@ -112,6 +113,37 @@ export default function CampaignInfoSheet({ campaign, isOpen, onOpenChange }: Ca
                 )}
               </div>
             </section>
+
+            {coinTpl && (
+              <>
+                <Separator />
+
+                <section>
+                  <SectionTitle>{t('campaign.coinTemplate.sectionTitle')}</SectionTitle>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                    <Field label={t('campaign.coinTemplate.title')}>{coinTpl.title}</Field>
+                    {coinTpl.description && (
+                      <Field label={t('campaign.coinTemplate.description')}>
+                        {coinTpl.description}
+                      </Field>
+                    )}
+                    <Field label={t('campaign.coinTemplate.coinPerUser')}>
+                      {coinTpl.coinPerUser.toLocaleString()}
+                    </Field>
+                    <Field label={t('campaign.coinTemplate.totalCoinLimit')}>
+                      {coinTpl.totalCoinLimit != null
+                        ? coinTpl.totalCoinLimit.toLocaleString()
+                        : t('campaign.coinTemplate.unlimited')}
+                    </Field>
+                    <Field label={t('campaign.coinTemplate.remainingCoin')}>
+                      {coinTpl.remainingCoin != null
+                        ? coinTpl.remainingCoin.toLocaleString()
+                        : t('campaign.coinTemplate.unlimited')}
+                    </Field>
+                  </div>
+                </section>
+              </>
+            )}
 
             {giftTpl && (
               <>

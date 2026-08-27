@@ -43,6 +43,36 @@ export interface ICampaignGiftTemplate {
   duration: number | null
 }
 
+// Response shape cho chiến dịch tặng xu (campaignType = coin)
+export interface ICampaignCoinTemplateResponse extends IBase {
+  title: string
+  description: string | null
+  coinPerUser: number
+  /** `null` = ngân sách không giới hạn */
+  totalCoinLimit: number | null
+  /** Số xu còn lại trong ngân sách; `null` = không giới hạn (theo totalCoinLimit) */
+  remainingCoin: number | null
+}
+
+// Request body cho coin template khi tạo mới (CreateCoinCampaignTemplateDto)
+export interface ICampaignCoinTemplate {
+  title: string
+  description?: string
+  coinPerUser: number
+  /** Bỏ hẳn key = ngân sách không giới hạn */
+  totalCoinLimit?: number
+}
+
+// UpdateCoinCampaignTemplateDto: mọi field optional. Gửi `totalCoinLimit` mới sẽ khiến
+// backend tính lại remaining = limit mới − đã tiêu — đây chính là cách "nạp thêm xu"
+// để mở lại chiến dịch đã đóng vì cạn ngân sách.
+export interface ICampaignCoinTemplateUpdate {
+  title?: string
+  description?: string
+  coinPerUser?: number
+  totalCoinLimit?: number
+}
+
 // Request body shape used in POST /campaigns and PUT /campaigns/:slug
 export interface ICampaignVoucherTemplate {
   title: string
@@ -69,9 +99,11 @@ export interface ICampaign extends IBase {
   endDate: string | null
   voucherGroup: ICampaignVoucherGroup
   // Response không trả `campaignType`. Suy ra loại phần thưởng bằng template nào tồn tại:
-  // có `voucherCampaignTemplate` -> voucher, có `giftCampaignTemplate` -> gift.
+  // `voucherCampaignTemplate` -> voucher, `giftCampaignTemplate` -> gift,
+  // `coinCampaignTemplate` -> coin.
   voucherCampaignTemplate?: ICampaignVoucherTemplateResponse
   giftCampaignTemplate?: ICampaignGiftTemplateResponse
+  coinCampaignTemplate?: ICampaignCoinTemplateResponse
 }
 
 export interface IGetCampaignRequestParams {
@@ -92,10 +124,12 @@ export interface ICreateCampaignRequest {
   endDate: string | null
   /** Chỉ gửi khi `campaignType = voucher`. Chiến dịch phát quà không gắn nhóm voucher. */
   voucherGroupSlug?: string
-  // Đúng một trong hai, khớp với `campaignType`. Backend validate bằng
+  // Đúng một template khớp với `campaignType`. Backend validate bằng
   // `@MatchTemplateToCampaignType()` — gửi lẫn hoặc thiếu đều bị 159910/159911.
+  // Lưu ý: coin chỉ hợp lệ với type new-user (backend trả 159905 nếu khác).
   voucherCampaignTemplate?: ICampaignVoucherTemplate
   giftCampaignTemplate?: ICampaignGiftTemplate
+  coinCampaignTemplate?: ICampaignCoinTemplate
 }
 
 // Mọi field optional theo UpdateCampaignRequestDto. Không có `type` —
@@ -110,4 +144,5 @@ export interface IUpdateCampaignRequest {
   endDate?: string | null
   voucherGroupSlug?: string
   voucherCampaignTemplate?: ICampaignVoucherTemplate
+  coinCampaignTemplate?: ICampaignCoinTemplateUpdate
 }

@@ -2,6 +2,7 @@
 
 export * from './campaign-template-fields'
 export * from './campaign-gift-template-fields'
+export * from './campaign-coin-template-fields'
 export * from './login-form'
 export * from './register-phone-form'
 export * from './register-otp-password-form'

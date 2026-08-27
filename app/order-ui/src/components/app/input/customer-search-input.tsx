@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
 import { CircleX, User2Icon, Scan } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import { useOrderFlowStore } from '@/stores'
+import { useCustomerScanRequestStore, useOrderFlowStore } from '@/stores'
 import { IUserInfo } from '@/types'
 import { useDebouncedInput, usePagination, useUsers, useValidateVoucher } from '@/hooks'
 import {
@@ -21,6 +21,17 @@ export default function CustomerSearchInput() {
     const { t: tCustomer } = useTranslation(['customer'])
     const [users, setUsers] = useState<IUserInfo[]>([])
     const [isRFIDDialogOpen, setIsRFIDDialogOpen] = useState(false)
+    const { isRequested: isScanRequested, clearRequest: clearScanRequest } =
+        useCustomerScanRequestStore()
+
+    // Màn quét voucher yêu cầu mở màn định danh: voucher vừa quét đòi khách hàng
+    // mà đơn chưa có ai. Xoá yêu cầu ngay khi nhận để nó không bật lại dialog ở
+    // những lần render sau.
+    useEffect(() => {
+        if (!isScanRequested) return
+        setIsRFIDDialogOpen(true)
+        clearScanRequest()
+    }, [isScanRequested, clearScanRequest])
     const [scannedIdentityCode, setScannedIdentityCode] = useState<string>('')
     const { pagination, setPagination } = usePagination()
     const { inputValue, setInputValue, debouncedInputValue } = useDebouncedInput()

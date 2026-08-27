@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Info, Calendar, Tag, Package, CreditCard, Clock, Users, User } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 
 import {
   Button,
@@ -14,7 +15,7 @@ import {
 } from '@/components/ui'
 
 import { useSpecificVoucher, useUserGroups } from '@/hooks'
-import { formatCurrency } from '@/utils'
+import { buildVoucherQrPayload, formatCurrency } from '@/utils'
 import { APPLICABILITY_RULE, VOUCHER_CUSTOMER_TYPE, VOUCHER_PAYMENT_METHOD, VOUCHER_TYPE, VOUCHER_USAGE_FREQUENCY_UNIT } from '@/constants'
 
 interface VoucherDetailInfoDialogProps {
@@ -198,6 +199,18 @@ export default function VoucherDetailInfoDialog({
                 </div>
               </div>
             </div>
+
+            {voucherData?.slug && (
+              <div className="flex flex-col gap-2 items-center py-4 border-t">
+                <span className="text-sm text-muted-foreground">
+                  {t('voucher.voucherQrCode')}
+                </span>
+                <div className="p-3 bg-white rounded-md">
+                  <QRCodeSVG value={buildVoucherQrPayload(voucherData)} size={160} />
+                </div>
+                <span className="font-medium">{voucherData.code}</span>
+              </div>
+            )}
 
             {/* Thông tin sử dụng */}
             <div className="space-y-3">

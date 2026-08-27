@@ -20,6 +20,11 @@
     "voucher-new-user-received": "Voucher ưu đãi dành riêng cho thành viên mới!",
     "gift": "Quà tặng mới",
     "gift-birthday-received": "Quà mừng sinh nhật dành riêng cho bạn đã sẵn sàng!",
+    "coin": "Xu mới",
+    "coin-new-user-received": "Chào mừng bạn! Bạn vừa được tặng xu dành cho thành viên mới.",
+    "coin-campaign-budget-exhausted": "Chiến dịch tặng xu đã hết ngân sách và được tự động đóng. Nạp thêm xu để mở lại chiến dịch.",
+    "card-order": "Thẻ quà tặng",
+    "card-order-paid": "Đơn mua thẻ quà tặng của bạn đã được thanh toán thành công!",
     "printerFailDialog": {
       "title": "Lỗi in đơn hàng",
       "titleMultiple": "Lỗi in đơn hàng ({{count}} đơn)",
@@ -45,7 +50,10 @@
       "order-paid": "Đơn đã thanh toán",
       "voucher-birthday-received": "Voucher sinh nhật",
       "voucher-new-user-received": "Voucher khách hàng mới",
-      "gift-birthday-received": "Quà sinh nhật"
+      "gift-birthday-received": "Quà sinh nhật",
+      "coin-new-user-received": "Xu thành viên mới",
+      "coin-campaign-budget-exhausted": "Chiến dịch xu hết ngân sách",
+      "card-order-paid": "Thanh toán thẻ quà tặng"
     },
     "read": "Đã đọc",
     "tabs": {

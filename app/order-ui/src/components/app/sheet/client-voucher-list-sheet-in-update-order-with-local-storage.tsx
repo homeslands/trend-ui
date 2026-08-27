@@ -29,6 +29,7 @@ import {
   Progress,
   Badge,
 } from '@/components/ui'
+import { VoucherQrScanButton } from '@/components/app/button'
 import {
   useIsMobile,
   usePagination,
@@ -39,8 +40,10 @@ import {
   // useUpdateVoucherInOrder,
   usePublicVouchersForOrder,
   useDebouncedValue,
+  useVoucherCartFix,
+  useVoucherScanRejection,
 } from '@/hooks'
-import { calculateCartItemDisplay, calculateCartTotals, formatCurrency, isVoucherApplicableToCartItems, showErrorToast, showToast } from '@/utils'
+import { calculateCartItemDisplay, calculateCartTotals, formatCurrency, isVoucherApplicableToCartItems, showErrorToast, showToast, normalizeVoucherCartLines } from '@/utils'
 import { isVoucherExpired, isVoucherInActiveTimeWindow } from '@/utils/voucher-time'
 import {
   IValidateVoucherRequest,
@@ -277,6 +280,26 @@ export default function ClientVoucherListSheetInUpdateOrderWithLocalStorage() {
       })
     }
   }, [orderDraft, updatingData?.originalOrder, isVoucherSelected, setAppliedVoucher, setSelectedVoucher, setRemovedVouchers, tToast, validateVoucher, addVoucher, removeVoucher, getUserInfo, removeDraftVoucher])
+
+  const handleQrResolved = useCallback(
+    (voucher: IVoucher) => {
+      // handleToggleVoucher là TOGGLE. Không có chốt chặn này, quét trúng
+      // voucher đang áp sẽ gỡ nó khỏi đơn — đúng ngược điều người dùng muốn,
+      // và không có lỗi nào bắn ra để phát hiện.
+      if (isVoucherSelected(voucher.slug)) {
+        showToast(tToast('toast.voucherAlreadyApplied'))
+        return
+      }
+
+      // Chặn tại máy trước khi phiền tới server, và nói RÕ lý do thay vì để
+      // toast lỗi chung chung từ handler toàn cục. Trả `false` để màn quét ở
+      // lại cho người dùng thử phiếu khác ngay.
+      if (!isVoucherValid(voucher)) {        return buildScanRejection(voucher, getVoucherErrorMessage(voucher))
+      }
+      handleToggleVoucher(voucher)
+    },
+    [isVoucherSelected, handleToggleVoucher, tToast],
+  )
 
   // 💡 Step 4: Auto-check voucher validity khi orderItems thay đổi (với debounce)
   // Chỉ check sau khi user dừng chỉnh sửa (800ms) để tránh remove quá sớm
@@ -708,17 +731,26 @@ export default function ClientVoucherListSheetInUpdateOrderWithLocalStorage() {
   //   return ''
   // }
 
+  // MỘT nguồn giỏ hàng cho cả bộ phân loại lẫn bộ dựng lời khuyên: hai
+  // chỗ đọc hai field khác nhau từng khiến chúng nói hai chuyện khác nhau.
+  const cartLines = useMemo(() => normalizeVoucherCartLines(orderDraft?.orderItems), [orderDraft?.orderItems])
+  const voucherCartFix = useVoucherCartFix()
+  const getVoucherCartFix = useCallback(
+    (voucher: IVoucher) =>
+      voucherCartFix(voucher, { cartItems: cartLines, subTotal: minOrderValue }),
+    [voucherCartFix, cartLines, minOrderValue],
+  )
+  const buildScanRejection = useVoucherScanRejection({
+    cartLines,
+    subTotal: minOrderValue,
+    // Định danh của KHÁCH trên đơn, không phải của người đang đăng nhập.
+    isOrderOwnerIdentified: isCustomerOwner,
+    canAddCustomer: false,
+  })
+
   const getVoucherErrorMessage = (voucher: IVoucher) => {
-    const cartProductSlugs = orderDraft?.orderItems?.map((item) => item.productSlug || '') || []
-    const voucherProductSlugs = voucher.voucherProducts?.map((vp) => vp.product?.slug) || []
-
-    const allCartProductsInVoucher = cartProductSlugs.every(slug => voucherProductSlugs.includes(slug))
-    const hasAnyCartProductInVoucher = cartProductSlugs.some(slug => voucherProductSlugs.includes(slug))
-
-    const subTotalAfterPromotion = (cartTotals?.subTotalBeforeDiscount || 0) - (cartTotals?.promotionDiscount || 0)
-    // ✅ Kiểm tra xem voucher có đang được áp dụng cho đơn hàng không
+    const cartFix = getVoucherCartFix(voucher)
     const isCurrentlyApplied = orderDraft?.voucher?.slug === voucher.slug
-
     const errorChecks: Array<{ condition: boolean; message: string }> = [
       {
         condition: !!voucher.isVerificationIdentity && !isCustomerOwner,
@@ -743,24 +775,10 @@ export default function ClientVoucherListSheetInUpdateOrderWithLocalStorage() {
         message: t('voucher.outOfStock'),
       },
       {
-        condition:
-          voucher.type !== VOUCHER_TYPE.SAME_PRICE_PRODUCT &&
-          voucher.minOrderValue > subTotalAfterPromotion,
-        message: t('voucher.minOrderNotMet'),
-      },
-      {
-        condition:
-          (voucher.voucherProducts?.length || 0) > 0 &&
-          voucher.applicabilityRule === APPLICABILITY_RULE.ALL_REQUIRED &&
-          !allCartProductsInVoucher,
-        message: t('voucher.requireOnlyApplicableProducts'),
-      },
-      {
-        condition:
-          (voucher.voucherProducts?.length || 0) > 0 &&
-          voucher.applicabilityRule === APPLICABILITY_RULE.AT_LEAST_ONE_REQUIRED &&
-          !hasAnyCartProductInVoucher,
-        message: t('voucher.requireSomeApplicableProducts'),
+        // Thiếu món, thừa món, chưa đủ tiền — gộp làm một, vì cả ba đều
+        // trả lời cùng câu hỏi "sửa đơn thế nào".
+        condition: !!cartFix,
+        message: cartFix?.message || '',
       },
     ]
 
@@ -822,6 +840,7 @@ export default function ClientVoucherListSheetInUpdateOrderWithLocalStorage() {
     // }
     const isValid = isVoucherValid(voucher)
     const errorMessage = getVoucherErrorMessage(voucher)
+    const cartFixHint = getVoucherCartFix(voucher)?.hint
     const isOutOfStockError = errorMessage === t('voucher.outOfStock')
     // ✅ Kiểm tra xem voucher có đang được áp dụng cho đơn hàng không
     const isCurrentlyApplied = orderDraft?.voucher?.slug === voucher.slug
@@ -862,6 +881,11 @@ export default function ClientVoucherListSheetInUpdateOrderWithLocalStorage() {
             <span className="text-xs italic text-destructive">
               {errorMessage}
             </span>
+            {cartFixHint && (
+              <span className="text-xs italic text-muted-foreground">
+                {cartFixHint}
+              </span>
+            )}
           </div>
           <div className="flex gap-2 justify-between items-center">
             <div className="flex flex-col gap-1 w-full">
@@ -1105,13 +1129,19 @@ export default function ClientVoucherListSheetInUpdateOrderWithLocalStorage() {
                 </Button>
               </div> */}
               <div className="grid grid-cols-1 gap-2 items-center">
-                <div className="relative p-1">
-                  <TicketPercent className="absolute left-2 top-1/2 text-gray-400 -translate-y-1/2" />
-                  <Input
-                    placeholder={t('voucher.enterVoucher')}
-                    className="pl-10"
-                    onChange={(e) => setSelectedVoucher(e.target.value)}
-                    value={selectedVoucher}
+                <div className="flex gap-2 items-center p-1">
+                  <div className="relative flex-1">
+                    <TicketPercent className="absolute left-2 top-1/2 text-gray-400 -translate-y-1/2" />
+                    <Input
+                      placeholder={t('voucher.enterVoucher')}
+                      className="pl-10"
+                      onChange={(e) => setSelectedVoucher(e.target.value)}
+                      value={selectedVoucher}
+                    />
+                  </div>
+                  <VoucherQrScanButton
+                    isPublic={!userInfo}
+                    onResolved={handleQrResolved}
                   />
                 </div>
               </div>

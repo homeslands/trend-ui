@@ -16,7 +16,7 @@ import {
   TabsContent,
 } from '@/components/ui'
 
-import { NotificationMessageCode, Role, ROUTE, PrinterJobType } from '@/constants'
+import { NOTIFICATION_TYPE, NotificationMessageCode, Role, ROUTE, PrinterJobType } from '@/constants'
 import { useUpdateNotificationStatus, useGetPrinterEvents, useNotification } from '@/hooks'
 import { INotification, PrinterFailNotificationItem, IPrinterEvent } from '@/types'
 import { useOrderTrackingStore, useSelectedOrderStore, useUserStore, useNotificationStore } from '@/stores'
@@ -383,7 +383,7 @@ export default function SystemNotificationPopover() {
       return
     }
 
-    if (notification.type === 'order') {
+    if (notification.type === NOTIFICATION_TYPE.ORDER) {
       clearSelectedItems()
       setOrderSlug(notification.slug)
       if (userInfo?.role.name === Role.STAFF) {

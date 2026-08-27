@@ -7,12 +7,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui'
 import { UpdateCampaignSheet } from '@/components/app/sheet'
-import { ConfirmCloseCampaignDialog, ConfirmDeleteCampaignDialog } from '@/components/app/dialog'
+import {
+  ConfirmCloseCampaignDialog,
+  ConfirmDeleteCampaignDialog,
+  ConfirmReopenCampaignDialog,
+} from '@/components/app/dialog'
 import { CAMPAIGN_STATUS } from '@/constants'
 import { ICampaign } from '@/types'
 
 export function CampaignActions({ campaign }: { campaign: ICampaign }) {
-  const canClose = campaign.status !== CAMPAIGN_STATUS.CLOSED
+  const isClosed = campaign.status === CAMPAIGN_STATUS.CLOSED
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
@@ -24,7 +28,13 @@ export function CampaignActions({ campaign }: { campaign: ICampaign }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="flex flex-col gap-1 w-fit">
           <UpdateCampaignSheet campaign={campaign} />
-          {canClose && <ConfirmCloseCampaignDialog campaign={campaign} />}
+          {isClosed ? (
+            // Mở lại chiến dịch đã đóng; với chiến dịch xu có thể nạp thêm ngân sách
+            // ngay trong dialog (backend chặn mở lại khi xu còn lại không đủ một lượt).
+            <ConfirmReopenCampaignDialog campaign={campaign} />
+          ) : (
+            <ConfirmCloseCampaignDialog campaign={campaign} />
+          )}
           <ConfirmDeleteCampaignDialog campaign={campaign} />
         </DropdownMenuContent>
       </DropdownMenu>

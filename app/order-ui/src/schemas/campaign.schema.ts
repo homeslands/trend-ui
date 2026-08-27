@@ -85,11 +85,41 @@ export const campaignGiftTemplateSchema = z.object({
 
 export type TCampaignGiftTemplateSchema = z.infer<typeof campaignGiftTemplateSchema>
 
+export const campaignCoinTemplateSchema = z
+  .object({
+    title: z.string().min(1, 'Tên phần thưởng xu là bắt buộc'),
+    description: z.string().optional(),
+    coinPerUser: z
+      .number({ invalid_type_error: 'Số xu mỗi người phải là số' })
+      .int()
+      .positive('Số xu mỗi người phải lớn hơn 0'),
+    // `null` = ngân sách không giới hạn (bỏ key khi gửi lên backend)
+    totalCoinLimit: z
+      .number({ invalid_type_error: 'Tổng ngân sách xu phải là số' })
+      .int()
+      .positive('Tổng ngân sách xu phải lớn hơn 0')
+      .nullable(),
+  })
+  .refine(
+    (data) => data.totalCoinLimit == null || data.totalCoinLimit >= data.coinPerUser,
+    {
+      // Backend cũng chặn (159916): ngân sách hữu hạn phải đủ cho ít nhất một lượt tặng.
+      message: 'Tổng ngân sách xu phải lớn hơn hoặc bằng số xu mỗi người',
+      path: ['totalCoinLimit'],
+    },
+  )
+
+export type TCampaignCoinTemplateSchema = z.infer<typeof campaignCoinTemplateSchema>
+
 export const campaignFormSchema = z
   .object({
     name: z.string().min(1, 'Tên chiến dịch là bắt buộc'),
     type: z.enum([CAMPAIGN_TYPE.NEW_USER, CAMPAIGN_TYPE.BIRTHDAY]),
-    campaignType: z.enum([CAMPAIGN_REWARD_TYPE.VOUCHER, CAMPAIGN_REWARD_TYPE.GIFT]),
+    campaignType: z.enum([
+      CAMPAIGN_REWARD_TYPE.VOUCHER,
+      CAMPAIGN_REWARD_TYPE.GIFT,
+      CAMPAIGN_REWARD_TYPE.COIN,
+    ]),
     startDate: z.string().min(1, 'Ngày bắt đầu là bắt buộc'),
     endDate: z.string().default(''),
     recipientLimit: z
@@ -99,11 +129,12 @@ export const campaignFormSchema = z
       .optional(),
     // Chỉ bắt buộc với phần thưởng voucher — chiến dịch phát quà không gắn nhóm voucher.
     voucherGroupSlug: z.string().default(''),
-    // Chỉ một trong hai tồn tại tại một thời điểm. Khi người dùng đổi loại phần thưởng,
-    // form phải xoá hẳn nhánh còn lại về `undefined` — để nguyên object rỗng sẽ khiến
+    // Chỉ một nhánh tồn tại tại một thời điểm. Khi người dùng đổi loại phần thưởng,
+    // form phải xoá hẳn các nhánh còn lại về `undefined` — để nguyên object rỗng sẽ khiến
     // `.optional()` vẫn chạy validate và báo lỗi ở nhánh không được chọn.
     template: campaignVoucherTemplateSchema.optional(),
     giftTemplate: campaignGiftTemplateSchema.optional(),
+    coinTemplate: campaignCoinTemplateSchema.optional(),
   })
   .superRefine((data, ctx) => {
     if (data.endDate && data.endDate <= data.startDate) {
@@ -128,6 +159,18 @@ export const campaignFormSchema = z
           code: z.ZodIssueCode.custom,
           message: 'Cần điền thời hạn quà tặng nếu không có ngày kết thúc chiến dịch',
           path: ['giftTemplate', 'duration'],
+        })
+      }
+      return
+    }
+
+    if (data.campaignType === CAMPAIGN_REWARD_TYPE.COIN) {
+      // Chiến dịch tặng xu không có duration/nhóm voucher — chỉ cần template.
+      if (!data.coinTemplate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Cần điền thông tin tặng xu',
+          path: ['coinTemplate', 'title'],
         })
       }
       return

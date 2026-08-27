@@ -1740,3 +1740,54 @@ input[type='number']::-webkit-outer-spin-button {
   content: " *";
   color: red;
 }
+
+/* Nhịp thở của 4 góc khung ngắm trong màn quét voucher QR. Thuần trang trí: nó
+   chỉ báo camera còn sống, không phản ánh việc máy đọc được gì. Thiếu nó thì
+   màn hình đứng im trông như treo.
+   Biên độ giữ nhỏ (4%) để không kéo người dùng chỉnh khoảng cách theo nhịp. */
+@keyframes voucher-qr-reticle {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+.voucher-qr-reticle {
+  animation: voucher-qr-reticle 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voucher-qr-reticle {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Thông báo từ chối trên màn quét: trượt xuống một nhịp ngắn khi xuất hiện.
+   Trên nền ảnh camera đang động, một khối chữ hiện ra tĩnh lặng rất dễ bị mắt
+   bỏ qua — chuyển động là thứ kéo được sự chú ý về đúng chỗ. */
+@keyframes voucher-qr-notice-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.voucher-qr-notice {
+  animation: voucher-qr-notice-in 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voucher-qr-notice {
+    animation: none;
+  }
+}

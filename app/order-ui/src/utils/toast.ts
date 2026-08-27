@@ -130,6 +130,7 @@ const errorCodes: { [key: number]: string } = {
   143421: 'toast.productNotAppliedToVoucher',
   143422: 'toast.voucherProductNotApplicable',
   143424: 'toast.allProductMustBeAppliedToVoucher',
+  143425: 'toast.atLeastOneProductMustBeAppliedToVoucher',
   143426: 'toast.voucherExpired',
   143428: 'toast.mustVerifyIdentityToUseVoucher',
   143429: 'toast.voucherPaymentMethodAlreadyExists',
@@ -342,6 +343,7 @@ const errorCodes: { [key: number]: string } = {
   159911: 'toast.campaignTemplateTypeMismatch',
   159912: 'toast.campaignGiftNotYetSupported',
   159914: 'toast.campaignBirthdayAlreadyRunningInPeriod',
+  159917: 'toast.campaignNewUserAlreadyRunningInPeriod',
   159805: 'toast.membershipCardAlreadyExists',
   158006: 'toast.cardPointAlreadyExists',
   158007: 'toast.cardTitleAlreadyExists',
@@ -353,9 +355,31 @@ export function showToast(message: string) {
   toast.success(i18next.t(message, { ns: 'toast' }))
 }
 
-export function showErrorToast(code: number) {
-  const messageKey = errorCodes[code] || 'toast.requestFailed'
-  toast.error(i18next.t(messageKey, { ns: 'toast' }))
+/**
+ * Hiện lỗi theo mã nghiệp vụ server trả về.
+ *
+ * `serverMessage` là trường `message` trong body lỗi. Nó được dùng khi mã chưa
+ * có trong `errorCodes`: body lỗi LUÔN kèm sẵn lý do, nên hiện "Yêu cầu thất
+ * bại" trong tình huống đó là tự vứt đi thông tin mình đang cầm — người dùng
+ * không biết chuyện gì xảy ra, còn lập trình viên phải cắm log mới lần ra được
+ * mã nào đang thiếu.
+ *
+ * Bản dịch vẫn được ưu tiên: `serverMessage` thường là tiếng Anh và mang giọng
+ * kỹ thuật, chỉ dùng khi không còn gì tốt hơn.
+ */
+export function showErrorToast(code: number, serverMessage?: string) {
+  const messageKey = errorCodes[code]
+  if (messageKey) {
+    toast.error(i18next.t(messageKey, { ns: 'toast' }))
+    return
+  }
+
+  if (serverMessage?.trim()) {
+    toast.error(serverMessage.trim())
+    return
+  }
+
+  toast.error(i18next.t('toast.requestFailed', { ns: 'toast' }))
 }
 
 export function useErrorToast(code: number) {
@@ -365,4 +389,18 @@ export function useErrorToast(code: number) {
 
 export function showErrorToastMessage(message: string) {
   toast.error(i18next.t(message, { ns: 'toast' }))
+}
+
+/**
+ * Hiện lỗi từ một chuỗi ĐÃ dịch sẵn.
+ *
+ * Khác `showErrorToastMessage` ở chỗ không dịch lại: dùng cho những nơi đã gọi
+ * `t()` rồi, ví dụ `getVoucherErrorMessage` trong các sheet voucher — nó ghép
+ * biến vào câu (tên khung giờ, số tiền tối thiểu) nên phải dịch tại chỗ.
+ * Đẩy chuỗi đã dịch qua `i18next.t` lần nữa là dựa vào việc i18next trả lại
+ * nguyên văn khi không tìm thấy khoá — chạy được nhưng do may, không do đúng.
+ */
+export function showErrorToastText(text: string) {
+  if (!text?.trim()) return
+  toast.error(text.trim())
 }

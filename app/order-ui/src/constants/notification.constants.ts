@@ -5,6 +5,15 @@ export enum TOKEN_REFRESH_THRESHOLD {
   THRESHOLD = 1000 * 60 * 60 * 48, // 48 hours
 }
 
+// Mirror của NotificationType phía backend (notification.constants.ts).
+export enum NOTIFICATION_TYPE {
+    ORDER = 'order',
+    CARD_ORDER = 'card-order',
+    VOUCHER = 'voucher',
+    GIFT = 'gift',
+    COIN = 'coin',
+}
+
 export enum NotificationMessageCode {
     ORDER_NEEDS_PROCESSED = 'order-needs-processed',
     ORDER_NEEDS_DELIVERED = 'order-needs-delivered',
@@ -17,6 +26,11 @@ export enum NotificationMessageCode {
     VOUCHER_BIRTHDAY_RECEIVED = 'voucher-birthday-received',
     VOUCHER_NEW_USER_RECEIVED = 'voucher-new-user-received',
     GIFT_BIRTHDAY_RECEIVED = 'gift-birthday-received',
+    // Chiến dịch tặng xu: khách nhận xu thành viên mới; admin được báo khi
+    // ngân sách xu cạn và chiến dịch tự đóng.
+    COIN_NEW_USER_RECEIVED = 'coin-new-user-received',
+    COIN_CAMPAIGN_BUDGET_EXHAUSTED = 'coin-campaign-budget-exhausted',
+    CARD_ORDER_PAID = 'card-order-paid',
 }
 
 export enum MAX_RETRIES {

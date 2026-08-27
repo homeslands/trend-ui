@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import jsPDF from 'jspdf'
+import QRCode from 'qrcode'
 import moment from 'moment'
 import { useTranslation } from 'react-i18next'
 import { Download, TriangleAlert } from 'lucide-react'
@@ -14,7 +16,7 @@ import {
   DialogTrigger,
 } from '@/components/ui'
 
-import { showToast } from '@/utils'
+import { buildVoucherQrPayload, showErrorToastMessage, showToast } from '@/utils'
 import { IVoucher } from '@/types'
 
 interface IConfirmExportVoucherDialogProps {
@@ -35,55 +37,86 @@ export default function ConfirmExportVoucherDialog({
   const { t } = useTranslation(['voucher'])
   const { t: tCommon } = useTranslation('common')
   const { t: tToast } = useTranslation('toast')
+  const [isExporting, setIsExporting] = useState(false)
 
   const handleExport = async () => {
-    await exportVouchersAsPDF(selectedVouchers)
-    onOpenChange(false)
-    onSuccess()
-    showToast(tToast('toast.exportVouchersSuccess'))
+    setIsExporting(true)
+    try {
+      await exportVouchersAsPDF(selectedVouchers)
+      onOpenChange(false)
+      onSuccess()
+      showToast(tToast('toast.exportVouchersSuccess'))
+    } catch {
+      // Sinh QR hoặc dựng PDF ném lỗi: không báo gì thì nút bật lại và người dùng
+      // thấy một cú bấm không có tác dụng, không biết là đã hỏng.
+      showErrorToastMessage('toast.exportVouchersError')
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   const exportVouchersAsPDF = async (vouchers: IVoucher[]) => {
-    if (!vouchers || vouchers.length === 0) return;
+    if (!vouchers || vouchers.length === 0) return
 
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'cm',
       format: [5, 2], // Kích thước nhãn 5cm x 2cm
-    });
+    })
+
+    const pageWidth = 5
+    const pageHeight = 2
+    const qrSize = 1.5
+    const qrX = 0.25
+    const qrY = (pageHeight - qrSize) / 2
+    const textX = 2.0 // ngay sau QR
+    const rightMargin = 0.15 // chừa mép để mực không tràn ra cạnh bế
+    const availableTextWidth = pageWidth - textX - rightMargin
+
+    const codeFontSizeDefault = 7
+    const codeFontSizeFloor = 5
+    const dateFontSize = 6 // nhỏ hơn dòng code: chuỗi HSD có độ dài cố định, không co giãn được
+
+    const lineSpacing = 0.3
+    const codeLineHeight = codeFontSizeDefault * 0.035
+    const dateLineHeight = dateFontSize * 0.035
+    const totalTextHeight = codeLineHeight + lineSpacing + dateLineHeight
+    const textYStart = (pageHeight - totalTextHeight) / 2 + codeLineHeight
+    const dateYStart = textYStart + lineSpacing + dateLineHeight
 
     for (const [index, voucher] of vouchers.entries()) {
-      if (index !== 0) pdf.addPage();
+      if (index !== 0) pdf.addPage()
 
-      // ==== Layout constants ====
-      const pageWidth = 5;
-      const pageHeight = 2;
+      // margin: 1 thay vì mặc định 4 — nhãn 1.5cm không đủ chỗ cho viền rộng.
+      const qrDataUrl = await QRCode.toDataURL(buildVoucherQrPayload(voucher), {
+        margin: 1,
+        width: 256,
+      })
+      pdf.addImage(qrDataUrl, 'PNG', qrX, qrY, qrSize, qrSize)
 
-      const fontSize = 8; // Font lớn hơn để dễ đọc
-      const lineSpacing = 0.3; // Khoảng cách giữa 2 dòng (cm)
-      const lineHeight = fontSize * 0.035; // Ước lượng chiều cao 1 dòng (cm)
+      const codeLine = `Code: ${voucher.code}`
+      const dateLine = `HSD: ${moment(voucher.startDate).format('DD/MM/YY')} - ${moment(voucher.endDate).format('DD/MM/YY')}`
 
-      const totalTextHeight = lineHeight * 2 + lineSpacing; // Tổng chiều cao 2 dòng và khoảng cách
-      const textYStart = (pageHeight - totalTextHeight) / 2 + lineHeight; // Vị trí dòng đầu tiên (căn giữa dọc)
+      pdf.setFont('helvetica', 'bold')
+      pdf.setTextColor(0, 0, 0)
 
-      const textX = pageWidth / 2; // Căn giữa ngang
+      // Mã voucher dài tuỳ ý: co dần cỡ chữ tới khi vừa cột, sàn 5pt.
+      // Không rút gọn chuỗi — mã bị cắt trông vẫn hợp lệ nhưng sai, còn nguy hiểm hơn chữ nhỏ.
+      let codeFontSize = codeFontSizeDefault
+      pdf.setFontSize(codeFontSize)
+      while (pdf.getTextWidth(codeLine) > availableTextWidth && codeFontSize > codeFontSizeFloor) {
+        codeFontSize -= 1
+        pdf.setFontSize(codeFontSize)
+      }
+      pdf.text(codeLine, textX, textYStart)
 
-      // Text content
-      const codeLine = `Code: ${voucher.code}`;
-      const dateLine = `HSD: ${moment(voucher.startDate).format('DD/MM/YYYY')} - ${moment(voucher.endDate).format('DD/MM/YYYY')}`;
-
-      // Set font
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(fontSize);
-      pdf.setTextColor(0, 0, 0);
-
-      // Draw text (centered)
-      pdf.text(codeLine, textX, textYStart, { align: 'center' });
-      pdf.text(dateLine, textX, textYStart + lineHeight + lineSpacing, { align: 'center' });
+      // Căn trái, không còn căn giữa: text giờ chia chỗ với QR.
+      pdf.setFontSize(dateFontSize)
+      pdf.text(dateLine, textX, dateYStart)
     }
 
-    pdf.save('Voucher-tickets.pdf');
-  };
+    pdf.save('Voucher-tickets.pdf')
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -124,10 +157,8 @@ export default function ConfirmExportVoucherDialog({
           >
             {tCommon('common.cancel')}
           </Button>
-          <Button
-            onClick={handleExport}
-          >
-            {t('voucher.exportVouchers')}
+          <Button onClick={handleExport} disabled={isExporting}>
+            {isExporting ? tCommon('common.loading') : t('voucher.exportVouchers')}
           </Button>
         </DialogFooter>
       </DialogContent>

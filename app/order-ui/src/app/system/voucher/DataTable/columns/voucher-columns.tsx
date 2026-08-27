@@ -43,22 +43,29 @@ export const useVoucherColumns = (onSuccess: () => void, onSelectionChange: (sel
   return [
     {
       id: 'select',
+      // `TableHead`/`TableCell` ép `pr-0` cho mọi ô chứa checkbox (xem
+      // `src/components/ui/table.tsx`), nên cột này co lại còn ~24px. Không đặt được
+      // `size` ở đây: `DataTable` render `TableHead`/`TableCell` mà không truyền
+      // `header.getSize()`, nên thuộc tính đó bị bỏ qua. Dùng div bọc để giữ bề rộng,
+      // đúng cách các cột khác trong file này đang làm.
       header: ({ table }) => (
-        <Checkbox
-          checked={selectedVouchers && selectedVouchers.length === table.getRowModel().rows.length}
-          onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(!!value)
-            const rows = table.getRowModel().rows
-            const updatedSlugs = value ? rows.map((row) => row.original) : []
-            updateSelectedVouchers(updatedSlugs)
-          }}
-          aria-label="Select all"
-        />
+        <div className="flex justify-center w-10">
+          <Checkbox
+            checked={selectedVouchers && selectedVouchers.length === table.getRowModel().rows.length}
+            onCheckedChange={(value) => {
+              table.toggleAllPageRowsSelected(!!value)
+              const rows = table.getRowModel().rows
+              const updatedSlugs = value ? rows.map((row) => row.original) : []
+              updateSelectedVouchers(updatedSlugs)
+            }}
+            aria-label="Select all"
+          />
+        </div>
       ),
       cell: ({ row }) => {
         const voucher = row.original
         return (
-          <div onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-center w-10" onClick={(e) => e.stopPropagation()}>
             <Checkbox
               checked={selectedVouchers && selectedVouchers.some(v => v.slug === voucher.slug)}
               onCheckedChange={(value) => {

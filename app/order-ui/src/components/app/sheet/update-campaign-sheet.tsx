@@ -29,7 +29,11 @@ import {
   Switch,
 } from '@/components/ui'
 import { DateAndTimePicker } from '@/components/app/picker'
-import { CampaignGiftTemplateFields, CampaignTemplateFields } from '@/components/app/form'
+import {
+  CampaignCoinTemplateFields,
+  CampaignGiftTemplateFields,
+  CampaignTemplateFields,
+} from '@/components/app/form'
 import { ConfirmUpdateCampaignDialog } from '@/components/app/dialog'
 import { campaignFormSchema, TCampaignFormSchema } from '@/schemas/campaign.schema'
 import {
@@ -57,7 +61,11 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
   const [selectedCampaignType, setSelectedCampaignType] = useState<CAMPAIGN_TYPE>(campaign.type)
   // Loại phần thưởng suy ra từ template nào có trong response, không đổi được sau khi tạo.
   const [selectedRewardType, setSelectedRewardType] = useState<CAMPAIGN_REWARD_TYPE>(
-    campaign.giftCampaignTemplate ? CAMPAIGN_REWARD_TYPE.GIFT : CAMPAIGN_REWARD_TYPE.VOUCHER,
+    campaign.coinCampaignTemplate
+      ? CAMPAIGN_REWARD_TYPE.COIN
+      : campaign.giftCampaignTemplate
+        ? CAMPAIGN_REWARD_TYPE.GIFT
+        : CAMPAIGN_REWARD_TYPE.VOUCHER,
   )
   const [hasRecipientLimit, setHasRecipientLimit] = useState(campaign.recipientLimit != null)
   const lastRecipientLimit = useRef<number>(campaign.recipientLimit ?? 100)
@@ -73,9 +81,11 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
       type: campaign.type,
       startDate: campaign.startDate,
       endDate: campaign.endDate ?? '',
-      campaignType: campaign.giftCampaignTemplate
-        ? CAMPAIGN_REWARD_TYPE.GIFT
-        : CAMPAIGN_REWARD_TYPE.VOUCHER,
+      campaignType: campaign.coinCampaignTemplate
+        ? CAMPAIGN_REWARD_TYPE.COIN
+        : campaign.giftCampaignTemplate
+          ? CAMPAIGN_REWARD_TYPE.GIFT
+          : CAMPAIGN_REWARD_TYPE.VOUCHER,
       recipientLimit: campaign.recipientLimit,
       voucherGroupSlug: campaign.voucherGroup?.slug ?? '',
       template: {
@@ -101,8 +111,13 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
     const detail = detailData.result
     const tpl = detail.voucherCampaignTemplate
     const giftTpl = detail.giftCampaignTemplate
+    const coinTpl = detail.coinCampaignTemplate
     // Response không trả `campaignType`; suy ra bằng template nào tồn tại.
-    const rewardType = giftTpl ? CAMPAIGN_REWARD_TYPE.GIFT : CAMPAIGN_REWARD_TYPE.VOUCHER
+    const rewardType = coinTpl
+      ? CAMPAIGN_REWARD_TYPE.COIN
+      : giftTpl
+        ? CAMPAIGN_REWARD_TYPE.GIFT
+        : CAMPAIGN_REWARD_TYPE.VOUCHER
     setSelectedCampaignType(detail.type as CAMPAIGN_TYPE)
     setSelectedRewardType(rewardType)
     setHasRecipientLimit(detail.recipientLimit != null)
@@ -139,6 +154,14 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
             title: giftTpl.title,
             description: giftTpl.description ?? '',
             duration: giftTpl.duration ?? 0,
+          }
+        : undefined,
+      coinTemplate: coinTpl
+        ? {
+            title: coinTpl.title,
+            description: coinTpl.description ?? '',
+            coinPerUser: coinTpl.coinPerUser,
+            totalCoinLimit: coinTpl.totalCoinLimit ?? null,
           }
         : undefined,
     })
@@ -181,6 +204,9 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
   }
 
   const isGiftReward = selectedRewardType === CAMPAIGN_REWARD_TYPE.GIFT
+  const isCoinReward = selectedRewardType === CAMPAIGN_REWARD_TYPE.COIN
+  // Số xu còn lại lấy từ detail (danh sách có thể cache cũ) để hiển thị cạnh ô ngân sách.
+  const coinRemaining = (detailData?.result ?? campaign).coinCampaignTemplate?.remainingCoin
 
   const handleSubmit = (data: TCampaignFormSchema) => {
     // Picker bật `showTime` nên vẫn chọn được giờ chưa tới trong hôm nay — chặn nốt ở đây.
@@ -200,13 +226,13 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
       // empty field must send `null` explicitly to clear the limit — do NOT switch this
       // back to the "omit key when empty" pattern used in create-campaign-sheet.tsx.
       recipientLimit: data.recipientLimit ?? null,
-      // Chiến dịch phát quà không gắn nhóm voucher.
-      ...(isGiftReward ? {} : { voucherGroupSlug: data.voucherGroupSlug }),
+      // Chỉ chiến dịch voucher mới gắn nhóm voucher.
+      ...(isGiftReward || isCoinReward ? {} : { voucherGroupSlug: data.voucherGroupSlug }),
       // `UpdateCampaignRequestDto` KHÔNG có `giftCampaignTemplate` — chiến dịch quà tặng
       // không sửa được nội dung quà. Gửi kèm `voucherCampaignTemplate` ở đây sẽ khiến
-      // backend TẠO MỚI một template voucher cho chiến dịch gift (campaign.service.ts:252-287),
-      // nên với gift phải bỏ hẳn key template.
-      ...(isGiftReward || !data.template
+      // backend TẠO MỚI một template voucher cho chiến dịch gift/coin, nên chỉ gửi
+      // template khớp với loại phần thưởng hiện tại.
+      ...(isGiftReward || isCoinReward || !data.template
         ? {}
         : {
             voucherCampaignTemplate: {
@@ -214,6 +240,21 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
               duration: data.endDate ? null : data.template.duration,
             },
           }),
+      ...(isCoinReward && data.coinTemplate
+        ? {
+            coinCampaignTemplate: {
+              title: data.coinTemplate.title,
+              description: data.coinTemplate.description,
+              coinPerUser: data.coinTemplate.coinPerUser,
+              // "Nạp thêm xu": gửi totalCoinLimit mới -> backend tính lại
+              // remaining = limit mới − đã tiêu. Để trống (không giới hạn) thì bỏ key —
+              // Update DTO không nhận null, backend giữ nguyên giá trị cũ.
+              ...(data.coinTemplate.totalCoinLimit != null
+                ? { totalCoinLimit: data.coinTemplate.totalCoinLimit }
+                : {}),
+            },
+          }
+        : {}),
     })
     setIsConfirmOpen(true)
   }
@@ -386,7 +427,7 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
                         </FormItem>
                       )}
                     />
-                    {!isGiftReward && (
+                    {!isGiftReward && !isCoinReward && (
                     <FormField
                       control={form.control}
                       name="voucherGroupSlug"
@@ -420,7 +461,13 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
 
                 {/* Phần thưởng — loại không đổi được sau khi tạo */}
                 <p className="text-sm font-medium text-muted-foreground px-1">
-                  {t(isGiftReward ? 'campaign.giftTemplate.sectionTitle' : 'campaign.template.title')}
+                  {t(
+                    isGiftReward
+                      ? 'campaign.giftTemplate.sectionTitle'
+                      : isCoinReward
+                        ? 'campaign.coinTemplate.sectionTitle'
+                        : 'campaign.template.title',
+                  )}
                 </p>
                 {isGiftReward ? (
                   <>
@@ -428,6 +475,19 @@ export default function UpdateCampaignSheet({ campaign }: UpdateCampaignSheetPro
                       {t('campaign.giftTemplate.readOnlyNote')}
                     </p>
                     <CampaignGiftTemplateFields key={resetKey} readOnly />
+                  </>
+                ) : isCoinReward ? (
+                  <>
+                    {campaign.status === CAMPAIGN_STATUS.CLOSED && (
+                      <p className="px-1 text-xs text-muted-foreground">
+                        {t('campaign.coinTemplate.topUpReopenNote')}
+                      </p>
+                    )}
+                    <CampaignCoinTemplateFields
+                      key={resetKey}
+                      isEditing
+                      remainingCoin={coinRemaining}
+                    />
                   </>
                 ) : (
                   <CampaignTemplateFields key={resetKey} />

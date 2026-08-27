@@ -136,6 +136,7 @@
     "exportProductImportTemplateSuccess": "Product import template exported successfully",
     "exportProductRevenueSuccess": "Product quantity report exported successfully",
     "exportRevenueSuccess": "Revenue exported successfully",
+    "exportVouchersError": "Voucher export failed",
     "exportVouchersSuccess": "Voucher exported successfully",
     "fileNotFound": "File not found",
     "firstNameRequired": "First name is required",
@@ -468,7 +469,12 @@
     "campaignTemplateTypeMismatch": "The reward template does not match the campaign type",
     "campaignGiftNotYetSupported": "Gift campaigns are not available yet",
     "campaignBirthdayAlreadyRunningInPeriod": "Another birthday campaign is already running in this time period",
+    "campaignNewUserAlreadyRunningInPeriod": "Campaign period is overlapping. Please close the opening new-user campaign before creating a new one.",
     "deleteAccountSuccess": "Your account has been deleted successfully.",
-    "sendOtpFailed": "Could not send a verification code to this number. Check the number or try again later."
+    "sendOtpFailed": "Could not send a verification code to this number. Check the number or try again later.",
+    "invalidVoucherQrCode": "Invalid QR code",
+    "voucherNotFoundFromQrCode": "No voucher found for this QR code",
+    "voucherAlreadyApplied": "This voucher is already applied to the order",
+    "atLeastOneProductMustBeAppliedToVoucher": "The cart must contain at least one product eligible for this voucher."
   }
 }

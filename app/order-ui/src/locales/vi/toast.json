@@ -15,6 +15,7 @@
 				"customPriceMustBePositive": "Giá sản phẩm phải lớn hơn 0",
 				"allOrderItemMustBelongToAOrder": "Tất cả mục đơn hàng phải thuộc về một đơn hàng",
 				"allProductMustBeAppliedToVoucher": "Một số sản phẩm trong giỏ hàng không áp dụng được voucher này.",
+				"atLeastOneProductMustBeAppliedToVoucher": "Giỏ hàng cần có ít nhất một sản phẩm áp dụng được voucher này.",
 				"applyPromotionSuccess": "Áp dụng khuyến mãi thành công",
 				"applyVoucherSuccess": "Áp dụng voucher thành công",
 				"authorityDeleteFailed": "Xóa quyền hạn thất bại",
@@ -136,6 +137,7 @@
 				"exportProductImportTemplateSuccess": "Xuất mẫu nhập sản phẩm thành công",
 				"exportProductRevenueSuccess": "Xuất báo cáo số lượng sản phẩm thành công",
 				"exportRevenueSuccess": "Xuất doanh thu thành công",
+				"exportVouchersError": "Xuất voucher thất bại",
 				"exportVouchersSuccess": "Xuất voucher thành công",
 				"fileNotFound": "Không tìm thấy tệp",
 				"firstNameRequired": "Họ tên là bắt buộc",
@@ -469,7 +471,11 @@
 				"campaignTemplateTypeMismatch": "Mẫu phần thưởng không khớp loại chiến dịch",
 				"campaignGiftNotYetSupported": "Chiến dịch quà tặng chưa khả dụng",
 				"campaignBirthdayAlreadyRunningInPeriod": "Đã có một chiến dịch sinh nhật khác đang diễn ra trong khoảng thời gian này",
-				"deleteAccountSuccess": "Tài khoản của bạn đã được xóa thành công."
+				"campaignNewUserAlreadyRunningInPeriod": "Chiến dịch bị trùng thời gian. Vui lòng đóng chiến dịch thành viên mới đang mở trước khi tạo chiến dịch mới.",
+				"deleteAccountSuccess": "Tài khoản của bạn đã được xóa thành công.",
+				"invalidVoucherQrCode": "Mã QR không hợp lệ",
+				"voucherNotFoundFromQrCode": "Không tìm thấy voucher từ mã QR này",
+				"voucherAlreadyApplied": "Voucher này đã được áp dụng cho đơn hàng"
 
 			}
 		}

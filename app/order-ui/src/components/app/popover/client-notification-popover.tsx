@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState } from 'react'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Sparkles, Package, Truck, Printer, Ticket, CircleCheck, Gift } from 'lucide-react'
+import { Bell, Sparkles, Package, Truck, Printer, Ticket, CircleCheck, Gift, Coins } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -15,9 +15,9 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@/components/ui'
-import { NotificationMessageCode, Role, ROUTE } from '@/constants'
+import { NOTIFICATION_TYPE, NotificationMessageCode, Role, ROUTE } from '@/constants'
+import { useNotification } from '@/hooks'
 import { useNotificationStore, useOrderTrackingStore, useSelectedOrderStore, useUserStore } from '@/stores'
-import { getAllNotifications } from '@/api'
 import type { INotification } from '@/types'
 
 export default function ClientNotificationPopover() {
@@ -34,27 +34,23 @@ export default function ClientNotificationPopover() {
 
   const unreadCount = useNotificationStore((state) => state.getUnreadCount())
 
-  // Fetch notifications khi popover mở
+  // Dùng useNotification hook để get notifications từ API
+  const { data: notificationsData, refetch: refetchNotifications } =
+    useNotification({
+      receiver: userInfo?.slug || '',
+      page: 1,
+      size: 50,
+    })
+
+  // Hydrate store từ data của hook
   useEffect(() => {
-    if (!userInfo?.slug) return
-    if (!isPopoverOpen) return
+    const items = notificationsData?.pages.flatMap(
+      (page) => page?.result?.items ?? [],
+    )
+    if (!items || items.length === 0) return
 
-    ;(async () => {
-      try {
-        const response = await getAllNotifications({
-          receiver: userInfo.slug,
-          page: 1,
-          size: 50,
-        })
-        const items = response.result.items as INotification[] | undefined
-        if (!items || items.length === 0) return
-
-        hydrateFromApi(items)
-      } catch {
-        // ignore errors
-      }
-    })()
-  }, [isPopoverOpen, userInfo?.slug, hydrateFromApi])
+    hydrateFromApi(items)
+  }, [notificationsData, hydrateFromApi])
 
   // Filter notifications theo tab
   const filteredNotifications = useMemo(() => {
@@ -148,7 +144,7 @@ export default function ClientNotificationPopover() {
       return
     }
 
-    if (notification.type === 'order') {
+    if (notification.type === NOTIFICATION_TYPE.ORDER) {
       clearSelectedItems()
       setOrderSlug(notification.slug)
       if (userInfo?.role.name === Role.STAFF) {
@@ -163,6 +159,9 @@ export default function ClientNotificationPopover() {
 
   const handlePopoverOpenChange = (open: boolean) => {
     setIsPopoverOpen(open)
+    if (open && userInfo?.slug) {
+      refetchNotifications()
+    }
   }
 
   return (
@@ -263,6 +262,9 @@ export default function ClientNotificationPopover() {
                               ? 'bg-violet-100'
                               : notification.message === NotificationMessageCode.GIFT_BIRTHDAY_RECEIVED
                               ? 'bg-pink-100'
+                              : notification.message === NotificationMessageCode.COIN_NEW_USER_RECEIVED ||
+                                notification.message === NotificationMessageCode.COIN_CAMPAIGN_BUDGET_EXHAUSTED
+                              ? 'bg-amber-100'
                               : notification.message === NotificationMessageCode.ORDER_PAID
                               ? 'bg-green-100'
                               : 'bg-blue-100'
@@ -299,6 +301,13 @@ export default function ClientNotificationPopover() {
                             <Gift
                               className={`w-4 h-4 ${
                                 notification.isRead ? 'text-muted-foreground/70' : 'text-pink-500'
+                              }`}
+                            />
+                          ) : notification.message === NotificationMessageCode.COIN_NEW_USER_RECEIVED ||
+                            notification.message === NotificationMessageCode.COIN_CAMPAIGN_BUDGET_EXHAUSTED ? (
+                            <Coins
+                              className={`w-4 h-4 ${
+                                notification.isRead ? 'text-muted-foreground/70' : 'text-amber-500'
                               }`}
                             />
                           ) : notification.message === NotificationMessageCode.ORDER_PAID ? (

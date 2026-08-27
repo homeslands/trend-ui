@@ -4,6 +4,8 @@
 
 Đảm bảo file `android/app/src/main/AndroidManifest.xml` có các permissions và cấu hình sau:
 
+`CAMERA` / `android.hardware.camera` là bắt buộc cho tính năng quét mã QR voucher; vì `AndroidManifest.xml` không được commit vào git, thêm quyền này đòi hỏi build lại APK — thiết bị đang chạy bản build cũ sẽ không quét được cho tới khi cập nhật.
+
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     
@@ -12,6 +14,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
     
     <application
         android:label="TREND Coffee"

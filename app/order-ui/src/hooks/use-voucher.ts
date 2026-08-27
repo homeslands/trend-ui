@@ -43,6 +43,7 @@ import {
   IUpdateVoucherRequest,
   IValidateVoucherPaymentMethodRequest,
   IValidateVoucherRequest,
+  IVoucher,
 } from '@/types'
 
 export const useVoucherGroups = (
@@ -244,6 +245,45 @@ export const useUpdateVoucherGroupApplyTime = () => {
   return useMutation({
     mutationFn: async (data: IUpdateVoucherGroupApplyTimeRequest) => {
       return updateVoucherGroupApplyTime(data)
+    },
+  })
+}
+
+/**
+ * Tra voucher từ định danh đọc được trên mã QR.
+ *
+ * Dùng mutation chứ không dùng `useSpecificVoucher`: hook đó là `useQuery`,
+ * chỉ chạy theo state, không gọi mệnh lệnh được từ callback quét.
+ *
+ * Thử `slug` trước rồi mới tới `code`: QR mới mã hoá slug, nhưng nhãn đã in
+ * trước tính năng này chỉ chứa code. Thiếu bước hai thì nhãn cũ quét không ra.
+ *
+ * `ignoreGlobalError` là bắt buộc — nếu để global handler bắt, lần tra `slug`
+ * thất bại sẽ bắn toast lỗi trước khi lần tra `code` kịp thành công.
+ */
+export const useLookupVoucherByQr = () => {
+  return useMutation({
+    mutationKey: ['lookupVoucherByQr'],
+    meta: { ignoreGlobalError: true },
+    mutationFn: async ({
+      identifier,
+      isPublic,
+    }: {
+      identifier: string
+      isPublic: boolean
+    }): Promise<IVoucher> => {
+      const lookup = isPublic ? getSpecificPublicVoucher : getSpecificVoucher
+
+      // Tra theo SLUG trước vì mã QR in ra chứa slug. Nhánh code giữ lại cho
+      // trường hợp nhân viên gõ tay chuỗi in trên nhãn, và cho nhãn in kiểu cũ.
+      // Sai thứ tự thì mọi lần quét đều tốn một request hỏng trước.
+      const bySlug = await lookup({ slug: identifier }).catch(() => null)
+      if (bySlug?.result) return bySlug.result
+
+      const byCode = await lookup({ code: identifier }).catch(() => null)
+      if (byCode?.result) return byCode.result
+
+      throw new Error(`Voucher not found for identifier: ${identifier}`)
     },
   })
 }
