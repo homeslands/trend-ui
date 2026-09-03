@@ -8,7 +8,7 @@ import { sidebarRoutes } from '@/router/routes'
 import { useAuthStore, useCartItemStore, useCurrentUrlStore, useUserStore } from '@/stores'
 import { Role } from '@/constants/role'
 import { showToast, isAuthLoading, safeNavigate, isValidRedirectUrl } from '@/utils'
-import { usePermissions } from '@/hooks'
+import { usePermissionsStatus } from '@/hooks'
 
 interface ProtectedElementProps {
   element: ReactNode,
@@ -30,7 +30,10 @@ export default function ProtectedElement({
   // Kiểm tra trạng thái loading của auth data - sử dụng helper function
   const isAuthDataLoading = isAuthLoading()
 
-  const tokenPermissions = usePermissions()
+  // Tách "chưa lấy xong quyền" khỏi "không có quyền": gộp hai cái này lại là
+  // nguyên nhân lỗi 403 mỗi lần F5 (xem chú thích trong use-permissions.ts).
+  const { permissions: tokenPermissions, isLoading: isScopeLoading } =
+    usePermissionsStatus()
 
   // Helper: Các route không cần kiểm tra permission đặc biệt
   const publicStaffRoutes = useMemo(() => [
@@ -83,13 +86,23 @@ export default function ProtectedElement({
       return true;
     }
 
-    // 5. Kiểm tra permission cho các route khác
+    // 5. Chưa lấy xong scope thì CHƯA kết luận được.
+    // Sau mỗi lần F5, cache của react-query rỗng nên `tokenPermissions` là []
+    // trong khoảnh khắc đầu tiên. Nếu coi đó là "không có quyền" thì mọi vai
+    // trò khác Customer đều bị đá sang trang 403 ngay khi tải lại trang —
+    // đúng lỗi tester ghi ngày 03/09/2026. Customer không dính vì nhánh 3 ở
+    // trên đã trả về trước, không đọc tới permissions.
+    if (isScopeLoading) {
+      return 'loading';
+    }
+
+    // 6. Kiểm tra permission cho các route khác
     if (tokenPermissions.length === 0) {
-      // Nếu không có permissions trong token, chỉ cho phép public routes
+      // Đã lấy xong scope mà vẫn rỗng ⇒ thật sự không có quyền nào
       return false;
     }
 
-    // 6. Tìm route config tương ứng
+    // 7. Tìm route config tương ứng
     const route = sidebarRoutes.find(route => pathname.includes(route.path));
 
     if (!route) {
@@ -98,7 +111,7 @@ export default function ProtectedElement({
       return true;
     }
 
-    // 7. Kiểm tra permission cụ thể
+    // 8. Kiểm tra permission cụ thể
     const hasRequiredPermission = !!route.permission && tokenPermissions.includes(route.permission);
 
     return hasRequiredPermission;
@@ -107,6 +120,7 @@ export default function ProtectedElement({
     token,
     userInfo,
     isPublicStaffRoute,
+    isScopeLoading,
     tokenPermissions
   ])
 
@@ -154,6 +168,16 @@ export default function ProtectedElement({
 
   // Hiển thị loading khi đang refresh token
   if (isRefreshing) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-8 h-8 rounded-full border-b-2 animate-spin border-primary"></div>
+      </div>
+    )
+  }
+
+  // Hiển thị loading khi chưa lấy xong quyền: chưa biết được người này có
+  // được vào hay không, render nội dung ra rồi mới đá đi sẽ loé trang cấm.
+  if (isScopeLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="w-8 h-8 rounded-full border-b-2 animate-spin border-primary"></div>
