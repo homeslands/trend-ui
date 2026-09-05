@@ -75,8 +75,18 @@ describe('User API', () => {
 
   describe('resetPassword', () => {
     it('should look up the shared-user slug by phonenumber, then reset there', async () => {
+      // Fixture phản ánh đúng response thật: `?phonenumber=` khớp kiểu CHUỖI
+      // CON nên trả về cả người có số chứa số đang tra. Chỉ người khớp TUYỆT
+      // ĐỐI mới được thao tác — rủi ro R6, xem `api/user.ts`.
       const listResponse = {
-        data: { result: { items: [{ slug: 'shared-user-1' }] } },
+        data: {
+          result: {
+            items: [
+              { slug: 'nguoi-khac', phonenumber: '01234567890' },
+              { slug: 'shared-user-1', phonenumber: '1234567890' },
+            ],
+          },
+        },
       }
       const resetResponse = { data: null }
       ;(httpAuthMock.get as Mock).mockResolvedValue(listResponse)
@@ -106,12 +116,37 @@ describe('User API', () => {
       ;(httpAuthMock.get as Mock).mockRejectedValue(SERVER_ERROR)
       await expect(resetPassword('1234567890')).rejects.toEqual(SERVER_ERROR)
     })
+
+    it('should refuse when no one matches the phonenumber exactly', async () => {
+      // Chỉ có người mang số CHỨA số đang tra, không ai khớp tuyệt đối.
+      // Bản cũ lấy items[0] nên sẽ đặt lại mật khẩu nhầm người này.
+      ;(httpAuthMock.get as Mock).mockResolvedValue({
+        data: {
+          result: { items: [{ slug: 'nguoi-khac', phonenumber: '01234567890' }] },
+        },
+      })
+
+      await expect(resetPassword('1234567890')).rejects.toThrow(
+        'User not found on shared-user',
+      )
+      expect(httpAuthMock.post).not.toHaveBeenCalled()
+    })
   })
 
   describe('lockUser', () => {
     it('should look up the shared-user slug by phonenumber, then toggle-active there', async () => {
+      // Fixture phản ánh đúng response thật: `?phonenumber=` khớp kiểu CHUỖI
+      // CON nên trả về cả người có số chứa số đang tra. Chỉ người khớp TUYỆT
+      // ĐỐI mới được thao tác — rủi ro R6, xem `api/user.ts`.
       const listResponse = {
-        data: { result: { items: [{ slug: 'shared-user-1' }] } },
+        data: {
+          result: {
+            items: [
+              { slug: 'nguoi-khac', phonenumber: '01234567890' },
+              { slug: 'shared-user-1', phonenumber: '1234567890' },
+            ],
+          },
+        },
       }
       const toggleResponse = { data: null }
       ;(httpAuthMock.get as Mock).mockResolvedValue(listResponse)

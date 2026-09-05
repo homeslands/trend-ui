@@ -55,11 +55,26 @@ async function findSharedUserSlugByPhonenumber(
   const listResponse = await httpAuth.get<
     IApiResponse<IPaginationResponse<IUserInfo>>
   >('/user', { params: { phonenumber } })
-  const sharedUser = listResponse.data.result.items[0]
-  if (!sharedUser) {
+
+  // `GET {shared-user}/user?phonenumber=` khớp kiểu CHUỖI CON (`LIKE '%…%'`),
+  // nên một truy vấn có thể trả về nhiều người — đã đo được: tra `912345678`
+  // trả cả `0912345678`. Lấy `items[0]` như trước là có thể đặt lại mật khẩu
+  // hoặc khoá NHẦM NGƯỜI. Phải lọc đúng khớp tuyệt đối.
+  // Rủi ro R6, xác nhận 04/09/2026 bằng `tests/src/baseline/known-gaps.spec.ts`.
+  const matches = listResponse.data.result.items.filter(
+    (item) => item.phonenumber === phonenumber,
+  )
+  if (matches.length === 0) {
     throw new Error('User not found on shared-user')
   }
-  return sharedUser.slug
+  // Số điện thoại là khoá duy nhất bên shared-user, nên >1 khớp tuyệt đối là
+  // dữ liệu đã hỏng — dừng lại còn hơn thao tác lên một người chọn bừa.
+  if (matches.length > 1) {
+    throw new Error(
+      `Multiple users share phonenumber ${phonenumber} on shared-user`,
+    )
+  }
+  return matches[0].slug
 }
 
 // Mật khẩu/tài khoản thuộc shared-user — trend không còn giữ mật khẩu nên
