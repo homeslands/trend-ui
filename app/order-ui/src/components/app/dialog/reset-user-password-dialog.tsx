@@ -78,7 +78,7 @@ export default function ResetPasswordDialog({ user }: { user?: IUserInfo | undef
             </Button>
             <Button
               variant="destructive"
-              onClick={() => user && handleSubmit(user.phonenumber || '')}
+              onClick={() => user && handleSubmit(user.slug || '')}
             >
               {tCommon('common.confirm')}
             </Button>
