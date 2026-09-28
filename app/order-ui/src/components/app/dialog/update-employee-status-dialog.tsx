@@ -94,7 +94,7 @@ export default function UpdateEmployeeStatusDialog({
             {tCommon('common.cancel')}
           </Button>
           <Button
-            onClick={() => user && handleSubmit(user.phonenumber)}
+            onClick={() => user && handleSubmit(user.slug)}
             className="min-w-24"
           >
             {tCommon('common.confirm')}

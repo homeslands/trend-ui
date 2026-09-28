@@ -21,6 +21,7 @@ import {
   getUsers,
   getUserStatistics,
   lockUser,
+  lookupGiftCardRecipient,
   replaceMembershipCard,
   resetPassword,
   toggleMembershipCard,
@@ -57,6 +58,25 @@ export const useUsers = (q: IUserQuery | null, enabled?: boolean) => {
   })
 }
 
+/**
+ * Tra NGUOI NHAN the qua theo SDT - cua HEP thay cho `useUsers` o man KHACH.
+ *
+ * Chi goi khi SDT du **10 chu so**: route backend khop **tuyet doi**, nen mot
+ * chuoi ngan hon chac chan khong ra ai - goi la phi mot luot mang.
+ */
+export const useGiftCardRecipient = (
+  phonenumber: string | null,
+  enabled?: boolean,
+) => {
+  return useQuery({
+    queryKey: ['gift-card-recipient', phonenumber],
+    queryFn: () =>
+      phonenumber ? lookupGiftCardRecipient(phonenumber) : Promise.resolve(null),
+    placeholderData: keepPreviousData,
+    enabled: !!phonenumber && phonenumber.length === 10 && !!enabled,
+  })
+}
+
 export const useExportExcelUsers = () => {
   return useMutation({
     mutationFn: async (q: IUserExportQuery) => {
@@ -90,18 +110,22 @@ export const useUpdateUser = () => {
   })
 }
 
+// QĐ16 — hai hàm này nay nhận `slug` cục bộ của trend, không phải
+// `phonenumber`. Slug đó có sẵn ngay trên dòng user mà màn hình đang hiển
+// thị (danh sách đến từ `GET {trend}/user`), nên không còn bước tra ngược
+// nào cả.
 export const useResetPassword = () => {
   return useMutation({
-    mutationFn: async (phonenumber: string) => {
-      return resetPassword(phonenumber)
+    mutationFn: async (slug: string) => {
+      return resetPassword(slug)
     },
   })
 }
 
 export const useLockUser = () => {
   return useMutation({
-    mutationFn: async (phonenumber: string) => {
-      return lockUser(phonenumber)
+    mutationFn: async (slug: string) => {
+      return lockUser(slug)
     },
   })
 }
