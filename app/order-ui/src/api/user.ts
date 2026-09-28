@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios'
 import moment from 'moment'
 
-import { http, httpAuth } from '@/utils'
+import { http } from '@/utils'
 import { useDownloadStore } from '@/stores'
 import {
   IApiResponse,
@@ -25,6 +25,7 @@ import {
   ICompleteRegistrationRequest,
   IUserStatisticsQuery,
   IUserStatisticsResponse,
+  IGiftCardRecipient,
 } from '@/types'
 
 export async function getUsers(
@@ -39,6 +40,28 @@ export async function getUsers(
   return response.data
 }
 
+/**
+ * Tra NGUOI NHAN the qua theo SDT - cua HEP thay cho `GET /user` o man KHACH.
+ *
+ * `GET /user` tu 14/09/2026 gac bang role va **khong nhan `Customer`** (no tra
+ * ca danh sach khach kem SDT / ho ten / email). Man khach mua the qua tang
+ * nguoi khac thi van can tra mot nguoi nhan, nen backend tach route rieng:
+ * khop SDT **tuyet doi**, tra **toi da 1 nguoi**, chi `slug` + `phonenumber` +
+ * ho ten.
+ *
+ * Dung `http` (trend), khong phai `httpAuth` - va **khong** quay lai
+ * `GET {shared-user}/user?phonenumber=` (khop chuoi con, chinh la R6 da dong).
+ */
+export async function lookupGiftCardRecipient(
+  phonenumber: string,
+): Promise<IApiResponse<IGiftCardRecipient[]>> {
+  const response = await http.get<IApiResponse<IGiftCardRecipient[]>>(
+    '/user/lookup-recipient',
+    { params: { phonenumber } },
+  )
+  return response.data
+}
+
 export async function getUserBySlug(
   slug: string,
 ): Promise<IApiResponse<IUserInfo>> {
@@ -46,44 +69,23 @@ export async function getUserBySlug(
   return response.data
 }
 
-// Slug cục bộ của trend khác slug thật bên shared-user — các thao tác chỉ
-// tồn tại ở shared-user (reset mật khẩu, khoá/mở khoá tài khoản...) đều
-// cần tra lại slug thật theo phonenumber trước khi gọi.
-async function findSharedUserSlugByPhonenumber(
-  phonenumber: string,
-): Promise<string> {
-  const listResponse = await httpAuth.get<
-    IApiResponse<IPaginationResponse<IUserInfo>>
-  >('/user', { params: { phonenumber } })
-
-  // `GET {shared-user}/user?phonenumber=` khớp kiểu CHUỖI CON (`LIKE '%…%'`),
-  // nên một truy vấn có thể trả về nhiều người — đã đo được: tra `912345678`
-  // trả cả `0912345678`. Lấy `items[0]` như trước là có thể đặt lại mật khẩu
-  // hoặc khoá NHẦM NGƯỜI. Phải lọc đúng khớp tuyệt đối.
-  // Rủi ro R6, xác nhận 04/09/2026 bằng `tests/src/baseline/known-gaps.spec.ts`.
-  const matches = listResponse.data.result.items.filter(
-    (item) => item.phonenumber === phonenumber,
-  )
-  if (matches.length === 0) {
-    throw new Error('User not found on shared-user')
-  }
-  // Số điện thoại là khoá duy nhất bên shared-user, nên >1 khớp tuyệt đối là
-  // dữ liệu đã hỏng — dừng lại còn hơn thao tác lên một người chọn bừa.
-  if (matches.length > 1) {
-    throw new Error(
-      `Multiple users share phonenumber ${phonenumber} on shared-user`,
-    )
-  }
-  return matches[0].slug
-}
-
-// Mật khẩu/tài khoản thuộc shared-user — trend không còn giữ mật khẩu nên
-// không thể tự reset — xem progress/trend-api.md giai đoạn 1 (bổ sung).
+// Gọi **trend**, không gọi thẳng shared-user nữa (QĐ16).
+//
+// Lý do, một câu: *đặt lại mật khẩu cần quyền của người ra quyết định, mà
+// quyền đó nằm ở trend.* Chức vụ trong cửa hàng (Manager/Admin/SuperAdmin)
+// là dữ kiện chỉ trend giữ đúng; shared-user chỉ **thi hành** trên identity
+// qua `/internal/*`. Đây là thứ đóng **R1** — trước đây admin vừa được cấp
+// quyền qua màn hình gán role bị **403 oan** ở đúng hai màn hình này.
+//
+// Nhận `slug` **cục bộ của trend** (lấy thẳng từ danh sách user mà màn hình
+// đang có), thay cho `phonenumber` trước đây. Bỏ được luôn bước tra ngược
+// slug thật bên shared-user — và đó là thứ đóng **R6**: route
+// `GET {shared-user}/user?phonenumber=` khớp **chuỗi con**, đo được là tra
+// `912345678` trả cả `0912345678`, nên có thể thao tác nhầm người.
 export async function resetPassword(
-  phonenumber: string,
+  slug: string,
 ): Promise<IApiResponse<null>> {
-  const slug = await findSharedUserSlugByPhonenumber(phonenumber)
-  const response = await httpAuth.post<IApiResponse<null>>(
+  const response = await http.post<IApiResponse<null>>(
     `/user/${slug}/reset-password`,
   )
   return response.data
@@ -124,13 +126,15 @@ export async function updateUser(
   return response.data
 }
 
-// Khoá/mở khoá tài khoản quy hẳn về shared-user (không còn route trung
-// gian ở trend) — xem progress/trend-api.md giai đoạn 1 (bổ sung).
-export async function lockUser(
-  phonenumber: string,
-): Promise<IApiResponse<null>> {
-  const slug = await findSharedUserSlugByPhonenumber(phonenumber)
-  const response = await httpAuth.patch<IApiResponse<null>>(
+// Gọi **trend** (QĐ16) — cùng lý do với `resetPassword` ở trên.
+//
+// > Đây **không** phải đảo ngược quyết định xoá route `toggle-active` cũ của
+// > trend. Route cũ bị xoá vì nó ghi vào **cột `isActive` cục bộ của trend**
+// > nên có hai bản trạng thái lệch nhau. Route mới không ghi cột nào của
+// > trend: nó chỉ là cửa kiểm quyền rồi uỷ quyền sang shared-user. Trạng
+// > thái khoá vẫn chỉ có **một nguồn thật** là shared_user_db.
+export async function lockUser(slug: string): Promise<IApiResponse<null>> {
+  const response = await http.patch<IApiResponse<null>>(
     `/user/${slug}/toggle-active`,
   )
   return response.data

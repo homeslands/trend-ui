@@ -11,6 +11,20 @@ export enum UserStatisticsGroupBy {
   YEAR = 'year'
 }
 
+/**
+ * Nguoi nhan the qua, tra ve tu `GET {trend}/user/lookup-recipient`.
+ *
+ * Co tinh **HEP hon `IUserInfo`**: backend chi tra dung bon field nay. Dung
+ * mo rong no ra thanh `IUserInfo` - man KHACH khong duoc thay email / dob /
+ * address / role / diem / vi cua nguoi khac. Do la ca ly do route nay ton tai.
+ */
+export interface IGiftCardRecipient {
+  slug: string
+  phonenumber: string
+  firstName?: string
+  lastName?: string
+}
+
 export interface IUserInfo {
   slug: string
   image?: string
