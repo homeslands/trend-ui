@@ -23,6 +23,7 @@ import { DatePicker } from '@/components/app/picker'
 import { useUserStore } from '@/stores'
 import { getProfile } from '@/api'
 import { useQueryClient } from '@tanstack/react-query'
+import { QUERYKEY } from '@/constants'
 
 interface IFormUpdateProfileProps {
   userProfile?: IUserInfo
@@ -55,7 +56,11 @@ export const UpdateProfileForm: React.FC<IFormUpdateProfileProps> = ({
           setUserInfo(data.result)
         })
         queryClient.invalidateQueries({
-          queryKey: ['profile'],
+          // `[QUERYKEY.profile]` - dung khoa ma `useProfile()` dang dung.
+          // Chuoi tran `'profile'` KHONG khop khoa `[['profile']]` cua no
+          // (react-query khop theo tien to, phan tu dau la mang chu khong phai
+          // chuoi). Xem chu thich o `hooks/use-profile.tsx`.
+          queryKey: [QUERYKEY.profile],
         })
         onSubmit(false)
         form.reset()
