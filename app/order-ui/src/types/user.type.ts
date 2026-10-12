@@ -141,11 +141,11 @@ export interface IUpdatePasswordRequest {
   newPassword: string
 }
 
-// Gán role: trend gọi sang shared-user xác minh user tồn tại qua
-// phonenumber (khoá đăng nhập dùng chung), không còn dùng slug cục bộ của
-// trend nữa — xem progress/trend-api.md giai đoạn 1 (bổ sung).
+// Gán role: `POST /user/:slug/role` theo slug CỤC BỘ của trend (giống
+// terminal) — bản giai đoạn 1 tra theo phonenumber đã bỏ ở bước 2.0, xem
+// progress/buoc-trien-khai-gd2-10.md bước 2.0.
 export interface IUpdateUserRoleRequest {
-  phonenumber: string
+  slug: string
   role: string
 }
 

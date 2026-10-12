@@ -179,15 +179,14 @@ describe('User API', () => {
   })
 
   describe('updateUserRole', () => {
-    it('should update user role correctly via phonenumber', async () => {
+    it('should update user role correctly via local slug', async () => {
       const mockResponse = {
         data: null,
       }
       ;(http.post as Mock).mockResolvedValue(mockResponse)
 
-      const result = await updateUserRole('1234567890', 'admin')
-      expect(http.post).toHaveBeenCalledWith('/user/role', {
-        phonenumber: '1234567890',
+      const result = await updateUserRole('user-slug', 'admin')
+      expect(http.post).toHaveBeenCalledWith('/user/user-slug/role', {
         role: 'admin',
       })
       expect(result).toEqual(mockResponse.data)
@@ -202,7 +201,7 @@ describe('User API', () => {
       }
       ;(http.post as Mock).mockRejectedValue(mockError)
       await expect(
-        updateUserRole('1234567890', 'invalid-role'),
+        updateUserRole('user-slug', 'invalid-role'),
       ).rejects.toEqual(mockError)
     })
   })
