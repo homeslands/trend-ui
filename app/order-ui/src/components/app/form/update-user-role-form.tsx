@@ -38,7 +38,7 @@ export const UpdateUserRoleForm: React.FC<
     const form = useForm<TUserRoleSchema>({
         resolver: zodResolver(userRoleSchema),
         defaultValues: {
-            phonenumber: user.phonenumber,
+            slug: user.slug,
             name: user.firstName + ' ' + user.lastName,
             role: ''
         },
@@ -62,13 +62,13 @@ export const UpdateUserRoleForm: React.FC<
     }
 
     const formFields = {
-        phonenumber: (
+        slug: (
             <FormField
                 control={form.control}
-                name="phonenumber"
+                name="slug"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{t('users.phoneNumber')}</FormLabel>
+                        <FormLabel>{t('users.id')}</FormLabel>
                         <FormControl>
                             <Input
                                 readOnly

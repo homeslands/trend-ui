@@ -132,14 +132,8 @@ export const useLockUser = () => {
 
 export const useUpdateUserRole = () => {
   return useMutation({
-    mutationFn: async ({
-      phonenumber,
-      role,
-    }: {
-      phonenumber: string
-      role: string
-    }) => {
-      return updateUserRole(phonenumber, role)
+    mutationFn: async ({ slug, role }: { slug: string; role: string }) => {
+      return updateUserRole(slug, role)
     },
   })
 }

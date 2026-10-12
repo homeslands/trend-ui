@@ -91,17 +91,19 @@ export async function resetPassword(
   return response.data
 }
 
-// Gán role cho user đã tồn tại bên shared-user (tra theo phonenumber) —
-// trend tự tạo row cục bộ tối giản nếu đây là lần đầu user này được cấp
-// quyền ở trend.
+// Gán role cho user đã có hàng cục bộ ở trend, theo `slug` CỤC BỘ lấy thẳng
+// từ danh sách (giống terminal) — không tra theo phonenumber nữa, vì cột
+// phonenumber cục bộ của trend bị drop ở giai đoạn 8 (architect-http.md 1.6).
 export async function updateUserRole(
-  phonenumber: string,
+  slug: string,
   role: string,
 ): Promise<IApiResponse<IUserInfo>> {
-  const response = await http.post<IApiResponse<IUserInfo>>('/user/role', {
-    phonenumber,
-    role,
-  })
+  const response = await http.post<IApiResponse<IUserInfo>>(
+    `/user/${slug}/role`,
+    {
+      role,
+    },
+  )
   return response.data
 }
 
