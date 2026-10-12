@@ -23,7 +23,7 @@ export const userInfoSchema = z.object({
 })
 
 export const userRoleSchema = z.object({
-  phonenumber: z.string(),
+  slug: z.string(),
   name: z.string(),
   role: z.string(),
 })
