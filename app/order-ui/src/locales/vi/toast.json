@@ -353,6 +353,8 @@
 				"userIdRequired": "ID người dùng là bắt buộc",
 				"userMustBeCustomer": "Người dùng phải là khách hàng",
 				"userNotFound": "Không tìm thấy người dùng",
+				"cannotAssignCustomerRole": "Không thể gán vai trò Khách hàng cho người dùng",
+				"sharedUserUnavailable": "Hệ thống tài khoản tạm thời không phản hồi, vui lòng thử lại sau",
 				"validateVoucherUsageFailed": "Xác thực sử dụng voucher thất bại",
 				"variantDoesExist": "Phân loại đã tồn tại",
 				"variantNotFound": "Không tìm thấy phân loại",

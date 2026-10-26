@@ -351,6 +351,8 @@
     "userIdRequired": "User ID is required",
     "userMustBeCustomer": "User must be a customer",
     "userNotFound": "User not found",
+    "cannotAssignCustomerRole": "Cannot assign the Customer role",
+    "sharedUserUnavailable": "The account service is temporarily unavailable, please try again later",
     "validateVoucherUsageFailed": "Failed to validate voucher usage",
     "variantDoesExist": "Variant already exists",
     "variantNotFound": "Variant not found",
