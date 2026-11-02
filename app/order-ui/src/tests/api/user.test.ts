@@ -13,9 +13,12 @@ import {
 import { SERVER_ERROR } from '../constants'
 import { Role } from '@/constants/role'
 
-// resetPassword/createUser gọi shared-user (httpAuth) cho phần identity;
-// updateUserRole và phần gán role/branch của createUser gọi trend (http) —
-// xem progress/trend-api.md giai đoạn 1 (bổ sung).
+// Mọi hàm trong tệp này gọi **trend** (`http`). `httpAuth` (shared-user) vẫn
+// được mock vì `@/utils` export nó, nhưng chỉ còn dùng để khẳng định
+// **không ai gọi tới** — xem hai nhóm `resetPassword` / `lockUser`.
+//
+// Trước 26/10/2026 `resetPassword`/`lockUser` tra slug bên shared-user theo
+// SĐT rồi mới thao tác; QĐ16 bỏ bước đó — xem progress/trend-api.md giai đoạn 1.
 vi.mock('@/utils', () => ({
   http: httpMock,
   httpAuth: httpAuthMock,
@@ -73,108 +76,71 @@ describe('User API', () => {
     })
   })
 
+  // Ba ca cũ của nhóm này đo hành vi HAI BƯỚC (tra
+  // `GET {shared-user}/user?phonenumber=` lấy slug rồi mới đặt lại mật khẩu
+  // ở đó). Hành vi đó **đã bị bỏ có chủ ý** theo QĐ16, xem chú thích trên
+  // `resetPassword` trong `api/user.ts`:
+  //   - đóng **R1**: quyền quyết định nằm ở trend, gọi thẳng shared-user làm
+  //     admin vừa được cấp quyền bị 403 oan;
+  //   - đóng **R6**: route kia khớp **chuỗi con** (tra `912345678` ra cả
+  //     `0912345678`) nên có thể thao tác nhầm người.
+  // Nay hàm nhận `slug` CỤC BỘ của trend, lấy thẳng từ danh sách user mà màn
+  // hình đang có, và gọi một lượt duy nhất sang trend.
   describe('resetPassword', () => {
-    it('should look up the shared-user slug by phonenumber, then reset there', async () => {
-      // Fixture phản ánh đúng response thật: `?phonenumber=` khớp kiểu CHUỖI
-      // CON nên trả về cả người có số chứa số đang tra. Chỉ người khớp TUYỆT
-      // ĐỐI mới được thao tác — rủi ro R6, xem `api/user.ts`.
-      const listResponse = {
-        data: {
-          result: {
-            items: [
-              { slug: 'nguoi-khac', phonenumber: '01234567890' },
-              { slug: 'shared-user-1', phonenumber: '1234567890' },
-            ],
-          },
-        },
-      }
-      const resetResponse = { data: null }
-      ;(httpAuthMock.get as Mock).mockResolvedValue(listResponse)
-      ;(httpAuthMock.post as Mock).mockResolvedValue(resetResponse)
+    it('should post to trend with the local slug', async () => {
+      const mockResponse = { data: null }
+      ;(http.post as Mock).mockResolvedValue(mockResponse)
 
-      const result = await resetPassword('1234567890')
+      const result = await resetPassword('user-1')
 
-      expect(httpAuthMock.get).toHaveBeenCalledWith('/user', {
-        params: { phonenumber: '1234567890' },
-      })
-      expect(httpAuthMock.post).toHaveBeenCalledWith(
-        '/user/shared-user-1/reset-password',
-      )
-      expect(result).toEqual(resetResponse.data)
+      expect(http.post).toHaveBeenCalledWith('/user/user-1/reset-password')
+      expect(result).toEqual(mockResponse.data)
     })
 
-    it('should throw when no shared-user account matches the phonenumber', async () => {
-      ;(httpAuthMock.get as Mock).mockResolvedValue({
-        data: { result: { items: [] } },
-      })
-      await expect(resetPassword('non-existent')).rejects.toThrow(
-        'User not found on shared-user',
-      )
+    // Canh giữ R1 + R6: không ai được lặng lẽ đưa lại lượt gọi thẳng
+    // shared-user hay bước tra ngược theo số điện thoại.
+    it('should not touch shared-user at all', async () => {
+      ;(http.post as Mock).mockResolvedValue({ data: null })
+
+      await resetPassword('user-1')
+
+      expect(httpAuthMock.get).not.toHaveBeenCalled()
+      expect(httpAuthMock.post).not.toHaveBeenCalled()
     })
 
     it('should handle server error', async () => {
-      ;(httpAuthMock.get as Mock).mockRejectedValue(SERVER_ERROR)
-      await expect(resetPassword('1234567890')).rejects.toEqual(SERVER_ERROR)
-    })
-
-    it('should refuse when no one matches the phonenumber exactly', async () => {
-      // Chỉ có người mang số CHỨA số đang tra, không ai khớp tuyệt đối.
-      // Bản cũ lấy items[0] nên sẽ đặt lại mật khẩu nhầm người này.
-      ;(httpAuthMock.get as Mock).mockResolvedValue({
-        data: {
-          result: { items: [{ slug: 'nguoi-khac', phonenumber: '01234567890' }] },
-        },
-      })
-
-      await expect(resetPassword('1234567890')).rejects.toThrow(
-        'User not found on shared-user',
-      )
-      expect(httpAuthMock.post).not.toHaveBeenCalled()
+      ;(http.post as Mock).mockRejectedValue(SERVER_ERROR)
+      await expect(resetPassword('user-1')).rejects.toEqual(SERVER_ERROR)
     })
   })
 
+  // Cùng lý do với `resetPassword` (QĐ16, một bước theo slug cục bộ). Route
+  // `PATCH {trend}/user/:slug/toggle-active` **không** ghi cột `isActive` nào
+  // của trend — nó chỉ là cửa kiểm quyền rồi uỷ sang shared-user, nên trạng
+  // thái khoá vẫn đúng một nguồn thật.
   describe('lockUser', () => {
-    it('should look up the shared-user slug by phonenumber, then toggle-active there', async () => {
-      // Fixture phản ánh đúng response thật: `?phonenumber=` khớp kiểu CHUỖI
-      // CON nên trả về cả người có số chứa số đang tra. Chỉ người khớp TUYỆT
-      // ĐỐI mới được thao tác — rủi ro R6, xem `api/user.ts`.
-      const listResponse = {
-        data: {
-          result: {
-            items: [
-              { slug: 'nguoi-khac', phonenumber: '01234567890' },
-              { slug: 'shared-user-1', phonenumber: '1234567890' },
-            ],
-          },
-        },
-      }
-      const toggleResponse = { data: null }
-      ;(httpAuthMock.get as Mock).mockResolvedValue(listResponse)
-      ;(httpAuthMock.patch as Mock).mockResolvedValue(toggleResponse)
+    it('should patch trend with the local slug', async () => {
+      const mockResponse = { data: null }
+      ;(http.patch as Mock).mockResolvedValue(mockResponse)
 
-      const result = await lockUser('1234567890')
+      const result = await lockUser('user-1')
 
-      expect(httpAuthMock.get).toHaveBeenCalledWith('/user', {
-        params: { phonenumber: '1234567890' },
-      })
-      expect(httpAuthMock.patch).toHaveBeenCalledWith(
-        '/user/shared-user-1/toggle-active',
-      )
-      expect(result).toEqual(toggleResponse.data)
+      expect(http.patch).toHaveBeenCalledWith('/user/user-1/toggle-active')
+      expect(result).toEqual(mockResponse.data)
     })
 
-    it('should throw when no shared-user account matches the phonenumber', async () => {
-      ;(httpAuthMock.get as Mock).mockResolvedValue({
-        data: { result: { items: [] } },
-      })
-      await expect(lockUser('non-existent')).rejects.toThrow(
-        'User not found on shared-user',
-      )
+    it('should not touch shared-user at all', async () => {
+      ;(http.patch as Mock).mockResolvedValue({ data: null })
+
+      await lockUser('user-1')
+
+      expect(httpAuthMock.get).not.toHaveBeenCalled()
+      expect(httpAuthMock.patch).not.toHaveBeenCalled()
     })
 
     it('should handle server error', async () => {
-      ;(httpAuthMock.get as Mock).mockRejectedValue(SERVER_ERROR)
-      await expect(lockUser('1234567890')).rejects.toEqual(SERVER_ERROR)
+      ;(http.patch as Mock).mockRejectedValue(SERVER_ERROR)
+      await expect(lockUser('user-1')).rejects.toEqual(SERVER_ERROR)
     })
   })
 
