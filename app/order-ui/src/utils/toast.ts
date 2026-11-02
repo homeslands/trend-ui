@@ -117,6 +117,7 @@ const errorCodes: { [key: number]: string } = {
   135503: 'toast.mustChangeSizeOfVariantsBeforeDelete',
   137000: 'toast.userNotFound',
   137003: 'toast.languageNotFound',
+  137006: 'toast.cannotAssignCustomerRole',
   139000: 'toast.roleNotFound',
   140000: 'toast.systemConfigKeyInvalid',
   140001: 'toast.systemConfigValueInvalid',
@@ -345,10 +346,24 @@ const errorCodes: { [key: number]: string } = {
   159914: 'toast.campaignBirthdayAlreadyRunningInPeriod',
   159917: 'toast.campaignNewUserAlreadyRunningInPeriod',
   159805: 'toast.membershipCardAlreadyExists',
+  // Tu buoc 2.5 the thanh vien do `shared-user` giu, nen bon ma nay di
+  // nguyen tu do ra UI thay vi bi `trend` dich het ve 159805. Truoc 2.5
+  // chung chua bao gio toi UI nen chua co cau dich.
+  159801: 'toast.membershipCardNotFound',
+  159803: 'toast.userAlreadyHasAMembershipCard',
+  159807: 'toast.membershipCardCodeAlreadyExists',
+  159808: 'toast.membershipCardExpired',
+  159806: 'toast.errorWhenDeleteMembershipCard',
+  159809: 'toast.errorWhenCreateMembershipCards',
+  159804: 'toast.userSlugRequired',
+  159810: 'toast.membershipCardUserIsNotTheOrderOwner',
   158006: 'toast.cardPointAlreadyExists',
   158007: 'toast.cardTitleAlreadyExists',
   160201: 'toast.qrTokenIsInvalidOrExpired',
   160108: 'toast.printerConnectorAlreadyExistsInThisBranch',
+  // `trend` khong goi duoc `shared-user` (HTTP 503 - sai lech D9). Ma chung
+  // cua moi loi nay tu buoc 2.4, khai song doi voi `terminal-ui`.
+  162001: 'toast.sharedUserUnavailable',
 }
 
 export function showToast(message: string) {
