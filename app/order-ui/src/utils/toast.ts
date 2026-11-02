@@ -346,6 +346,17 @@ const errorCodes: { [key: number]: string } = {
   159914: 'toast.campaignBirthdayAlreadyRunningInPeriod',
   159917: 'toast.campaignNewUserAlreadyRunningInPeriod',
   159805: 'toast.membershipCardAlreadyExists',
+  // Tu buoc 2.5 the thanh vien do `shared-user` giu, nen bon ma nay di
+  // nguyen tu do ra UI thay vi bi `trend` dich het ve 159805. Truoc 2.5
+  // chung chua bao gio toi UI nen chua co cau dich.
+  159801: 'toast.membershipCardNotFound',
+  159803: 'toast.userAlreadyHasAMembershipCard',
+  159807: 'toast.membershipCardCodeAlreadyExists',
+  159808: 'toast.membershipCardExpired',
+  159806: 'toast.errorWhenDeleteMembershipCard',
+  159809: 'toast.errorWhenCreateMembershipCards',
+  159804: 'toast.userSlugRequired',
+  159810: 'toast.membershipCardUserIsNotTheOrderOwner',
   158006: 'toast.cardPointAlreadyExists',
   158007: 'toast.cardTitleAlreadyExists',
   160201: 'toast.qrTokenIsInvalidOrExpired',
