@@ -25,7 +25,6 @@ export interface IChefOrderTrackingStore {
 }
 
 export interface IChefOrdersQuery {
-  owner?: string
   branchSlug?: string
   page: number | 1
   size: number | 10
