@@ -5,7 +5,7 @@ import { Coins, EyeIcon, EyeOffIcon } from 'lucide-react'
 import { useState } from 'react'
 
 import { ProfilePicture } from '@/components/app/avatar'
-import { useUploadProfilePicture, useGetUserBalance, useLoyaltyPoints, useIsMobile } from '@/hooks'
+import { useUploadProfilePicture, useGetMyBalance, useMyLoyaltyPoints, useIsMobile } from '@/hooks'
 import { getProfile } from '@/api'
 import { useUserStore } from '@/stores'
 import { publicFileURL, ROUTE } from '@/constants'
@@ -18,12 +18,13 @@ export default function ProfileLayout() {
     const { t: tLoyaltyPoint } = useTranslation('loyaltyPoint')
     const { t: tHelmet } = useTranslation('helmet')
     const { userInfo, setUserInfo } = useUserStore()
-    const { data: pointsData } = useLoyaltyPoints(userInfo?.slug ?? '')
+    // Step 7.8: own points and balance from shared-user (the user comes from the JWT).
+    const { data: pointsData } = useMyLoyaltyPoints(!!userInfo)
     const { mutate: uploadProfilePicture } = useUploadProfilePicture()
     const fullname = userInfo?.firstName + ' ' + userInfo?.lastName
     const [showBalance, setShowBalance] = useState(true)
 
-    const { data: balanceData } = useGetUserBalance(userInfo?.slug)
+    const { data: balanceData } = useGetMyBalance(!!userInfo)
     const balance = balanceData?.result?.points || 0
     const points = pointsData?.totalPoints || 0
 

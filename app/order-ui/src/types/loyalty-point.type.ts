@@ -29,3 +29,7 @@ export interface ILoyaltyPointHistoryQuery {
   fromDate?: string
   toDate?: string
 }
+
+// Step 7.8: query of GET {shared-user}/accumulated-point/history (self view) -
+// the user comes from the JWT, the query names nobody.
+export type IMyLoyaltyPointHistoryQuery = Omit<ILoyaltyPointHistoryQuery, 'slug'>
