@@ -26,8 +26,10 @@ import {
 } from '@/hooks'
 import { UserStatisticsGroupBySelect } from '@/components/app/select'
 import { PaymentMethod, Role } from '@/constants'
-import { CustomerAccountRevenueType } from '@/types'
-import { fillSpendingBuckets, fillTimeBuckets } from '@/utils'
+import { AxiosError } from 'axios'
+
+import { CustomerAccountRevenueType, IApiErrorResponse } from '@/types'
+import { fillSpendingBuckets, fillTimeBuckets, showErrorToast } from '@/utils'
 import { CustomerAnalyticsFilters, resolveDefaultBranch } from '@/app/system/customers/hooks'
 import { SpendingRow } from '@/app/system/customers/DataTable/columns'
 import { useBranchStore } from '@/stores'
@@ -39,10 +41,16 @@ import CustomerAnalyticsChart from './customer-analytics-chart'
 
 interface CustomerAnalyticsPanelProps {
   filters: CustomerAnalyticsFilters
-  onSpendingRowsChange?: (rows: SpendingRow[], isLoading: boolean) => void
+  onSpendingRowsChange?: (
+    rows: SpendingRow[],
+    isLoading: boolean,
+    searchTooBroadMessage?: string,
+  ) => void
 }
 
 const DAY = 'YYYY-MM-DD'
+// Buoc 7.2: ma loi cua trend khi chuoi SDT khop qua 500 nguoi (utils/toast.ts errorCodes).
+const PHONENUMBER_SEARCH_TOO_BROAD = 137007
 const DATETIME = 'YYYY-MM-DDTHH:mm:ss'
 const startOfDay = (d: string) => moment(d).startOf('day').format(DATETIME)
 const endOfDay = (d: string) => moment(d).endOf('day').format(DATETIME)
@@ -65,6 +73,7 @@ export default function CustomerAnalyticsPanel({
   // `order-overview.tab-content.tsx` dùng cho hàng badge của nó — thay vì chép lại
   // chuỗi này vào `customer.json` và có hai nguồn sự thật cho cùng một câu chữ.
   const { t: tDashboard } = useTranslation('dashboard')
+  const { t: tToast } = useTranslation('toast')
 
   const startDate = startOfDay(filters.from)
   const endDate = endOfDay(filters.to)
@@ -138,7 +147,22 @@ export default function CustomerAnalyticsPanel({
     data: spendData,
     isLoading: spendLoading,
     refetch: refetchSpend,
+    error: spendError,
   } = useCustomerAccountRevenue(spendQuery, hasBranch)
+  // Buoc 7.2 (QD4): chuoi SDT khop qua 500 nguoi o shared-user => trend tra 400 /
+  // 137007 thay vi cat danh sach. Handler loi toan cuc cua trend-ui doc `code` chu
+  // khong doc `statusCode` (UI-1, co tu truoc) nen man nay tu bao: toast + mot dong
+  // thong bao thay cho tong / bieu do / bang rong - "khong co du lieu" lam nguoi van
+  // hanh tuong khong co khach.
+  const spendSearchTooBroad =
+    (spendError as AxiosError<IApiErrorResponse> | null)?.response?.data?.statusCode ===
+    PHONENUMBER_SEARCH_TOO_BROAD
+  useEffect(() => {
+    if (spendSearchTooBroad) showErrorToast(PHONENUMBER_SEARCH_TOO_BROAD)
+  }, [spendSearchTooBroad])
+  const searchTooBroadMessage = spendSearchTooBroad
+    ? tToast('toast.phonenumberSearchTooBroad')
+    : undefined
   const { data: spendPrevData, refetch: refetchSpendPrev } = useCustomerAccountRevenue(
     {
       ...spendQuery,
@@ -262,8 +286,8 @@ export default function CustomerAnalyticsPanel({
 
   const spendingRows = useMemo(() => revenue?.customers ?? [], [revenue])
   useEffect(() => {
-    onSpendingRowsChange?.(spendingRows, spendLoading)
-  }, [spendingRows, spendLoading, onSpendingRowsChange])
+    onSpendingRowsChange?.(spendingRows, spendLoading, searchTooBroadMessage)
+  }, [spendingRows, spendLoading, searchTooBroadMessage, onSpendingRowsChange])
 
   const dateFilterValue: DateFilterValue = useMemo(
     () => ({
@@ -513,6 +537,15 @@ export default function CustomerAnalyticsPanel({
         )}
       </div>
 
+      {searchTooBroadMessage ? (
+        <div
+          role="alert"
+          className="p-4 text-sm rounded-md border border-destructive/50 text-destructive bg-destructive/5"
+        >
+          {searchTooBroadMessage}
+        </div>
+      ) : (
+        <>
       <CustomerAnalyticsSummary
         revenue={revenue}
         newCustomerTotal={newData?.result?.total ?? 0}
@@ -538,6 +571,8 @@ export default function CustomerAnalyticsPanel({
         isLoading={newLoading || spendLoading}
         spendingOnly={phoneNarrowed}
       />
+        </>
+      )}
     </div>
   )
 }
