@@ -69,10 +69,17 @@ export function SystemCustomerManagementTabsContent() {
 
   const [spendingRows, setSpendingRows] = useState<SpendingRow[]>([])
   const [spendingLoading, setSpendingLoading] = useState(true)
-  const handleSpendingRows = useCallback((rows: SpendingRow[], isLoading: boolean) => {
-    setSpendingRows(rows)
-    setSpendingLoading(isLoading)
-  }, [])
+  // Buoc 7.2: panel bao chuoi SDT qua rong (137007) - bang chi tieu hien dung thong bao
+  // do thay cho "Khong co du lieu".
+  const [spendingNotice, setSpendingNotice] = useState<string | undefined>()
+  const handleSpendingRows = useCallback(
+    (rows: SpendingRow[], isLoading: boolean, searchTooBroadMessage?: string) => {
+      setSpendingRows(rows)
+      setSpendingLoading(isLoading)
+      setSpendingNotice(searchTooBroadMessage)
+    },
+    [],
+  )
 
   // Bảng Danh bạ ĐỒNG NHẤT với thẻ "Khách mới": lọc theo NGÀY TẠO tài khoản trong đúng
   // khoảng ngày của dashboard — số khách đăng ký trong kỳ khớp giữa card và bảng.
@@ -180,7 +187,14 @@ export function SystemCustomerManagementTabsContent() {
         </CardHeader>
       </Card>
 
-      {analytics.table === 'spend' ? (
+      {analytics.table === 'spend' && spendingNotice ? (
+        <div
+          role="alert"
+          className="p-4 text-sm rounded-md border border-destructive/50 text-destructive bg-destructive/5"
+        >
+          {spendingNotice}
+        </div>
+      ) : analytics.table === 'spend' ? (
         <CustomerSpendingTable rows={spendingRows} isLoading={spendingLoading} />
       ) : (
         <DataTable

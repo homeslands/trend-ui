@@ -353,6 +353,7 @@
     "userNotFound": "User not found",
     "cannotAssignCustomerRole": "Cannot assign the Customer role",
     "sharedUserUnavailable": "The account service is temporarily unavailable, please try again later",
+    "phonenumberSearchTooBroad": "Too many customers match this phone number, please type more digits to narrow the search",
     "validateVoucherUsageFailed": "Failed to validate voucher usage",
     "variantDoesExist": "Variant already exists",
     "variantNotFound": "Variant not found",

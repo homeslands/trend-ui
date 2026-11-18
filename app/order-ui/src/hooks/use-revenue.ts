@@ -1,4 +1,5 @@
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 
 import {
   getAllRevenue,
@@ -48,6 +49,11 @@ export const useCustomerAccountRevenue = (
     queryFn: () => getCustomerAccountRevenue(q),
     placeholderData: keepPreviousData,
     enabled,
+    // Buoc 7.2: 4xx (vd 137007 - chuoi SDT qua rong) la ket qua, khong phai loi
+    // tam thoi - goi lai chi lam man hinh treo ~7 s truoc khi bao "tim hep lai".
+    retry: (failureCount, error) =>
+      !((error as AxiosError)?.response?.status ?? 500).toString().startsWith('4') &&
+      failureCount < 3,
   })
 }
 
