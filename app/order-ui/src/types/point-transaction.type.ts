@@ -49,6 +49,10 @@ export interface IPointTransactionQuery {
   groupBy?: UserStatisticsGroupBy
 }
 
+// Step 7.8: query of GET {shared-user}/point-transaction (self view) - the user
+// comes from the JWT, the query names nobody.
+export type IMyPointTransactionQuery = Omit<IPointTransactionQuery, 'userSlug'>
+
 export interface UsePointTransactionsFilters {
   fromDate?: string
   toDate?: string

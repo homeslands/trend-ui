@@ -11,12 +11,11 @@ import {
   CoinsIcon,
   Filter,
   X,
-  Download,
   TrendingUp,
   TrendingDown,
 } from 'lucide-react'
 
-import { useIsMobile, usePointTransactions } from '@/hooks'
+import { useIsMobile, useMyPointTransactions } from '@/hooks'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -62,13 +61,9 @@ export function CustomerCoinTabsContent() {
     updateFilters,
     clearFilters,
     hasActiveFilters,
-    exportAll,
-    exportTransaction,
-    isExportingAll,
-    exportingTransactionSlug,
-  } = usePointTransactions({
-    userSlug: userInfo?.slug,
+  } = useMyPointTransactions({
     pageSize: 10,
+    enabled: !!userInfo,
   })
 
   // Intersection observer for infinite scroll
@@ -296,26 +291,6 @@ export function CustomerCoinTabsContent() {
               <Clock size={12} className="mr-1" />
               {moment(transaction.createdAt).format('HH:mm:ss DD/MM/YYYY')}
             </div>
-            {/* Export Transaction Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                exportTransaction(transaction.slug)
-              }}
-              disabled={exportingTransactionSlug === transaction.slug}
-              className="p-0 w-8 h-8 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <Download
-                size={14}
-                className={
-                  exportingTransactionSlug === transaction.slug
-                    ? 'animate-pulse'
-                    : ''
-                }
-              />
-            </Button>
           </div>
         </div>
       </TransactionGiftCardDetailDialog>
@@ -347,18 +322,8 @@ export function CustomerCoinTabsContent() {
             <div
               className={`flex items-center gap-2 ${isMobile && 'flex-col'}`}
             >
-              {/* Export Transaction Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={exportAll}
-                disabled={isExportingAll || totalCount === 0}
-                className="flex min-w-[120px] items-center gap-2"
-              >
-                <Download size={16} />
-                {t('profile.exportAll')}
-              </Button>
-
+              {/* Step 7.8 (QD-T7): no export on the self-view screen - the
+                  exports of trend need Manager or above. */}
               {/* Filter Toggle Button */}
               <Button
                 variant="outline"
