@@ -127,6 +127,8 @@ interface DataTableProps<TData, TValue> {
   pageSize?: number
   onPaginationChange?: (pageIndex0: number, pageSize: number) => void
   searchValue?: string
+  /** Thay "Khong co du lieu" khi bang rong vi mot ly do da biet (vd tim qua rong). */
+  emptyMessage?: string
 }
 
 export function DataTable<TData, TValue>({
@@ -153,6 +155,7 @@ export function DataTable<TData, TValue>({
   pageSize,
   onPaginationChange,
   searchValue,
+  emptyMessage,
 }: DataTableProps<TData, TValue>) {
   const { t } = useTranslation('common')
   const { inputValue, setInputValue, debouncedInputValue } = useDebouncedInput({
@@ -368,7 +371,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-full text-center border dark:border-gray-500"
                 >
-                  {t('common.noData')}
+                  {emptyMessage ?? t('common.noData')}
                 </TableCell>
               </TableRow>
             )}

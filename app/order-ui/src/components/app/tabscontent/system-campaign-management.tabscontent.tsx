@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
+import { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CalendarHeart, Download, MoveRight } from 'lucide-react'
@@ -25,7 +26,8 @@ import { useExportExcelUsers, useUsers } from '@/hooks'
 import { useUserListColumns } from '@/app/system/customers/DataTable/columns'
 import { Role, ROUTE } from '@/constants'
 import { useUserStore } from '@/stores'
-import { IUserInfo } from '@/types'
+import { IApiErrorResponse, IUserInfo } from '@/types'
+import { showErrorToast } from '@/utils'
 
 const DATE = 'YYYY-MM-DD'
 const today = () => moment().format(DATE)
@@ -58,9 +60,13 @@ const toDayMonthParam = (date: string): string | undefined => {
  * và BỎ QUA NĂM (format dd/MM) — nên state giữ full ngày `YYYY-MM-DD`,
  * nhưng chỉ phần dd/MM được gửi đi.
  */
+// Buoc 8.2: ma loi cua trend khi khoang sinh nhat khop qua 5000 nguoi (utils/toast.ts errorCodes).
+const BIRTHDAY_SEARCH_TOO_BROAD = 137008
+
 function CustomerBirthdayView() {
   const { t } = useTranslation('customer')
   const { t: tCommon } = useTranslation('common')
+  const { t: tToast } = useTranslation('toast')
   const navigate = useNavigate()
   const columns = useUserListColumns()
   const { userInfo } = useUserStore()
@@ -103,7 +109,7 @@ function CustomerBirthdayView() {
     setPage(1)
   }, [])
 
-  const { data, isLoading } = useUsers(
+  const { data, isLoading, error } = useUsers(
     {
       page,
       size,
@@ -114,7 +120,20 @@ function CustomerBirthdayView() {
       birthdayToDate: toDayMonth,
     },
     true,
+    true,
   )
+  // Buoc 8.2 (khuon QD4 cua 7.1/7.2): khoang sinh nhat khop qua 5000 nguoi o
+  // shared-user => trend tra 400 / 137008 thay vi cat danh sach. Handler loi toan
+  // cuc doc `code` chu khong doc `statusCode` (UI-1, co tu truoc) nen man nay tu
+  // bao: toast mot lan + o trong cua bang noi "chon khoang ngan hon" thay cho
+  // "Khong co du lieu" (bang van giu bo chon ngay de thu hep). `keepPreviousData`
+  // giu trang cu khi loi => bo `items` di, khong de danh sach cu lan vao.
+  const birthdaySearchTooBroad =
+    (error as AxiosError<IApiErrorResponse> | null)?.response?.data
+      ?.statusCode === BIRTHDAY_SEARCH_TOO_BROAD
+  useEffect(() => {
+    if (birthdaySearchTooBroad) showErrorToast(BIRTHDAY_SEARCH_TOO_BROAD)
+  }, [birthdaySearchTooBroad])
 
   const handlePaginationChange = useCallback(
     (pageIndex0: number, pageSize: number) => {
@@ -134,6 +153,12 @@ function CustomerBirthdayView() {
   const { mutate: exportUsers, isPending: isExporting } = useExportExcelUsers()
   const hasBirthdayFilter = !!fromDayMonth && !!toDayMonth
   const handleExportExcel = useCallback(() => {
+    // Cung khoang sinh nhat => `GET /user/export` cung tra 137008, ma body loi la
+    // Blob (responseType 'blob') nen khong doc duoc ma - bao truoc, khong goi.
+    if (hasBirthdayFilter && birthdaySearchTooBroad) {
+      showErrorToast(BIRTHDAY_SEARCH_TOO_BROAD)
+      return
+    }
     exportUsers({
       role: Role.CUSTOMER,
       ...(hasBirthdayFilter && {
@@ -142,7 +167,13 @@ function CustomerBirthdayView() {
         dobEndDate: toDayMonth,
       }),
     })
-  }, [exportUsers, hasBirthdayFilter, fromDayMonth, toDayMonth])
+  }, [
+    exportUsers,
+    hasBirthdayFilter,
+    birthdaySearchTooBroad,
+    fromDayMonth,
+    toDayMonth,
+  ])
 
   const BirthdayActionOptions = useMemo(() => {
     return function ActionOptions() {
@@ -231,9 +262,14 @@ function CustomerBirthdayView() {
 
       <DataTable
         columns={columns}
-        data={data?.result?.items || []}
+        data={birthdaySearchTooBroad ? [] : data?.result?.items || []}
         isLoading={isLoading}
-        pages={data?.result?.totalPages || 0}
+        pages={birthdaySearchTooBroad ? 0 : data?.result?.totalPages || 0}
+        emptyMessage={
+          birthdaySearchTooBroad
+            ? tToast('toast.birthdaySearchTooBroad')
+            : undefined
+        }
         pageIndex={page - 1}
         pageSize={size}
         onPaginationChange={handlePaginationChange}
