@@ -356,6 +356,7 @@
 				"cannotAssignCustomerRole": "Không thể gán vai trò Khách hàng cho người dùng",
 				"sharedUserUnavailable": "Hệ thống tài khoản tạm thời không phản hồi, vui lòng thử lại sau",
 				"phonenumberSearchTooBroad": "Có quá nhiều khách trùng số điện thoại này, vui lòng nhập thêm số để tìm hẹp lại",
+				"birthdaySearchTooBroad": "Có quá nhiều khách có sinh nhật trong khoảng này, vui lòng chọn khoảng ngày ngắn hơn",
 				"validateVoucherUsageFailed": "Xác thực sử dụng voucher thất bại",
 				"variantDoesExist": "Phân loại đã tồn tại",
 				"variantNotFound": "Không tìm thấy phân loại",
