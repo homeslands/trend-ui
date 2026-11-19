@@ -17,6 +17,13 @@ const errorCodes: { [key: number]: string } = {
   1042: 'toast.unloggedIn',
   101000: 'toast.ownerNotFound',
   101001: 'toast.orderNotFound',
+  // Module `accumulated-point` có mã "Order not found" RIÊNG (159011) bên cạnh
+  // 101001 của module `order`. Cả hai cùng nghĩa nên dùng chung một bản dịch.
+  // Khách gọi tới được: `POST /accumulated-point/order/:slug/apply-points` với
+  // slug đơn không tồn tại ⇒ 400/159011. Thiếu dòng này thì `showErrorToast`
+  // rơi về `serverMessage` và hiện tiếng Anh "Order not found". Lỗ có từ trước,
+  // bổ sung 11/11/2026 khi rà mã lỗi của bước 2.15.
+  159011: 'toast.orderNotFound',
   101002: 'toast.orderStatusInvalid',
   101003: 'toast.requestQuantityExcessCurrentQuantity',
   101004: 'toast.orderSlugInvalid',
