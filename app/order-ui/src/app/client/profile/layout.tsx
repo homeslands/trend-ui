@@ -6,6 +6,7 @@ import { useState } from 'react'
 
 import { ProfilePicture } from '@/components/app/avatar'
 import { useUploadProfilePicture, useGetUserBalance, useLoyaltyPoints, useIsMobile } from '@/hooks'
+import { getProfile } from '@/api'
 import { useUserStore } from '@/stores'
 import { publicFileURL, ROUTE } from '@/constants'
 import { formatCurrency, formatPoints, showToast } from '@/utils'
@@ -32,9 +33,14 @@ export default function ProfileLayout() {
 
     const handleUploadProfilePicture = (file: File) => {
         uploadProfilePicture(file, {
-            onSuccess: (data) => {
+            onSuccess: () => {
                 showToast(t('toast.uploadProfilePictureSuccess'))
-                setUserInfo(data.result)
+                // Step 6.14: the upload answers with shared-user's profile (no branch,
+                // shared-user's own role). The store holds the profile of trend,
+                // so read it again instead of writing the upload response.
+                getProfile().then((profile) => {
+                    setUserInfo(profile.result)
+                })
             },
         })
     }
