@@ -8,41 +8,43 @@ import {
   keepPreviousData,
 } from '@tanstack/react-query'
 import {
+  getMyPointTransactions,
   getPointTransactions,
-  exportAllPointTransactions,
-  exportPointTransactionBySlug,
   exportAllSystemPointTransactions,
   analyzePointTransactions,
 } from '@/api/point-transaction'
 import {
+  IMyPointTransactionQuery,
   IPointTransaction,
-  IPointTransactionQuery,
   UsePointTransactionsFilters,
 } from '@/types'
 import { PointTransactionType } from '@/constants'
-import { saveAs } from 'file-saver'
+import { useUserStore } from '@/stores'
 import moment from 'moment'
 
-interface UsePointTransactionsProps {
-  userSlug?: string
+interface UseMyPointTransactionsProps {
   pageSize?: number
+  enabled?: boolean
 }
 
-export function usePointTransactions({
-  userSlug,
+// Step 7.8 (cutover): the coin history of the signed-in user, read from
+// shared-user (getMyPointTransactions, the user comes from the JWT). Only the
+// self-view screen uses it; the staff screens keep useSystemPointTransactions
+// (trend, role-checked). No export here (QD-T7): the exports of trend need
+// Manager or above, so the buttons left the customer screen. The cache keys
+// carry the signed-in user (another customer on the same tab must not get
+// this history from the cache).
+export function useMyPointTransactions({
   pageSize = 10,
-}: UsePointTransactionsProps) {
+  enabled = true,
+}: UseMyPointTransactionsProps) {
+  const mySlug = useUserStore((s) => s.userInfo?.slug)
   const today = moment()
   const [filters, setFilters] = useState<UsePointTransactionsFilters>({
     type: PointTransactionType.ALL,
     fromDate: today.startOf('month').format('YYYY-MM-DD'),
     toDate: today.endOf('month').format('YYYY-MM-DD'),
   })
-  const [isExportingAll, setIsExportingAll] = useState(false)
-  const [exportingTransactionSlug, setExportingTransactionSlug] = useState<
-    string | null
-  >(null)
-
   const {
     data: transactionsData,
     fetchNextPage,
@@ -52,12 +54,11 @@ export function usePointTransactions({
     isError,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ['pointTransactions', userSlug, filters],
+    queryKey: ['pointTransactions', 'mine', mySlug, filters],
     queryFn: async ({ pageParam }) => {
-      const params: IPointTransactionQuery = {
+      const params: IMyPointTransactionQuery = {
         page: pageParam as number,
         size: pageSize,
-        userSlug,
       }
 
       // Add filters. Tên nội bộ vẫn là `fromDate`/`toDate` (UI trang cá nhân dùng),
@@ -68,9 +69,9 @@ export function usePointTransactions({
       if (filters.toDate) params.endDate = filters.toDate
       if (filters.type !== PointTransactionType.ALL) params.type = filters.type
 
-      return getPointTransactions(params)
+      return getMyPointTransactions(params)
     },
-    enabled: !!userSlug,
+    enabled: enabled && !!mySlug,
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.result.hasNext ? lastPage.result.page + 1 : undefined,
@@ -81,28 +82,26 @@ export function usePointTransactions({
     useQuery({
       queryKey: [
         'allPointTransactions',
-        userSlug,
+        'mine',
+        mySlug,
         filters.fromDate,
         filters.toDate,
       ],
       queryFn: async () => {
-        if (!userSlug) throw new Error('User slug is required')
-
         try {
           let allTransactions: IPointTransaction[] = []
           let page = 1
           let hasNext = true
 
           while (hasNext) {
-            const params: IPointTransactionQuery = {
+            const params: IMyPointTransactionQuery = {
               page,
               size: 100, // Large page size for faster fetching
-              userSlug,
               startDate: filters.fromDate,
               endDate: filters.toDate,
             }
 
-            const response = await getPointTransactions(params)
+            const response = await getMyPointTransactions(params)
             allTransactions = [...allTransactions, ...response.result.items]
             hasNext = response.result.hasNext
             page++
@@ -112,7 +111,7 @@ export function usePointTransactions({
           return []
         }
       },
-      enabled: !!userSlug,
+      enabled: enabled && !!mySlug,
     })
 
   // Flatten paginated transactions
@@ -183,37 +182,6 @@ export function usePointTransactions({
     )
   }, [filters])
 
-  // Export all transactions
-  const exportAll = useCallback(async () => {
-    if (!userSlug) return
-
-    setIsExportingAll(true)
-    try {
-      const blob = await exportAllPointTransactions(
-        userSlug,
-        filters.fromDate,
-        filters.toDate,
-        filters.type == PointTransactionType.ALL ? undefined : filters.type,
-      )
-      const filename = `point-transactions-${userSlug}-${new Date().toISOString().split('T')[0]}.pdf`
-      saveAs(blob, filename)
-    } finally {
-      setIsExportingAll(false)
-    }
-  }, [filters.fromDate, filters.toDate, filters.type, userSlug])
-
-  // Export single transaction
-  const exportTransaction = useCallback(async (transactionSlug: string) => {
-    setExportingTransactionSlug(transactionSlug)
-    try {
-      const blob = await exportPointTransactionBySlug(transactionSlug)
-      const filename = `transaction-${transactionSlug}-${new Date().toISOString().split('T')[0]}.pdf`
-      saveAs(blob, filename)
-    } finally {
-      setExportingTransactionSlug(null)
-    }
-  }, [])
-
   return {
     // Data
     transactions,
@@ -235,12 +203,6 @@ export function usePointTransactions({
     updateFilters,
     clearFilters,
     hasActiveFilters,
-
-    // Export
-    exportAll,
-    exportTransaction,
-    isExportingAll,
-    exportingTransactionSlug,
 
     // Actions
     refetch,

@@ -3,7 +3,8 @@ import { Coins, Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Badge, Label, Switch } from "@/components/ui"
-import { useApplyLoyaltyPoint, useCancelReservationForOrder, useLoyaltyPoints } from "@/hooks"
+import { useApplyLoyaltyPoint, useCancelReservationForOrder, useLoyaltyPoints, useMyLoyaltyPoints } from "@/hooks"
+import { useUserStore } from "@/stores"
 import { LoyaltyPointInput } from "../input"
 
 interface ClientLoyaltyPointSelectorProps {
@@ -17,7 +18,14 @@ interface ClientLoyaltyPointSelectorProps {
 export default function ClientLoyaltyPointSelector({ usedPoints, orderSlug, ownerSlug, total, onSuccess }: ClientLoyaltyPointSelectorProps) {
     const { t } = useTranslation('loyaltyPoint')
     const [error, setError] = useState<string | null>(null)
-    const { data: loyaltyPoints } = useLoyaltyPoints(ownerSlug ?? '')
+    // Step 7.8: own points through shared-user only when the signed-in user IS
+    // the owner of the order. Anyone else on this page (a staff member taking
+    // the payment) keeps the on-behalf route of trend, which checks the role.
+    const { userInfo } = useUserStore()
+    const isOwner = !!ownerSlug && userInfo?.slug === ownerSlug
+    const { data: myLoyaltyPoints } = useMyLoyaltyPoints(isOwner)
+    const { data: ownerLoyaltyPoints } = useLoyaltyPoints(isOwner ? '' : ownerSlug ?? '')
+    const loyaltyPoints = isOwner ? myLoyaltyPoints : ownerLoyaltyPoints
 
     const totalPoints = loyaltyPoints?.totalPoints ?? 0
     // Base total before applying points: current subtotal + already used points

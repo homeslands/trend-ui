@@ -12,7 +12,7 @@ import {
   Label,
 } from '@/components/ui'
 
-import { useIsMobile, useLoyaltyPointHistory, useLoyaltyPoints, usePagination } from '@/hooks'
+import { useIsMobile, useMyLoyaltyPointHistory, useMyLoyaltyPoints, usePagination } from '@/hooks'
 import { formatPoints } from '@/utils'
 import { useUserStore } from '@/stores'
 import { useLoyaltyPointTransactionColumns } from '@/app/client/profile/DataTable/columns'
@@ -54,11 +54,11 @@ export function CustomerLoyaltyPointTabsContent() {
   }, [startDate, endDate, type, setPagination])
 
   // Total points hook
-  const { data: totalPointsData, isLoading: loadingTotalPoints } = useLoyaltyPoints(userInfo?.slug || '')
+  // Step 7.8: own points from shared-user (the user comes from the JWT).
+  const { data: totalPointsData, isLoading: loadingTotalPoints } = useMyLoyaltyPoints(!!userInfo)
 
   // Loyalty point history hook
-  const { data: loyaltyPointHistoryData, isLoading: loadingLoyaltyPointHistory } = useLoyaltyPointHistory({
-    slug: userInfo?.slug || '',
+  const { data: loyaltyPointHistoryData, isLoading: loadingLoyaltyPointHistory } = useMyLoyaltyPointHistory({
     page,
     size,
     sort: 'DESC',
@@ -74,7 +74,7 @@ export function CustomerLoyaltyPointTabsContent() {
     ,
     fromDate: startDate || undefined,
     toDate: endDate || undefined,
-  })
+  }, !!userInfo)
 
 
   const totalPoints = totalPointsData?.totalPoints || 0

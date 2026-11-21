@@ -371,6 +371,10 @@ const errorCodes: { [key: number]: string } = {
   // `trend` khong goi duoc `shared-user` (HTTP 503 - sai lech D9). Ma chung
   // cua moi loi nay tu buoc 2.4, khai song doi voi `terminal-ui`.
   162001: 'toast.sharedUserUnavailable',
+  // O tim SDT khop qua 500 nguoi o `shared-user` (buoc 7.2,
+  // search-by-phonenumber). `trend` tra 400 ma nay thay vi cat bot danh
+  // sach - UI phai noi "tim hep lai", khong de nguoi dung tuong "khong co ai".
+  137007: 'toast.phonenumberSearchTooBroad',
 }
 
 export function showToast(message: string) {
