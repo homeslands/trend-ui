@@ -1,8 +1,9 @@
 import { AxiosRequestConfig } from 'axios'
-import { http } from '@/utils'
+import { http, httpAuth } from '@/utils'
 import {
   IAnalyzePointTransaction,
   IApiResponse,
+  IMyPointTransactionQuery,
   IPaginationResponse,
   IPointTransaction,
   IPointTransactionQuery,
@@ -13,6 +14,20 @@ export async function getPointTransactions(
   params: IPointTransactionQuery | null,
 ): Promise<IApiResponse<IPaginationResponse<IPointTransaction>>> {
   const response = await http.get<
+    IApiResponse<IPaginationResponse<IPointTransaction>>
+  >('/point-transaction', {
+    params,
+  })
+  return response.data
+}
+
+// Step 7.8 (cutover): the coin transactions of the signed-in user, read from
+// shared-user (GET /point-transaction, the user comes from the JWT).
+// getPointTransactions stays on trend for the staff screens.
+export async function getMyPointTransactions(
+  params: IMyPointTransactionQuery | null,
+): Promise<IApiResponse<IPaginationResponse<IPointTransaction>>> {
+  const response = await httpAuth.get<
     IApiResponse<IPaginationResponse<IPointTransaction>>
   >('/point-transaction', {
     params,

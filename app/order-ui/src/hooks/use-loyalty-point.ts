@@ -5,9 +5,12 @@ import {
   cancelReservationForOrder,
   getLoyaltyPointHistory,
   getLoyaltyPoints,
+  getMyLoyaltyPointHistory,
+  getMyLoyaltyPoints,
 } from '@/api'
 import { QUERYKEY } from '@/constants'
-import { ILoyaltyPointHistoryQuery } from '@/types'
+import { useUserStore } from '@/stores'
+import { ILoyaltyPointHistoryQuery, IMyLoyaltyPointHistoryQuery } from '@/types'
 
 export const useLoyaltyPoints = (q?: string) => {
   return useQuery({
@@ -16,6 +19,44 @@ export const useLoyaltyPoints = (q?: string) => {
     placeholderData: keepPreviousData,
     select: (data) => data.result,
     enabled: !!q,
+  })
+}
+
+// Step 7.8: points of the signed-in user (shared-user). Own cache keys under
+// the loyaltyPoints prefix, carrying the signed-in user: another customer
+// signing in on the same tab must not get these cached numbers.
+export const useMyLoyaltyPoints = (enabled: boolean = true) => {
+  const mySlug = useUserStore((s) => s.userInfo?.slug)
+  return useQuery({
+    queryKey: [QUERYKEY.loyaltyPoints, 'mine', mySlug, 'total'],
+    queryFn: () => getMyLoyaltyPoints(),
+    placeholderData: keepPreviousData,
+    select: (data) => data.result,
+    enabled: enabled && !!mySlug,
+  })
+}
+
+export const useMyLoyaltyPointHistory = (
+  params: IMyLoyaltyPointHistoryQuery,
+  enabled: boolean = true,
+) => {
+  const mySlug = useUserStore((s) => s.userInfo?.slug)
+  return useQuery({
+    queryKey: [
+      QUERYKEY.loyaltyPoints,
+      'mine',
+      mySlug,
+      'history',
+      params.page,
+      params.size,
+      params.fromDate,
+      params.toDate,
+      (params.types || []).join(','),
+    ],
+    queryFn: () => getMyLoyaltyPointHistory(params),
+    placeholderData: keepPreviousData,
+    select: (data) => data.result,
+    enabled: enabled && !!mySlug,
   })
 }
 

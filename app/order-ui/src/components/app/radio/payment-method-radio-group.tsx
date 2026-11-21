@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react'
 import { RadioGroup, RadioGroupItem, Label, Input } from '@/components/ui'
 import { PaymentMethod, Role, VOUCHER_PAYMENT_METHOD } from '@/constants'
 import { useUserStore } from '@/stores'
-import { useGetUserBalance } from '@/hooks'
+import { useGetMyBalance } from '@/hooks'
 import { formatCurrency } from '@/utils'
 import { IOrder } from '@/types'
 
@@ -27,10 +27,9 @@ export default function PaymentMethodRadioGroup({
   const { t: tProfile } = useTranslation('profile')
   const { userInfo } = useUserStore()
 
-  const { data: balanceData } = useGetUserBalance(
-    userInfo?.slug,
-    !!userInfo?.slug,
-  )
+  // Step 7.8: the balance of the signed-in user, from shared-user (the user
+  // comes from the JWT). The staff payment screen keeps the on-behalf route.
+  const { data: balanceData } = useGetMyBalance(!!userInfo?.slug)
   const balance = balanceData?.result?.points || 0
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
   const [creditCardTransactionId, setCreditCardTransactionId] = useState<string>('')
