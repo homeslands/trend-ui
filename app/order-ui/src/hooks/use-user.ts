@@ -1,4 +1,5 @@
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 
 import {
   addMultipleUserGroupMember,
@@ -49,12 +50,25 @@ import {
 } from '@/types'
 import { QUERYKEY } from '@/constants'
 
-export const useUsers = (q: IUserQuery | null, enabled?: boolean) => {
+export const useUsers = (
+  q: IUserQuery | null,
+  enabled?: boolean,
+  // Buoc 8.2: man loc sinh nhat khong goi lai khi 4xx - 137008 (khoang qua rong)
+  // la ket qua, goi lai chi lam man hinh treo ~7 s truoc khi bao "chon khoang
+  // ngan hon" (cung ly do voi useCustomerAccountRevenue o 7.2).
+  noRetryOn4xx?: boolean,
+) => {
   return useQuery({
     queryKey: ['users', JSON.stringify(q)],
     queryFn: () => (q ? getUsers(q) : Promise.resolve(null)),
     placeholderData: keepPreviousData,
     enabled: !!q && !!enabled,
+    ...(noRetryOn4xx && {
+      retry: (failureCount: number, error: Error) =>
+        !((error as AxiosError)?.response?.status ?? 500)
+          .toString()
+          .startsWith('4') && failureCount < 3,
+    }),
   })
 }
 
