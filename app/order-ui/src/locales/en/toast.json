@@ -354,6 +354,7 @@
     "cannotAssignCustomerRole": "Cannot assign the Customer role",
     "sharedUserUnavailable": "The account service is temporarily unavailable, please try again later",
     "phonenumberSearchTooBroad": "Too many customers match this phone number, please type more digits to narrow the search",
+    "birthdaySearchTooBroad": "Too many customers have a birthday in this range, please choose a shorter date range",
     "validateVoucherUsageFailed": "Failed to validate voucher usage",
     "variantDoesExist": "Variant already exists",
     "variantNotFound": "Variant not found",

@@ -375,6 +375,10 @@ const errorCodes: { [key: number]: string } = {
   // search-by-phonenumber). `trend` tra 400 ma nay thay vi cat bot danh
   // sach - UI phai noi "tim hep lai", khong de nguoi dung tuong "khong co ai".
   137007: 'toast.phonenumberSearchTooBroad',
+  // Khoang sinh nhat khop qua 5000 nguoi o `shared-user` (buoc 8.2,
+  // by-birthday). `trend` tra 400 ma nay o `GET /user` / `GET /user/export`
+  // thay vi cat bot - UI phai noi "chon khoang ngan hon", khong noi "khong co ai".
+  137008: 'toast.birthdaySearchTooBroad',
 }
 
 export function showToast(message: string) {
